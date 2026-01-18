@@ -1,0 +1,123 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          # Linux builds
+          - os: linux
+            arch: x64
+            runner: ubuntu-latest
+            flutter-version: '3.19.0'
+          # macOS builds
+          - os: macos
+            arch: x64
+            runner: macos-latest
+            flutter-version: '3.19.0'
+          # Windows builds
+          - os: windows
+            arch: x64
+            runner: windows-latest
+            flutter-version: '3.19.0'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: 'stable'
+      
+      - name: Show environment info
+        shell: bash
+        run: |
+          echo "Runner OS: ${{ runner.os }}"
+          echo "Runner Architecture: ${{ runner.arch }}"
+          echo "Matrix OS: ${{ matrix.os }}"
+          flutter --version
+      
+      - name: Install dependencies
+        run: flutter pub get
+      
+      - name: Run tests
+        run: flutter test
+      
+      - name: Enable desktop support
+        run: flutter config --enable-linux-desktop --enable-macos-desktop --enable-windows-desktop
+      
+      - name: Get version from tag
+        id: get_version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+        shell: bash
+      
+      - name: Build Linux app
+        if: matrix.os == 'linux'
+        run: |
+          flutter build linux --release
+          cd build/linux/x64/release/bundle
+          zip -r ../../../taskly-${{ env.VERSION }}-linux-x64.zip .
+      
+      - name: Build macOS app
+        if: matrix.os == 'macos'
+        run: |
+          flutter build macos --release
+          cd build/macos/Build/Products/Release
+          zip -r ../../../taskly-${{ env.VERSION }}-macos-x64.zip Taskly.app
+      
+      - name: Build Windows app
+        if: matrix.os == 'windows'
+        shell: powershell
+        run: |
+          flutter build windows --release
+          $version = $env:VERSION
+          $source = "build\windows\x64\runner\Release"
+          $destination = "build\taskly-$version-windows-x64.zip"
+          Compress-Archive -Path $source -DestinationPath $destination -Force
+      
+      - name: List build artifacts
+        shell: bash
+        run: |
+          ls -la build/
+      
+      - name: Get CHANGELOG content
+        id: get_changelog
+        run: |
+          # Extract CHANGELOG.md content for the current version
+          if grep -q "## \[${{ env.VERSION }}\]" CHANGELOG.md; then
+            CHANGELOG_CONTENT=$(sed -n "/## \[${{ env.VERSION }}\]/,/## \[/p" CHANGELOG.md | awk 'NR>1 {print prev} {prev=$0}')
+          else
+            CHANGELOG_CONTENT="## Release v${{ env.VERSION }}\n\nNo changes listed in CHANGELOG.md."
+          fi
+          echo "CHANGELOG_CONTENT<<EOF" >> $GITHUB_ENV
+          echo "$CHANGELOG_CONTENT" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+        shell: bash
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            build/taskly-*.zip
+          name: Release v${{ env.VERSION }}
+          generate_release_notes: true
+          body: |
+            ${{ env.CHANGELOG_CONTENT }}
+            
+            ---
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
