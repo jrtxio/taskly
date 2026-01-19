@@ -56,117 +56,233 @@ class _ListNavigationState extends State<ListNavigation> {
                       GestureDetector(
                         onTap: widget.onTodayTap,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 16,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFF007AFF), // iOS blue
                             borderRadius: BorderRadius.circular(14),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Color.fromRGBO(0, 0, 0, 0.1),
                                 blurRadius: 3,
                                 offset: const Offset(0, 2),
                               ),
                             ],
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
+                          child: Stack(
                             children: [
-                              const Icon(Icons.today, color: Colors.white, size: 18),
-                              const SizedBox(height: 4),
-                              const Text('今天', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 11)),
-                              const SizedBox(height: 2),
-                              const Text('0', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                              // Icon and text on the left
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Icon(
+                                    Icons.today,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  const Text(
+                                    '今天',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              // Number on the top right, aligned with icon
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: const Text(
+                                  '0',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
                       ),
-                      
+
                       // Planned
                       GestureDetector(
                         onTap: widget.onPlannedTap,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 16,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFFFF3B30), // iOS red
                             borderRadius: BorderRadius.circular(14),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Color.fromRGBO(0, 0, 0, 0.1),
                                 blurRadius: 3,
                                 offset: const Offset(0, 2),
                               ),
                             ],
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
+                          child: Stack(
                             children: [
-                              const Icon(Icons.calendar_month, color: Colors.white, size: 18),
-                              const SizedBox(height: 4),
-                              const Text('计划', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 11)),
-                              const SizedBox(height: 2),
-                              const Text('2', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                              // Icon and text on the left
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Icon(
+                                    Icons.calendar_month,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  const Text(
+                                    '计划',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              // Number on the top right, aligned with icon
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: const Text(
+                                  '2',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
                       ),
-                      
+
                       // All
                       GestureDetector(
                         onTap: widget.onAllTap,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 16,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFF8E8E93), // iOS gray
                             borderRadius: BorderRadius.circular(14),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Color.fromRGBO(0, 0, 0, 0.1),
                                 blurRadius: 3,
                                 offset: const Offset(0, 2),
                               ),
                             ],
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
+                          child: Stack(
                             children: [
-                              const Icon(Icons.list, color: Colors.white, size: 18),
-                              const SizedBox(height: 4),
-                              const Text('全部', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 11)),
-                              const SizedBox(height: 2),
-                              const Text('5', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                              // Icon and text on the left
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Icon(
+                                    Icons.list,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  const Text(
+                                    '全部',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              // Number on the top right, aligned with icon
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: const Text(
+                                  '5',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
                       ),
-                      
+
                       // Completed
                       GestureDetector(
                         onTap: widget.onCompletedTap,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 16,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFFFF9500), // iOS orange
                             borderRadius: BorderRadius.circular(14),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Color.fromRGBO(0, 0, 0, 0.1),
                                 blurRadius: 3,
                                 offset: const Offset(0, 2),
                               ),
                             ],
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
+                          child: Stack(
                             children: [
-                              const Icon(Icons.check_circle, color: Colors.white, size: 18),
-                              const SizedBox(height: 4),
-                              const Text('已完成', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 11)),
-                              const SizedBox(height: 2),
-                              const Text('0', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                              // Icon and text on the left
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Icon(
+                                    Icons.check_circle,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  const Text(
+                                    '已完成',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              // Number on the top right, aligned with icon
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: const Text(
+                                  '0',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
