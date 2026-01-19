@@ -15,16 +15,23 @@ void main() {
     final testMap = {
       'id': testId,
       'name': testName,
+      'icon': null,
+      'color': null,
     };
 
     test('should create a TodoList instance with valid parameters', () {
       expect(testTodoList.id, testId);
       expect(testTodoList.name, testName);
+      expect(testTodoList.icon, isNull);
+      expect(testTodoList.color, isNull);
     });
 
     test('should convert from map to TodoList', () {
       final todoList = TodoList.fromMap(testMap);
-      expect(todoList, testTodoList);
+      expect(todoList.id, testTodoList.id);
+      expect(todoList.name, testTodoList.name);
+      expect(todoList.icon, testTodoList.icon);
+      expect(todoList.color, testTodoList.color);
     });
 
     test('should convert from TodoList to map', () {

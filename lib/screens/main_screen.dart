@@ -5,6 +5,8 @@ import '../providers/list_provider.dart';
 import '../providers/task_provider.dart';
 import '../widgets/list_navigation.dart';
 import '../widgets/task_list_view.dart';
+import '../widgets/task_dialogs.dart';
+import '../widgets/menu_dialogs.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -14,102 +16,239 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  String _currentViewTitle = '';
+  String _statusMessage = '就绪';
+  int? _todayCount;
+  int? _plannedCount;
+  int? _allCount;
+  int? _completedCount;
+
   @override
   void initState() {
     super.initState();
-    // Resize window for main screen
     _resizeWindow();
-    // Load initial data after first build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadInitialData();
     });
   }
 
-  // Resize window to appropriate size for main screen
   Future<void> _resizeWindow() async {
     await DesktopWindow.setWindowSize(const Size(1024, 768));
   }
 
-  // Load initial data
   Future<void> _loadInitialData() async {
     final listProvider = Provider.of<ListProvider>(context, listen: false);
     final taskProvider = Provider.of<TaskProvider>(context, listen: false);
 
-    // Load lists
     await listProvider.loadLists();
 
-    // Load tasks based on selected list or default view
     if (listProvider.selectedList != null) {
       await taskProvider.loadTasksByList(listProvider.selectedList!.id);
+      _updateViewTitle(listProvider.selectedList!.name);
     } else {
       await taskProvider.loadAllTasks();
+      _updateViewTitle('全部');
+    }
+
+    _updateTaskCounts();
+    _updateStatus('数据已加载');
+  }
+
+  void _updateViewTitle(String title) {
+    if (mounted) {
+      setState(() {
+        _currentViewTitle = title;
+      });
+    }
+  }
+
+  void _updateStatus(String message) {
+    if (mounted) {
+      setState(() {
+        _statusMessage = message;
+      });
+    }
+  }
+
+  Future<void> _updateTaskCounts() async {
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+
+    final todayTasks = await taskProvider.repository.getTodayTasks();
+    final plannedTasks = await taskProvider.repository.getPlannedTasks();
+    final allTasks = await taskProvider.repository.getIncompleteTasks();
+    final completedTasks = await taskProvider.repository.getCompletedTasks();
+
+    if (mounted) {
+      setState(() {
+        _todayCount = todayTasks.length;
+        _plannedCount = plannedTasks.length;
+        _allCount = allTasks.length;
+        _completedCount = completedTasks.length;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Consumer2<ListProvider, TaskProvider>(
-        builder: (context, listProvider, taskProvider, child) {
-          return Row(
-            children: [
-              // Left sidebar: List navigation
-              SizedBox(
-                width: 300,
-                child: ListNavigation(
-                  lists: listProvider.lists,
-                  selectedList: listProvider.selectedList,
-                  onSelectList: (list) {
-                    listProvider.selectList(list);
-                    taskProvider.loadTasksByList(list.id);
-                  },
-                  onAddList: (name) {
-                    listProvider.addList(name);
-                  },
-                  onTodayTap: () {
-                    taskProvider.loadTodayTasks();
-                  },
-                  onPlannedTap: () {
-                    taskProvider.loadPlannedTasks();
-                  },
-                  onAllTap: () {
-                    taskProvider.loadAllTasks();
-                  },
-                  onCompletedTap: () {
-                    taskProvider.loadCompletedTasks();
-                  },
-                ),
-              ),
+      body: Column(
+        children: [
+          const AppMenuBar(),
 
-              // Vertical divider
-              const VerticalDivider(width: 1),
+          Expanded(
+            child: Consumer2<ListProvider, TaskProvider>(
+              builder: (context, listProvider, taskProvider, child) {
+                return Row(
+                  children: [
+                    SizedBox(
+                      width: 300,
+                      child: ListNavigation(
+                        lists: listProvider.lists,
+                        selectedList: listProvider.selectedList,
+                        onSelectList: (list) {
+                          listProvider.selectList(list);
+                          taskProvider.loadTasksByList(list.id);
+                          _updateViewTitle(list.name);
+                          _updateStatus('切换到列表: ${list.name}');
+                        },
+                        onAddList: (name) {
+                          listProvider.addList(name);
+                          _updateStatus('创建列表: $name');
+                        },
+                        onDeleteList: (id) {
+                          listProvider.deleteList(id);
+                          _updateStatus('删除列表成功');
+                        },
+                        onTodayTap: () {
+                          taskProvider.loadTodayTasks();
+                          _updateViewTitle('今天');
+                          _updateStatus('显示今天的任务');
+                        },
+                        onPlannedTap: () {
+                          taskProvider.loadPlannedTasks();
+                          _updateViewTitle('计划');
+                          _updateStatus('显示计划中的任务');
+                        },
+                        onAllTap: () {
+                          taskProvider.loadAllTasks();
+                          _updateViewTitle('全部');
+                          _updateStatus('显示全部任务');
+                        },
+                        onCompletedTap: () {
+                          taskProvider.loadCompletedTasks();
+                          _updateViewTitle('已完成');
+                          _updateStatus('显示已完成的任务');
+                        },
+                        todayCount: _todayCount,
+                        plannedCount: _plannedCount,
+                        allCount: _allCount,
+                        completedCount: _completedCount,
+                      ),
+                    ),
 
-              // Right content: Task list view
-              Expanded(
-                child: TaskListView(
-                  tasks: taskProvider.tasks,
-                  isLoading: taskProvider.isLoading,
-                  onToggleTask: (id) {
-                    taskProvider.toggleTaskCompleted(id);
-                  },
-                  onEditTask: (task) {
-                    // Navigate to task edit screen
-                  },
-                  onDeleteTask: (id) {
-                    taskProvider.deleteTask(id);
-                  },
-                ),
-              ),
-            ],
-          );
+                    const VerticalDivider(width: 1),
+
+                    Expanded(
+                      child: TaskListView(
+                        tasks: taskProvider.tasks,
+                        isLoading: taskProvider.isLoading,
+                        onToggleTask: (id) {
+                          taskProvider.toggleTaskCompleted(id);
+                          _updateTaskCounts();
+                          _updateStatus('更新任务状态');
+                        },
+                        onEditTask: (task) {
+                          _showEditTaskDialog(task);
+                        },
+                        onDeleteTask: (id) {
+                          _showDeleteConfirmDialog(id);
+                        },
+                        currentViewTitle: _currentViewTitle,
+                        currentListId: listProvider.selectedList?.id,
+                        lists: listProvider.lists,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+
+          _buildStatusBar(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusBar() {
+    return Container(
+      height: 28,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        border: Border(top: BorderSide(color: Colors.grey[300]!)),
+      ),
+      child: Row(
+        children: [
+          Text(
+            _statusMessage,
+            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+          ),
+          const Spacer(),
+          Text(
+            'Taskly v1.0.0',
+            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditTaskDialog(dynamic task) {
+    final listProvider = Provider.of<ListProvider>(context, listen: false);
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+
+    showDialog(
+      context: context,
+      builder: (context) => EditTaskDialog(
+        task: task,
+        lists: listProvider.lists,
+        onUpdate: (updatedTask) async {
+          await taskProvider.updateTask(updatedTask);
+          _updateTaskCounts();
+          _updateStatus('任务已更新');
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        tooltip: '添加新任务',
-        onPressed: () {
-          // Navigate to add task screen
-        },
-        child: const Icon(Icons.add),
+    );
+  }
+
+  void _showDeleteConfirmDialog(int taskId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('确认删除'),
+        content: const Text('确定要删除这个任务吗？此操作无法撤销。'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              final taskProvider = Provider.of<TaskProvider>(
+                context,
+                listen: false,
+              );
+              taskProvider.deleteTask(taskId).then((_) {
+                _updateTaskCounts();
+                _updateStatus('任务已删除');
+              });
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('删除'),
+          ),
+        ],
       ),
     );
   }

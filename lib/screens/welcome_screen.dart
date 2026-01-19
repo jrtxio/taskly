@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import '../providers/app_provider.dart';
 import '../services/database_service.dart';
+import 'main_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
-  final AppProvider appProvider;
-
-  const WelcomeScreen({super.key, required this.appProvider});
+  const WelcomeScreen({super.key});
 
   @override
   State<WelcomeScreen> createState() => _WelcomeScreenState();
@@ -23,14 +23,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     _loadDefaultDbPath();
   }
 
-  // Load default database path
   Future<void> _loadDefaultDbPath() async {
     final dbService = DatabaseService();
     final defaultPath = await dbService.getDatabasePath();
     _dbPathController.text = defaultPath;
   }
 
-  // Browse for database file
   Future<void> _browseDbFile() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -45,7 +43,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     }
   }
 
-  // Create database file
   Future<void> _createDbFile() async {
     final result = await FilePicker.platform.saveFile(
       dialogTitle: '创建新任务数据库',
@@ -59,7 +56,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     }
   }
 
-  // Handle confirm button press
   Future<void> _handleConfirm() async {
     final path = _dbPathController.text.trim();
     if (path.isEmpty) {
@@ -72,19 +68,19 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     });
 
     try {
-      // Ensure the directory exists
       final file = File(path);
       final dir = file.parent;
       if (!await dir.exists()) {
         await dir.create(recursive: true);
       }
 
-      // Save database path to config
-      await widget.appProvider.saveDbPath(path);
+      final appProvider = Provider.of<AppProvider>(context, listen: false);
+      await appProvider.saveDbPath(path);
 
-      // Navigate to main screen
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/main');
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const MainScreen()),
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -97,13 +93,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     }
   }
 
-  // Handle cancel button press
   void _handleCancel() {
-    // Exit the app
     exit(0);
   }
 
-  // Show error dialog
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -127,79 +120,102 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       body: Center(
         child: Container(
           width: 600,
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
             color: Colors.white,
-            border: Border.all(color: Colors.grey.shade300),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey[300]!),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Title
+              Icon(
+                Icons.task_alt,
+                size: 64,
+                color: Theme.of(context).primaryColor,
+              ),
+              const SizedBox(height: 24),
               Text(
-                '欢迎来到 Taskly',
+                '欢迎使用 Taskly',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 12),
-
-              // Prompt message
               Text(
                 '请选择或创建任务数据库',
-                style: Theme.of(context).textTheme.bodyLarge,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Colors.grey[600],
+                ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
-
-              // File path input area
+              const SizedBox(height: 24),
               Row(
                 children: [
                   Expanded(
                     child: TextField(
                       controller: _dbPathController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[50],
+                        hintText: '数据库路径',
                       ),
                       readOnly: true,
                       onTap: _createDbFile,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 12),
                   ElevatedButton(
                     onPressed: _browseDbFile,
                     style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(80, 40),
+                      minimumSize: const Size(100, 48),
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
                     ),
                     child: const Text('浏览...'),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-
-              // Buttons
+              const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
                     onPressed: _isLoading ? null : _handleConfirm,
                     style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(100, 40),
+                      minimumSize: const Size(120, 44),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(8),
                       ),
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
                     ),
                     child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
                         : const Text('确定'),
                   ),
-                  const SizedBox(width: 24),
+                  const SizedBox(width: 16),
                   OutlinedButton(
                     onPressed: _isLoading ? null : _handleCancel,
                     style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(100, 40),
+                      minimumSize: const Size(120, 44),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     child: const Text('取消'),

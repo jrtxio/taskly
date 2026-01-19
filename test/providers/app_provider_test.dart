@@ -33,14 +33,10 @@ class MockConfigService implements ConfigServiceInterface {
 void main() {
   group('AppProvider Tests', () {
     test('should initialize with default values', () {
-      // Create mock implementation
       final mockConfigService = MockConfigService();
-
-      // Create AppProvider with mocked dependency
       final appProvider = AppProvider.test(configService: mockConfigService);
 
-      // Assert
-      expect(appProvider.dbPath, isNull);
+      expect(appProvider.databasePath, isNull);
       expect(appProvider.language, 'zh');
       expect(appProvider.isLoading, isFalse);
       expect(appProvider.error, isNull);
@@ -48,14 +44,10 @@ void main() {
     });
 
     test('should have correct getters', () {
-      // Create mock implementation
       final mockConfigService = MockConfigService();
-
-      // Create AppProvider with mocked dependency
       final appProvider = AppProvider.test(configService: mockConfigService);
 
-      // Assert
-      expect(appProvider.dbPath, isNull);
+      expect(appProvider.databasePath, isNull);
       expect(appProvider.language, isA<String>());
       expect(appProvider.isLoading, isA<bool>());
       expect(appProvider.error, isNull);

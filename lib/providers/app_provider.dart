@@ -1,43 +1,40 @@
 import 'package:flutter/material.dart';
 import '../interfaces/config_service_interface.dart';
 import '../locator/service_locator.dart';
-
 import '../models/app_error.dart';
 
 class AppProvider with ChangeNotifier {
-  // Public constructor for testing purposes
   AppProvider.test({required ConfigServiceInterface configService})
-    : _configService = configService;
+      : _configService = configService;
 
-  // Regular constructor with service locator
   AppProvider() : _configService = sl<ConfigServiceInterface>();
 
   final ConfigServiceInterface _configService;
-  String? _dbPath;
+  String? _databasePath;
   String _language = 'zh';
+  bool _isDarkMode = false;
+  bool _isFirstLaunch = true;
   bool _isLoading = false;
   AppError? _error;
 
-  // Getters
-  String? get dbPath => _dbPath;
+  String? get databasePath => _databasePath;
   String get language => _language;
+  bool get isDarkMode => _isDarkMode;
+  bool get isFirstLaunch => _isFirstLaunch;
   bool get isLoading => _isLoading;
   AppError? get error => _error;
   bool get hasError => _error != null;
 
-  // Initialize app provider
   Future<void> init() async {
     _isLoading = true;
     _clearError();
     notifyListeners();
 
     try {
-      // Initialize config service
       await _configService.init();
-
-      // Load configs
-      _dbPath = _configService.getLastDbPath();
+      _databasePath = _configService.getLastDbPath();
       _language = _configService.getLanguage();
+      _isFirstLaunch = _databasePath == null;
     } catch (e, stackTrace) {
       _setError(
         AppError(
@@ -46,7 +43,6 @@ class AppProvider with ChangeNotifier {
           originalError: e,
         ),
       );
-      // ignore: avoid_print
       print('Error initializing app: $e\n$stackTrace');
     } finally {
       _isLoading = false;
@@ -54,7 +50,6 @@ class AppProvider with ChangeNotifier {
     }
   }
 
-  // Save database path
   Future<void> saveDbPath(String path) async {
     _isLoading = true;
     _clearError();
@@ -62,7 +57,8 @@ class AppProvider with ChangeNotifier {
 
     try {
       await _configService.saveLastDbPath(path);
-      _dbPath = path;
+      _databasePath = path;
+      _isFirstLaunch = false;
     } catch (e, stackTrace) {
       _setError(
         AppError(
@@ -71,7 +67,6 @@ class AppProvider with ChangeNotifier {
           originalError: e,
         ),
       );
-      // ignore: avoid_print
       print('Error saving database path: $e\n$stackTrace');
     } finally {
       _isLoading = false;
@@ -79,7 +74,12 @@ class AppProvider with ChangeNotifier {
     }
   }
 
-  // Change language
+  void setDatabasePath(String path) {
+    _databasePath = path;
+    _isFirstLaunch = false;
+    notifyListeners();
+  }
+
   Future<void> changeLanguage(String language) async {
     _isLoading = true;
     _clearError();
@@ -96,7 +96,6 @@ class AppProvider with ChangeNotifier {
           originalError: e,
         ),
       );
-      // ignore: avoid_print
       print('Error changing language: $e\n$stackTrace');
     } finally {
       _isLoading = false;
@@ -104,13 +103,26 @@ class AppProvider with ChangeNotifier {
     }
   }
 
-  // Set loading state
+  void setLanguage(String language) {
+    _language = language;
+    notifyListeners();
+  }
+
+  void setDarkMode(bool isDark) {
+    _isDarkMode = isDark;
+    notifyListeners();
+  }
+
+  void toggleDarkMode() {
+    _isDarkMode = !_isDarkMode;
+    notifyListeners();
+  }
+
   void setLoading(bool isLoading) {
     _isLoading = isLoading;
     notifyListeners();
   }
 
-  // Private methods
   void _setError(AppError error) {
     _error = error;
   }

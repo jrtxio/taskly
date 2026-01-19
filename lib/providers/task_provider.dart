@@ -5,29 +5,28 @@ import '../models/app_error.dart';
 import '../models/task.dart';
 
 class TaskProvider with ChangeNotifier {
-  // Public constructor for testing purposes
   TaskProvider.test({required TaskRepositoryInterface taskRepository})
-    : _taskRepository = taskRepository;
+      : _taskRepository = taskRepository;
 
-  // Regular constructor with service locator
   TaskProvider() : _taskRepository = sl<TaskRepositoryInterface>();
 
   final TaskRepositoryInterface _taskRepository;
   List<Task> _tasks = [];
-  String _currentView = 'all'; // today, planned, all, completed, list, search
+  String _currentView = 'all';
   String _searchKeyword = '';
+  String? _databasePath;
   bool _isLoading = false;
   AppError? _error;
 
-  // Getters
   List<Task> get tasks => _tasks;
   String get currentView => _currentView;
   String get searchKeyword => _searchKeyword;
+  String? get databasePath => _databasePath;
+  TaskRepositoryInterface get repository => _taskRepository;
   bool get isLoading => _isLoading;
   AppError? get error => _error;
   bool get hasError => _error != null;
 
-  // Initialize tasks
   Future<void> loadTasks({
     String viewType = 'all',
     int? listId,
@@ -53,7 +52,6 @@ class TaskProvider with ChangeNotifier {
           originalError: e,
         ),
       );
-      // ignore: avoid_print
       print('Error loading tasks: $e\n$stackTrace');
     } finally {
       _isLoading = false;
@@ -61,37 +59,30 @@ class TaskProvider with ChangeNotifier {
     }
   }
 
-  // Load tasks by list
   Future<void> loadTasksByList(int listId) async {
     await loadTasks(viewType: 'list', listId: listId);
   }
 
-  // Load today's tasks
   Future<void> loadTodayTasks() async {
     await loadTasks(viewType: 'today');
   }
 
-  // Load planned tasks
   Future<void> loadPlannedTasks() async {
     await loadTasks(viewType: 'planned');
   }
 
-  // Load all incomplete tasks
   Future<void> loadAllTasks() async {
     await loadTasks(viewType: 'all');
   }
 
-  // Load completed tasks
   Future<void> loadCompletedTasks() async {
     await loadTasks(viewType: 'completed');
   }
 
-  // Search tasks
   Future<void> searchTasks(String keyword) async {
     await loadTasks(viewType: 'search', keyword: keyword);
   }
 
-  // Add a new task
   Future<void> addTask(Task task) async {
     _isLoading = true;
     _clearError();
@@ -110,7 +101,6 @@ class TaskProvider with ChangeNotifier {
           originalError: e,
         ),
       );
-      // ignore: avoid_print
       print('Error adding task: $e\n$stackTrace');
     } finally {
       _isLoading = false;
@@ -118,7 +108,6 @@ class TaskProvider with ChangeNotifier {
     }
   }
 
-  // Update an existing task
   Future<void> updateTask(Task task) async {
     _isLoading = true;
     _clearError();
@@ -137,7 +126,6 @@ class TaskProvider with ChangeNotifier {
           originalError: e,
         ),
       );
-      // ignore: avoid_print
       print('Error updating task: $e\n$stackTrace');
     } finally {
       _isLoading = false;
@@ -145,7 +133,6 @@ class TaskProvider with ChangeNotifier {
     }
   }
 
-  // Toggle task completion status
   Future<void> toggleTaskCompleted(int id) async {
     _isLoading = true;
     _clearError();
@@ -162,7 +149,6 @@ class TaskProvider with ChangeNotifier {
           originalError: e,
         ),
       );
-      // ignore: avoid_print
       print('Error toggling task status: $e\n$stackTrace');
     } finally {
       _isLoading = false;
@@ -170,7 +156,6 @@ class TaskProvider with ChangeNotifier {
     }
   }
 
-  // Delete a task
   Future<void> deleteTask(int id) async {
     _isLoading = true;
     _clearError();
@@ -187,7 +172,6 @@ class TaskProvider with ChangeNotifier {
           originalError: e,
         ),
       );
-      // ignore: avoid_print
       print('Error deleting task: $e\n$stackTrace');
     } finally {
       _isLoading = false;
@@ -195,12 +179,14 @@ class TaskProvider with ChangeNotifier {
     }
   }
 
-  // Refresh tasks
   Future<void> refreshTasks() async {
     await loadTasks(viewType: _currentView, keyword: _searchKeyword);
   }
 
-  // Private methods
+  void updateDatabasePath(String? path) {
+    _databasePath = path;
+  }
+
   void _setError(AppError error) {
     _error = error;
   }
