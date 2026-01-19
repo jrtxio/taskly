@@ -324,20 +324,44 @@ class _ListNavigationState extends State<ListNavigation> {
                 // Add list input
                 if (_isAddingList)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 8,
+                    ),
                     child: Row(
                       children: [
+                        // Colored circle icon for new list
+                        Container(
+                          width: 28,
+                          height: 28,
+                          decoration: const BoxDecoration(
+                            color: Colors.blue,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.folder,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
                         Expanded(
                           child: TextField(
                             controller: _newListController,
                             autofocus: true,
                             decoration: const InputDecoration(
                               hintText: '输入列表名称',
-                              border: OutlineInputBorder(),
+                              border: UnderlineInputBorder(),
                               contentPadding: EdgeInsets.symmetric(
-                                horizontal: 12,
+                                horizontal: 8,
+                                vertical: 8,
                               ),
+                              isDense: true,
+                              hintStyle: TextStyle(color: Colors.grey),
                             ),
+                            style: const TextStyle(fontSize: 14),
                             onSubmitted: (value) {
                               if (value.trim().isNotEmpty) {
                                 widget.onAddList(value.trim());
@@ -348,8 +372,10 @@ class _ListNavigationState extends State<ListNavigation> {
                             },
                           ),
                         ),
+
                         IconButton(
                           icon: const Icon(Icons.close),
+                          iconSize: 18,
                           onPressed: () {
                             setState(() {
                               _isAddingList = false;
@@ -362,22 +388,103 @@ class _ListNavigationState extends State<ListNavigation> {
 
                 // Lists
                 ...widget.lists.map((list) {
-                  return ListTile(
-                    leading: const Icon(Icons.folder),
-                    title: Text(list.name),
-                    selected: widget.selectedList?.id == list.id,
-                    selectedColor: Colors.blue,
-                    selectedTileColor: Colors.blue[50],
-                    onTap: () => widget.onSelectList(list),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.more_vert),
-                      iconSize: 18,
-                      onPressed: () {
-                        // Implement list actions (edit, delete)
-                      },
+                  final isSelected = widget.selectedList?.id == list.id;
+                  final tileColor = list.color ?? Colors.blue;
+
+                  return AnimatedOpacity(
+                    opacity: 1.0,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeIn,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.grey[100] : Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        border: isSelected
+                            ? Border(
+                                left: BorderSide(color: tileColor, width: 3),
+                              )
+                            : null,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 2,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                      child: InkWell(
+                        onTap: () => widget.onSelectList(list),
+                        borderRadius: BorderRadius.circular(10),
+                        splashColor: tileColor.withOpacity(0.2),
+                        highlightColor: Colors.grey[200],
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 16,
+                          ),
+                          child: Row(
+                            children: [
+                              // Colored circle icon
+                              Container(
+                                width: 28,
+                                height: 28,
+                                decoration: BoxDecoration(
+                                  color: tileColor,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: tileColor.withOpacity(0.3),
+                                      blurRadius: 3,
+                                      offset: const Offset(0, 1),
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  list.icon != null
+                                      ? IconData(
+                                          int.parse(list.icon!),
+                                          fontFamily: 'MaterialIcons',
+                                        )
+                                      : Icons.folder,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                              ),
+
+                              // List name
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  list.name,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+
+                              // Item count (placeholder for now)
+                              const Text(
+                                '0',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                   );
                 }),
+
+                // Add some padding at the bottom
+                const SizedBox(height: 16),
               ],
             ),
           ),
