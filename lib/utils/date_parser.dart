@@ -71,12 +71,7 @@ class DateParser {
   }
 
   static String? _parseAbsoluteDate(String input) {
-    final formats = [
-      'yyyy-MM-dd',
-      'yyyy/MM/dd',
-      'MM/dd/yyyy',
-      'dd/MM/yyyy',
-    ];
+    final formats = ['yyyy-MM-dd', 'yyyy/MM/dd', 'MM/dd/yyyy', 'dd/MM/yyyy'];
 
     for (final format in formats) {
       try {

@@ -63,17 +63,19 @@ class _TaskListViewState extends State<TaskListView> {
     }
 
     if (taskText.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请输入任务描述')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请输入任务描述')));
       return;
     }
 
-    final listId = widget.currentListId ?? (widget.lists.isNotEmpty ? widget.lists.first.id : 0);
+    final listId =
+        widget.currentListId ??
+        (widget.lists.isNotEmpty ? widget.lists.first.id : 0);
     if (listId == 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请先创建一个任务列表')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请先创建一个任务列表')));
       return;
     }
 
@@ -91,19 +93,22 @@ class _TaskListViewState extends State<TaskListView> {
     });
 
     final taskProvider = Provider.of<TaskProvider>(context, listen: false);
-    taskProvider.addTask(task).then((_) {
-      setState(() {
-        _quickAddController.clear();
-        _isSubmitting = false;
-      });
-    }).catchError((error) {
-      setState(() {
-        _isSubmitting = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('添加任务失败: $error')),
-      );
-    });
+    taskProvider
+        .addTask(task)
+        .then((_) {
+          setState(() {
+            _quickAddController.clear();
+            _isSubmitting = false;
+          });
+        })
+        .catchError((error) {
+          setState(() {
+            _isSubmitting = false;
+          });
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('添加任务失败: $error')));
+        });
   }
 
   @override
@@ -111,9 +116,7 @@ class _TaskListViewState extends State<TaskListView> {
     return Column(
       children: [
         _buildQuickAddInput(),
-        Expanded(
-          child: _buildTaskList(),
-        ),
+        Expanded(child: _buildTaskList()),
       ],
     );
   }
@@ -123,9 +126,7 @@ class _TaskListViewState extends State<TaskListView> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.grey[50],
-        border: Border(
-          bottom: BorderSide(color: Colors.grey[300]!),
-        ),
+        border: Border(bottom: BorderSide(color: Colors.grey[300]!)),
       ),
       child: Row(
         children: [
@@ -168,10 +169,7 @@ class _TaskListViewState extends State<TaskListView> {
             const SizedBox(height: 16),
             Text(
               '暂无任务',
-              style: TextStyle(
-                color: Colors.grey[500],
-                fontSize: 16,
-              ),
+              style: TextStyle(color: Colors.grey[500], fontSize: 16),
             ),
           ],
         ),
@@ -236,7 +234,10 @@ class TaskItem extends StatelessWidget {
           border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
         ),
         child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
           leading: Transform.scale(
             scale: 1.2,
             child: Checkbox(
@@ -275,7 +276,10 @@ class TaskItem extends StatelessWidget {
                   ),
                   backgroundColor: Colors.blue[50],
                   side: BorderSide.none,
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                 )
               : null,
           onTap: onToggle,

@@ -46,9 +46,7 @@ class AppTheme {
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
@@ -72,7 +70,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Color(0xFF007AFF), width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
       ),
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith((states) {
@@ -82,24 +83,15 @@ class AppTheme {
           return Colors.transparent;
         }),
         checkColor: WidgetStateProperty.all(Colors.white),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       ),
-      iconTheme: const IconThemeData(
-        color: Colors.black87,
-      ),
-      dividerTheme: DividerThemeData(
-        color: Colors.grey[300],
-        thickness: 1,
-      ),
+      iconTheme: const IconThemeData(color: Colors.black87),
+      dividerTheme: DividerThemeData(color: Colors.grey[300], thickness: 1),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: Colors.black87,
         contentTextStyle: const TextStyle(color: Colors.white),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       textTheme: const TextTheme(
         displayLarge: TextStyle(
@@ -137,20 +129,9 @@ class AppTheme {
           fontWeight: FontWeight.w500,
           color: Colors.black87,
         ),
-        bodyLarge: TextStyle(
-          fontSize: 15,
-          color: Colors.black87,
-          height: 1.5,
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 14,
-          color: Colors.black87,
-          height: 1.5,
-        ),
-        bodySmall: TextStyle(
-          fontSize: 13,
-          color: Colors.grey,
-        ),
+        bodyLarge: TextStyle(fontSize: 15, color: Colors.black87, height: 1.5),
+        bodyMedium: TextStyle(fontSize: 14, color: Colors.black87, height: 1.5),
+        bodySmall: TextStyle(fontSize: 13, color: Colors.grey),
       ),
     );
   }
@@ -200,9 +181,7 @@ class AppTheme {
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
@@ -226,7 +205,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Color(0xFF0A84FF), width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
       ),
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith((states) {
@@ -236,13 +218,9 @@ class AppTheme {
           return Colors.transparent;
         }),
         checkColor: WidgetStateProperty.all(Colors.white),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       ),
-      iconTheme: const IconThemeData(
-        color: Colors.white,
-      ),
+      iconTheme: const IconThemeData(color: Colors.white),
       dividerTheme: const DividerThemeData(
         color: Color(0xFF38383A),
         thickness: 1,
@@ -251,9 +229,7 @@ class AppTheme {
         backgroundColor: const Color(0xFF2C2C2E),
         contentTextStyle: const TextStyle(color: Colors.white),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       textTheme: const TextTheme(
         displayLarge: TextStyle(
@@ -291,20 +267,9 @@ class AppTheme {
           fontWeight: FontWeight.w500,
           color: Colors.white,
         ),
-        bodyLarge: TextStyle(
-          fontSize: 15,
-          color: Colors.white,
-          height: 1.5,
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 14,
-          color: Colors.white,
-          height: 1.5,
-        ),
-        bodySmall: TextStyle(
-          fontSize: 13,
-          color: Color(0xFF98989D),
-        ),
+        bodyLarge: TextStyle(fontSize: 15, color: Colors.white, height: 1.5),
+        bodyMedium: TextStyle(fontSize: 14, color: Colors.white, height: 1.5),
+        bodySmall: TextStyle(fontSize: 13, color: Color(0xFF98989D)),
       ),
     );
   }
