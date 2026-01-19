@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../interfaces/config_service_interface.dart';
+import '../interfaces/database_service_interface.dart';
 import '../locator/service_locator.dart';
 import '../models/app_error.dart';
 
@@ -9,7 +11,7 @@ class AppProvider with ChangeNotifier {
 
   AppProvider() : _configService = sl<ConfigServiceInterface>();
 
-  final ConfigServiceInterface _configService;
+  ConfigServiceInterface? _configService;
   String? _databasePath;
   String _language = 'zh';
   bool _isDarkMode = false;
@@ -31,10 +33,38 @@ class AppProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      await _configService.init();
-      _databasePath = _configService.getLastDbPath();
-      _language = _configService.getLanguage();
+      if (_configService == null) {
+        _configService = sl<ConfigServiceInterface>();
+      }
+
+      await _configService!.init();
+      _databasePath = _configService!.getLastDbPath();
+      _language = _configService!.getLanguage();
       _isFirstLaunch = _databasePath == null;
+
+      // Set database path to database service if path exists
+      if (_databasePath != null) {
+        try {
+          // Check if database file exists
+          final dbFile = File(_databasePath!);
+          if (!dbFile.existsSync()) {
+            // If database file doesn't exist, treat as first launch
+            _isFirstLaunch = true;
+            _databasePath = null;
+          } else {
+            final dbService = sl<DatabaseServiceInterface>();
+            dbService.setDatabasePath(_databasePath!);
+            // Reinitialize database service with new path
+            await dbService.init();
+          }
+        } catch (dbError, stackTrace) {
+          print('Database initialization failed: $dbError');
+          print('Stack trace: $stackTrace');
+          // If database initialization fails, treat as first launch
+          _isFirstLaunch = true;
+          _databasePath = null;
+        }
+      }
     } catch (e, stackTrace) {
       _setError(
         AppError(
@@ -56,7 +86,7 @@ class AppProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      await _configService.saveLastDbPath(path);
+      await _configService!.saveLastDbPath(path);
       _databasePath = path;
       _isFirstLaunch = false;
     } catch (e, stackTrace) {
@@ -86,7 +116,7 @@ class AppProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      await _configService.saveLanguage(language);
+      await _configService!.saveLanguage(language);
       _language = language;
     } catch (e, stackTrace) {
       _setError(

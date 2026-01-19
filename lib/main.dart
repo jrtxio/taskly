@@ -22,14 +22,63 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  AppProvider? _appProvider;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    try {
+      // Create and initialize AppProvider
+      final appProvider = AppProvider();
+      await appProvider.init();
+      setState(() {
+        _appProvider = appProvider;
+      });
+    } catch (e, stackTrace) {
+      setState(() {
+        _errorMessage = '初始化失败: $e\n$stackTrace';
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_appProvider == null) {
+      if (_errorMessage == null) {
+        return const MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        );
+      } else {
+        return MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: Text(_errorMessage!),
+            ),
+          ),
+        );
+      }
+    }
+
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AppProvider()),
+        ChangeNotifierProvider.value(value: _appProvider!),
         ChangeNotifierProvider(create: (_) => ListProvider()),
         ChangeNotifierProxyProvider2<AppProvider, ListProvider, TaskProvider>(
           create: (context) => TaskProvider(),

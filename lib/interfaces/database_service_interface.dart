@@ -4,6 +4,9 @@ import '../models/todo_list.dart';
 abstract class DatabaseServiceInterface {
   // Initialize database
   Future<void> init();
+
+  // Set custom database path
+  void setDatabasePath(String path);
   
   // ------------------------
   // Lists Table Operations

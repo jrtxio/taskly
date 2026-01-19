@@ -33,6 +33,11 @@ class PathUtils {
     return p.join(appDir.path, 'tasks.db');
   }
 
+  // Get default application directory path (for folder selection UI)
+  static String getDefaultAppDirPath() {
+    return getDefaultAppDir().path;
+  }
+
   // Get configuration file path
   static String getConfigFilePath() {
     final appDir = getDefaultAppDir();

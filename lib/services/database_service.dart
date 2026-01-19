@@ -6,12 +6,20 @@ import '../utils/path_utils.dart';
 
 class DatabaseService implements DatabaseServiceInterface {
   Database? _database;
+  String? _customDatabasePath;
 
   // Initialize database service
   @override
   Future<void> init() async {
-    // Just get the database to initialize it
+    // Just get's database to initialize it
     await database;
+  }
+
+  // Set custom database path
+  @override
+  void setDatabasePath(String path) {
+    _customDatabasePath = path;
+    _database = null; // Reset database connection
   }
 
   // Initialize database
@@ -30,8 +38,8 @@ class DatabaseService implements DatabaseServiceInterface {
 
   // Create database file path
   Future<String> getDatabasePath() async {
-    // Use PathUtils to get default database path in user's home directory
-    return PathUtils.getDefaultDbPath();
+    // Use custom path if set, otherwise use default path
+    return _customDatabasePath ?? PathUtils.getDefaultDbPath();
   }
 
   // Initialize database

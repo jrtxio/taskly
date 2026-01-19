@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import '../providers/app_provider.dart';
 import '../services/database_service.dart';
+import '../utils/path_utils.dart';
 import 'main_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -24,22 +25,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   Future<void> _loadDefaultDbPath() async {
-    final dbService = DatabaseService();
-    final defaultPath = await dbService.getDatabasePath();
+    final defaultPath = PathUtils.getDefaultAppDirPath();
     _dbPathController.text = defaultPath;
   }
 
   Future<void> _browseDbFile() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['db'],
-      dialogTitle: '选择或创建任务数据库',
-      allowMultiple: false,
-      allowCompression: false,
+    final result = await FilePicker.platform.getDirectoryPath(
+      dialogTitle: '选择数据库文件夹',
     );
 
-    if (result != null && result.files.isNotEmpty) {
-      _dbPathController.text = result.files.single.path!;
+    if (result != null) {
+      _dbPathController.text = result;
     }
   }
 
@@ -57,9 +53,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   Future<void> _handleConfirm() async {
-    final path = _dbPathController.text.trim();
-    if (path.isEmpty) {
-      _showErrorDialog('请选择或输入数据库路径');
+    final dirPath = _dbPathController.text.trim();
+    if (dirPath.isEmpty) {
+      _showErrorDialog('请选择或输入数据库文件夹路径');
       return;
     }
 
@@ -68,14 +64,21 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     });
 
     try {
-      final file = File(path);
-      final dir = file.parent;
+      // Convert directory path to database file path
+      final dbPath = '${Directory(dirPath).path}${Platform.pathSeparator}tasks.db';
+      final dir = Directory(dirPath);
       if (!await dir.exists()) {
         await dir.create(recursive: true);
       }
 
+      // Save database file path (not directory path)
+      if (!mounted) return;
       final appProvider = Provider.of<AppProvider>(context, listen: false);
-      await appProvider.saveDbPath(path);
+      await appProvider.saveDbPath(dbPath);
+
+      // Set database path for database service
+      final dbService = DatabaseService();
+      dbService.setDatabasePath(dbPath);
 
       if (mounted) {
         Navigator.of(context).pushReplacement(
