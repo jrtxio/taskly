@@ -11,7 +11,7 @@ class AppProvider with ChangeNotifier {
 
   AppProvider() : _configService = sl<ConfigServiceInterface>();
 
-  ConfigServiceInterface? _configService;
+  ConfigServiceInterface _configService;
   String? _databasePath;
   String _language = 'zh';
   bool _isDarkMode = false;
