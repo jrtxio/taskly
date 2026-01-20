@@ -423,7 +423,7 @@ class _ListNavigationState extends State<ListNavigation> {
                         onTap: () => widget.onSelectList(list),
                         onDoubleTap: () => _showListEditDialog(list: list),
                         onSecondaryTapDown: (details) => _showEditMenu(list, details.globalPosition),
-                        onLongPressDown: (details) => _showEditMenu(list, details.globalPosition),
+                        onLongPress: () => _showEditMenu(list, Offset.zero),
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.transparent,
@@ -433,7 +433,6 @@ class _ListNavigationState extends State<ListNavigation> {
                             borderRadius: BorderRadius.circular(10),
                             splashColor: tileColor.withOpacity(0.2),
                             highlightColor: Colors.grey[200],
-                            onTap: () => widget.onSelectList(list),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
                                 vertical: 10,
