@@ -86,6 +86,12 @@ class MockDatabaseService implements DatabaseServiceInterface {
   Future<int> getCompletedTaskCount() async => 0;
 
   @override
+  Future<int> getTodayTaskCount() async => 0;
+
+  @override
+  Future<int> getPlannedTaskCount() async => 0;
+
+  @override
   Future<int> getTaskCountByList(int listId) async => 0;
 
   @override

@@ -97,10 +97,10 @@ class _MainScreenState extends State<MainScreen> {
 
     final taskProvider = Provider.of<TaskProvider>(context, listen: false);
 
-    final todayTasks = await taskProvider.repository.getTodayTasks();
-    final plannedTasks = await taskProvider.repository.getPlannedTasks();
-    final allTasks = await taskProvider.repository.getIncompleteTasks();
-    final completedTasks = await taskProvider.repository.getCompletedTasks();
+    final todayCount = await taskProvider.repository.getTodayTaskCount();
+    final plannedCount = await taskProvider.repository.getPlannedTaskCount();
+    final allCount = await taskProvider.repository.getIncompleteTaskCount();
+    final completedCount = await taskProvider.repository.getCompletedTaskCount();
 
     final listProvider = Provider.of<ListProvider>(context, listen: false);
     final Map<int, int> counts = {};
@@ -111,10 +111,10 @@ class _MainScreenState extends State<MainScreen> {
 
     if (mounted) {
       setState(() {
-        _todayCount = todayTasks.length;
-        _plannedCount = plannedTasks.length;
-        _allCount = allTasks.length;
-        _completedCount = completedTasks.length;
+        _todayCount = todayCount;
+        _plannedCount = plannedCount;
+        _allCount = allCount;
+        _completedCount = completedCount;
         _listTaskCounts = counts;
       });
     }

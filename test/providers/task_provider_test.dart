@@ -73,6 +73,26 @@ class MockTaskRepository implements TaskRepositoryInterface {
   }
 
   @override
+  Future<int> getTodayTaskCount() async {
+    final now = DateTime.now();
+    final todayString =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    return _tasks
+        .where(
+          (task) =>
+              task.dueDate != null &&
+              task.dueDate!.startsWith(todayString) &&
+              !task.completed,
+        )
+        .length;
+  }
+
+  @override
+  Future<int> getPlannedTaskCount() async {
+    return _tasks.where((task) => task.dueDate != null && !task.completed).length;
+  }
+
+  @override
   Future<int> addTask(Task task) async {
     final newTask = task.copyWith(id: _nextId++);
     _tasks.add(newTask);
@@ -236,6 +256,12 @@ class MockDatabaseService implements DatabaseServiceInterface {
   Future<int> getCompletedTaskCount() async => 0;
 
   @override
+  Future<int> getTodayTaskCount() async => 0;
+
+  @override
+  Future<int> getPlannedTaskCount() async => 0;
+
+  @override
   Future<int> addTask(Task task) async => 0;
 
   @override
@@ -309,6 +335,12 @@ class FailingLoadTaskRepository implements TaskRepositoryInterface {
   Future<int> getCompletedTaskCount() async => 0;
 
   @override
+  Future<int> getTodayTaskCount() async => 0;
+
+  @override
+  Future<int> getPlannedTaskCount() async => 0;
+
+  @override
   Future<int> addTask(Task task) async => 0;
 
   @override
@@ -378,6 +410,12 @@ class FailingAddTaskRepository implements TaskRepositoryInterface {
 
   @override
   Future<int> getCompletedTaskCount() async => 0;
+
+  @override
+  Future<int> getTodayTaskCount() async => 0;
+
+  @override
+  Future<int> getPlannedTaskCount() async => 0;
 
   @override
   Future<int> addTask(Task task) async {
@@ -451,6 +489,12 @@ class FailingUpdateTaskRepository implements TaskRepositoryInterface {
   Future<int> getCompletedTaskCount() async => 0;
 
   @override
+  Future<int> getTodayTaskCount() async => 0;
+
+  @override
+  Future<int> getPlannedTaskCount() async => 0;
+
+  @override
   Future<int> addTask(Task task) async => 0;
 
   @override
@@ -522,6 +566,12 @@ class FailingToggleTaskRepository implements TaskRepositoryInterface {
   Future<int> getCompletedTaskCount() async => 0;
 
   @override
+  Future<int> getTodayTaskCount() async => 0;
+
+  @override
+  Future<int> getPlannedTaskCount() async => 0;
+
+  @override
   Future<int> addTask(Task task) async => 0;
 
   @override
@@ -591,6 +641,12 @@ class FailingDeleteTaskRepository implements TaskRepositoryInterface {
 
   @override
   Future<int> getCompletedTaskCount() async => 0;
+
+  @override
+  Future<int> getTodayTaskCount() async => 0;
+
+  @override
+  Future<int> getPlannedTaskCount() async => 0;
 
   @override
   Future<int> addTask(Task task) async => 0;

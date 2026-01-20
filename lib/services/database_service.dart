@@ -418,6 +418,39 @@ class DatabaseService implements DatabaseServiceInterface {
     return result.first['count'] as int;
   }
 
+  // Get total today task count
+  @override
+  Future<int> getTodayTaskCount() async {
+    final db = await database;
+    final today = DateTime.now().toLocal();
+    final todayString =
+        '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+
+    final result = await db.rawQuery(
+      '''
+      SELECT COUNT(*) as count
+      FROM $_tableTasks
+      WHERE date(due_date) = ? AND completed = 0
+    ''',
+      [todayString],
+    );
+    return result.first['count'] as int;
+  }
+
+  // Get total planned task count
+  @override
+  Future<int> getPlannedTaskCount() async {
+    final db = await database;
+    final result = await db.rawQuery(
+      '''
+      SELECT COUNT(*) as count
+      FROM $_tableTasks
+      WHERE due_date IS NOT NULL AND completed = 0
+    ''',
+    );
+    return result.first['count'] as int;
+  }
+
   // Add task
   @override
   Future<int> addTask(Task task) async {

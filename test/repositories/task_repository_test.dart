@@ -101,6 +101,26 @@ class MockDatabaseService implements DatabaseServiceInterface {
   }
 
   @override
+  Future<int> getTodayTaskCount() async {
+    final now = DateTime.now();
+    final todayString =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    return _tasks
+        .where(
+          (task) =>
+              task.dueDate != null &&
+              task.dueDate!.startsWith(todayString) &&
+              !task.completed,
+        )
+        .length;
+  }
+
+  @override
+  Future<int> getPlannedTaskCount() async {
+    return _tasks.where((task) => task.dueDate != null && !task.completed).length;
+  }
+
+  @override
   Future<int> addTask(Task task) async {
     final newTask = task.copyWith(id: _nextId++);
     _tasks.add(newTask);

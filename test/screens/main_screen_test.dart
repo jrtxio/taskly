@@ -308,6 +308,12 @@ class MockTaskRepository implements TaskRepositoryInterface {
   Future<int> getCompletedTaskCount() async => 0;
 
   @override
+  Future<int> getTodayTaskCount() async => 0;
+
+  @override
+  Future<int> getPlannedTaskCount() async => 0;
+
+  @override
   Future<Task?> getTaskById(int id) async => null;
 
   @override
@@ -416,6 +422,12 @@ class MockDatabaseService implements DatabaseServiceInterface {
 
   @override
   Future<int> getCompletedTaskCount() async => 0;
+
+  @override
+  Future<int> getTodayTaskCount() async => 0;
+
+  @override
+  Future<int> getPlannedTaskCount() async => 0;
 
   @override
   Future<int> addTask(Task task) async => 0;

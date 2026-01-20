@@ -64,6 +64,12 @@ abstract class DatabaseServiceInterface {
 
   // Get total completed task count
   Future<int> getCompletedTaskCount();
+
+  // Get total today task count
+  Future<int> getTodayTaskCount();
+
+  // Get total planned task count
+  Future<int> getPlannedTaskCount();
   
   // Add task
   Future<int> addTask(Task task);

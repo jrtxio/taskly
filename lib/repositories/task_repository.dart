@@ -80,6 +80,18 @@ class TaskRepository implements TaskRepositoryInterface {
     return await _databaseService.getCompletedTaskCount();
   }
 
+  // Get total today task count
+  @override
+  Future<int> getTodayTaskCount() async {
+    return await _databaseService.getTodayTaskCount();
+  }
+
+  // Get total planned task count
+  @override
+  Future<int> getPlannedTaskCount() async {
+    return await _databaseService.getPlannedTaskCount();
+  }
+
   // Add a new task
   @override
   Future<int> addTask(Task task) async {
