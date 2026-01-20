@@ -16,25 +16,10 @@ class AppMenuBar extends StatelessWidget {
       child: Row(
         children: [
           const SizedBox(width: 16),
-          Image.asset(
-            'assets/icons/taskly.png',
-            width: 24,
-            height: 24,
-            errorBuilder: (context, error, stackTrace) {
-              return const Icon(Icons.task_alt, size: 24);
-            },
-          ),
-          const SizedBox(width: 12),
-          const Text(
-            'Taskly',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-          const Spacer(),
           _buildMenuButton(context, '文件', _buildFileMenu(context)),
-          _buildMenuButton(context, '编辑', _buildEditMenu(context)),
-          _buildMenuButton(context, '视图', _buildViewMenu(context)),
+          _buildMenuButton(context, '设置', _buildSettingsMenu(context)),
           _buildMenuButton(context, '帮助', _buildHelpMenu(context)),
-          const SizedBox(width: 16),
+          const Spacer(),
         ],
       ),
     );
@@ -72,14 +57,7 @@ class AppMenuBar extends StatelessWidget {
     ];
   }
 
-  List<PopupMenuEntry<dynamic>> _buildEditMenu(BuildContext context) {
-    return [
-      const PopupMenuItem(value: 'undo', enabled: false, child: Text('撤销')),
-      const PopupMenuItem(value: 'redo', enabled: false, child: Text('重做')),
-    ];
-  }
-
-  List<PopupMenuEntry<dynamic>> _buildViewMenu(BuildContext context) {
+  List<PopupMenuEntry<dynamic>> _buildSettingsMenu(BuildContext context) {
     final appProvider = Provider.of<AppProvider>(context);
 
     return [
