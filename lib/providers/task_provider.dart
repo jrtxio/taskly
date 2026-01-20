@@ -256,6 +256,7 @@ class TaskProvider with ChangeNotifier {
 
   void updateDatabasePath(String? path) {
     _databasePath = path;
+    notifyListeners();
   }
 
   // Clear all tasks
