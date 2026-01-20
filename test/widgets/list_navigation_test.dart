@@ -43,7 +43,7 @@ void main() {
       expect(find.text('今天'), findsOneWidget);
       expect(find.text('计划'), findsOneWidget);
       expect(find.text('全部'), findsOneWidget);
-      expect(find.text('已完成'), findsOneWidget);
+      expect(find.text('完成'), findsOneWidget);
       expect(find.text('任务列表'), findsOneWidget);
     });
 
@@ -169,7 +169,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('已完成'));
+      await tester.tap(find.text('完成'));
       await tester.pump();
 
       expect(wasCalled, isTrue);

@@ -47,7 +47,6 @@ void main() {
       expect(find.byType(AppMenuBar), findsOneWidget);
       expect(find.byType(ListNavigation), findsOneWidget);
       expect(find.byType(TaskListView), findsOneWidget);
-      expect(find.text('Taskly v1.0.0'), findsOneWidget);
     });
 
     testWidgets('should display status message', (WidgetTester tester) async {

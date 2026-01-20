@@ -206,8 +206,8 @@ class _MainScreenState extends State<MainScreen> {
                                 return;
                               }
                               taskProvider.loadCompletedTasks();
-                              _updateViewTitle('已完成');
-                              _updateStatus('显示已完成的任务');
+                              _updateViewTitle('完成');
+                              _updateStatus('显示完成的任务');
                             },
                             todayCount: _todayCount,
                             plannedCount: _plannedCount,
@@ -269,11 +269,6 @@ class _MainScreenState extends State<MainScreen> {
         children: [
           Text(
             _statusMessage,
-            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-          ),
-          const Spacer(),
-          Text(
-            'Taskly v1.0.0',
             style: TextStyle(fontSize: 12, color: Colors.grey[600]),
           ),
         ],

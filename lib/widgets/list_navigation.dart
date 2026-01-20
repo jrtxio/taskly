@@ -135,7 +135,7 @@ class _ListNavigationState extends State<ListNavigation> {
                         widget.onAllTap,
                       ),
                       _buildSmartViewButton(
-                        '已完成',
+                        '完成',
                         Icons.check_circle,
                         const Color(0xFFFF9500),
                         widget.completedCount ?? 0,
@@ -336,17 +336,15 @@ class _ListNavigationState extends State<ListNavigation> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
-          color: isEnabled ? color : Colors.grey[300],
+          color: color,
           borderRadius: BorderRadius.circular(14),
-          boxShadow: isEnabled
-              ? [
-                  BoxShadow(
-                    color: Color.fromRGBO(0, 0, 0, 0.1),
-                    blurRadius: 3,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : null,
+          boxShadow: [
+            BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.1),
+              blurRadius: 3,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Stack(
           children: [
