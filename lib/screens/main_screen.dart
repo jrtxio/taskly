@@ -78,6 +78,20 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future<void> _updateTaskCounts() async {
+    final appProvider = Provider.of<AppProvider>(context, listen: false);
+
+    if (!appProvider.isDatabaseConnected) {
+      if (mounted) {
+        setState(() {
+          _todayCount = null;
+          _plannedCount = null;
+          _allCount = null;
+          _completedCount = null;
+        });
+      }
+      return;
+    }
+
     final taskProvider = Provider.of<TaskProvider>(context, listen: false);
 
     final todayTasks = await taskProvider.repository.getTodayTasks();
@@ -121,6 +135,7 @@ class _MainScreenState extends State<MainScreen> {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         listProvider.clearLists();
                         taskProvider.clearTasks();
+                        _updateTaskCounts();
                       });
                     }
                     return Row(
@@ -145,21 +160,37 @@ class _MainScreenState extends State<MainScreen> {
                               _updateStatus('删除列表成功');
                             },
                             onTodayTap: () {
+                              if (!appProvider.isDatabaseConnected) {
+                                _updateStatus('请先打开数据库');
+                                return;
+                              }
                               taskProvider.loadTodayTasks();
                               _updateViewTitle('今天');
                               _updateStatus('显示今天的任务');
                             },
                             onPlannedTap: () {
+                              if (!appProvider.isDatabaseConnected) {
+                                _updateStatus('请先打开数据库');
+                                return;
+                              }
                               taskProvider.loadPlannedTasks();
                               _updateViewTitle('计划');
                               _updateStatus('显示计划中的任务');
                             },
                             onAllTap: () {
+                              if (!appProvider.isDatabaseConnected) {
+                                _updateStatus('请先打开数据库');
+                                return;
+                              }
                               taskProvider.loadAllTasks();
                               _updateViewTitle('全部');
                               _updateStatus('显示全部任务');
                             },
                             onCompletedTap: () {
+                              if (!appProvider.isDatabaseConnected) {
+                                _updateStatus('请先打开数据库');
+                                return;
+                              }
                               taskProvider.loadCompletedTasks();
                               _updateViewTitle('已完成');
                               _updateStatus('显示已完成的任务');
