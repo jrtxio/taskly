@@ -165,7 +165,7 @@ class _MainScreenState extends State<MainScreen> {
                     return Row(
                       children: [
                         SizedBox(
-                          width: 300,
+                          width: 280,
                           child: ListNavigation(
                             lists: listProvider.lists,
                             selectedList: listProvider.selectedList,

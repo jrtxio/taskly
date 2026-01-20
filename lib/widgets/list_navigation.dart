@@ -326,12 +326,12 @@ class _ListNavigationState extends State<ListNavigation> {
             child: ListView(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: GridView.count(
                     crossAxisCount: 2,
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10,
-                    childAspectRatio: 1.5,
+                    childAspectRatio: 2.0,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     children: [
@@ -367,10 +367,8 @@ class _ListNavigationState extends State<ListNavigation> {
                   ),
                 ),
 
-                const Divider(),
-
                 Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -378,7 +376,7 @@ class _ListNavigationState extends State<ListNavigation> {
                         '我的列表',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                          fontSize: 12,
                         ),
                       ),
                       IconButton(
@@ -472,7 +470,7 @@ class _ListNavigationState extends State<ListNavigation> {
                                     child: Text(
                                       list.name,
                                       style: TextStyle(
-                                        fontSize: 14,
+                                        fontSize: 13,
                                         fontWeight: FontWeight.w500,
                                         color: isSelected ? Colors.white : Colors.black87,
                                       ),
@@ -530,7 +528,7 @@ class _ListNavigationState extends State<ListNavigation> {
     return GestureDetector(
       onTap: isEnabled ? onTap : null,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(14),
@@ -544,30 +542,33 @@ class _ListNavigationState extends State<ListNavigation> {
         ),
         child: Stack(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(icon, color: Colors.white, size: 18),
-                const SizedBox(height: 4),
-                Text(
-                  label,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
+            Positioned(
+              top: 2,
+              left: 0,
+              child: Icon(icon, color: Colors.white, size: 18),
             ),
             Positioned(
-              top: 0,
+              bottom: 0,
+              left: 0,
+              child: Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+            Positioned(
+              top: 2,
               right: 0,
               child: Text(
                 count.toString(),
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  height: 1.0,
                 ),
               ),
             ),
