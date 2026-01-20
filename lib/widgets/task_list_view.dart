@@ -6,7 +6,6 @@ import '../models/todo_list.dart';
 import '../providers/task_provider.dart';
 import '../utils/date_parser.dart';
 import 'task_dialogs.dart';
-import 'welcome_panel.dart';
 
 class TaskListView extends StatefulWidget {
   final List<Task> tasks;
@@ -165,7 +164,44 @@ class _TaskListViewState extends State<TaskListView> {
 
   Widget _buildTaskList() {
     if (!widget.isDatabaseConnected) {
-      return const WelcomePanel();
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.folder_open, size: 64, color: Colors.grey[300]),
+            const SizedBox(height: 24),
+            Text(
+              '还没有打开数据库',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[700],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              '请点击"文件"菜单创建或打开数据库',
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey[200]!),
+              ),
+              child: Column(
+                children: [
+                  _buildInstructionRow('文件', '新建数据库'),
+                  const SizedBox(height: 8),
+                  _buildInstructionRow('文件', '打开数据库'),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
     }
 
     if (widget.isLoading) {
@@ -200,6 +236,32 @@ class _TaskListViewState extends State<TaskListView> {
           onDelete: () => widget.onDeleteTask(task.id),
         );
       },
+    );
+  }
+
+  Widget _buildInstructionRow(String menu, String action) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: Colors.blue[50],
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Text(
+            menu,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.blue[700],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Icon(Icons.arrow_forward, size: 16, color: Colors.grey[400]),
+        const SizedBox(width: 8),
+        Text(action, style: TextStyle(fontSize: 14, color: Colors.grey[700])),
+      ],
     );
   }
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:taskly/screens/main_screen.dart';
-import 'package:taskly/screens/welcome_screen.dart';
 import 'package:taskly/providers/app_provider.dart';
 import 'package:taskly/providers/list_provider.dart';
 import 'package:taskly/providers/task_provider.dart';
@@ -60,46 +59,6 @@ void main() {
       expect(find.byType(AppMenuBar), findsOneWidget);
       expect(find.byType(ListNavigation), findsOneWidget);
       expect(find.byType(TaskListView), findsOneWidget);
-    });
-
-    testWidgets('should render WelcomeScreen', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: ChangeNotifierProvider<AppProvider>(
-            create: (_) => AppProvider.test(configService: mockConfigService),
-            child: const WelcomeScreen(),
-          ),
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
-      expect(find.text('欢迎使用 Taskly'), findsOneWidget);
-      expect(find.text('请选择或创建任务数据库'), findsOneWidget);
-      expect(find.text('确定'), findsOneWidget);
-      expect(find.text('取消'), findsOneWidget);
-    });
-
-    testWidgets('should handle complete user workflow', (
-      WidgetTester tester,
-    ) async {
-      // Test complete workflow: Welcome -> Main -> Task operations
-      await tester.pumpWidget(
-        MaterialApp(
-          home: ChangeNotifierProvider<AppProvider>(
-            create: (_) => AppProvider.test(configService: mockConfigService),
-            child: const WelcomeScreen(),
-          ),
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
-      // Verify welcome screen is shown
-      expect(find.text('欢迎使用 Taskly'), findsOneWidget);
-
-      // The workflow test would continue to MainScreen
-      // but we keep it simple for now
     });
 
     test('should handle task lifecycle', () async {
