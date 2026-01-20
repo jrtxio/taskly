@@ -18,7 +18,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   String _currentViewTitle = '';
-  String _statusMessage = '就绪';
+  String _statusMessage = '未连接数据库';
   int? _todayCount;
   int? _plannedCount;
   int? _allCount;
@@ -43,22 +43,20 @@ class _MainScreenState extends State<MainScreen> {
     final taskProvider = Provider.of<TaskProvider>(context, listen: false);
     final appProvider = Provider.of<AppProvider>(context, listen: false);
 
-    await listProvider.loadLists();
-
-    if (listProvider.selectedList != null) {
-      await taskProvider.loadTasksByList(listProvider.selectedList!.id);
-      _updateViewTitle(listProvider.selectedList!.name);
-    } else {
-      await taskProvider.loadAllTasks();
-      _updateViewTitle('全部');
-    }
-
-    _updateTaskCounts();
-    _updateStatus('数据已加载');
-
-    // Listen for database changes
+    // Only load data if database is connected
     if (appProvider.isDatabaseConnected) {
-      _updateStatus('数据库已连接');
+      await listProvider.loadLists();
+
+      if (listProvider.selectedList != null) {
+        await taskProvider.loadTasksByList(listProvider.selectedList!.id);
+        _updateViewTitle(listProvider.selectedList!.name);
+      } else {
+        await taskProvider.loadAllTasks();
+        _updateViewTitle('全部');
+      }
+
+      _updateTaskCounts();
+      _updateStatus('数据已加载');
     }
   }
 
@@ -121,6 +119,11 @@ class _MainScreenState extends State<MainScreen> {
             child: Consumer3<AppProvider, ListProvider, TaskProvider>(
               builder:
                   (context, appProvider, listProvider, taskProvider, child) {
+                    // Show empty state if database is not connected
+                    if (!appProvider.isDatabaseConnected) {
+                      return _buildEmptyState();
+                    }
+
                     // Monitor database connection status changes
                     final isConnected = appProvider.isDatabaseConnected;
                     if (_wasConnected != isConnected) {
@@ -270,6 +273,28 @@ class _MainScreenState extends State<MainScreen> {
           Text(
             'Taskly v1.0.0',
             style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.folder_off_outlined, size: 80, color: Colors.grey[400]),
+          const SizedBox(height: 24),
+          Text(
+            '未打开数据库',
+            style: TextStyle(fontSize: 20, color: Colors.grey[600]),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            '请通过菜单栏"文件"菜单\n创建新数据库或打开已有数据库',
+            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
