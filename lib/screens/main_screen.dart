@@ -114,6 +114,15 @@ class _MainScreenState extends State<MainScreen> {
                         taskProvider.loadAllTasks();
                       });
                     }
+                    // Clear data when database is disconnected
+                    if (!appProvider.isDatabaseConnected &&
+                        (listProvider.lists.isNotEmpty ||
+                            taskProvider.tasks.isNotEmpty)) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        listProvider.clearLists();
+                        taskProvider.clearTasks();
+                      });
+                    }
                     return Row(
                       children: [
                         SizedBox(

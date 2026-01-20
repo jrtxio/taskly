@@ -167,6 +167,13 @@ class ListProvider with ChangeNotifier {
     await loadLists();
   }
 
+  // Clear all lists
+  void clearLists() {
+    _lists = [];
+    _selectedList = null;
+    notifyListeners();
+  }
+
   // Private methods
   void _setError(AppError error) {
     _error = error;

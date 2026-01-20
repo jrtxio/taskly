@@ -148,6 +148,14 @@ class TaskProvider with ChangeNotifier {
   }
 
   Future<void> updateTask(Task task) async {
+    if (!_databaseService.isConnected()) {
+      _setError(
+        AppError(message: '数据库未连接，请先创建或打开数据库文件', type: AppErrorType.validation),
+      );
+      notifyListeners();
+      return;
+    }
+
     _isLoading = true;
     _clearError();
     notifyListeners();
@@ -173,6 +181,14 @@ class TaskProvider with ChangeNotifier {
   }
 
   Future<void> toggleTaskCompleted(int id) async {
+    if (!_databaseService.isConnected()) {
+      _setError(
+        AppError(message: '数据库未连接，请先创建或打开数据库文件', type: AppErrorType.validation),
+      );
+      notifyListeners();
+      return;
+    }
+
     _isLoading = true;
     _clearError();
     notifyListeners();
@@ -196,6 +212,14 @@ class TaskProvider with ChangeNotifier {
   }
 
   Future<void> deleteTask(int id) async {
+    if (!_databaseService.isConnected()) {
+      _setError(
+        AppError(message: '数据库未连接，请先创建或打开数据库文件', type: AppErrorType.validation),
+      );
+      notifyListeners();
+      return;
+    }
+
     _isLoading = true;
     _clearError();
     notifyListeners();
@@ -232,6 +256,14 @@ class TaskProvider with ChangeNotifier {
 
   void updateDatabasePath(String? path) {
     _databasePath = path;
+  }
+
+  // Clear all tasks
+  void clearTasks() {
+    _tasks = [];
+    _currentView = 'all';
+    _searchKeyword = '';
+    notifyListeners();
   }
 
   void _setError(AppError error) {

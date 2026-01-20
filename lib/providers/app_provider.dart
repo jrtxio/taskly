@@ -275,6 +275,9 @@ class AppProvider with ChangeNotifier {
         await dbService.close();
         logger.i('Database closed successfully');
       }
+      _databasePath = null;
+      _isFirstLaunch = true;
+      notifyListeners();
     } catch (e, stackTrace) {
       logger.e('Error closing database', error: e, stackTrace: stackTrace);
       _setError(
