@@ -23,6 +23,7 @@ class _MainScreenState extends State<MainScreen> {
   int? _plannedCount;
   int? _allCount;
   int? _completedCount;
+  bool _wasConnected = false;
 
   @override
   void initState() {
@@ -120,6 +121,19 @@ class _MainScreenState extends State<MainScreen> {
             child: Consumer3<AppProvider, ListProvider, TaskProvider>(
               builder:
                   (context, appProvider, listProvider, taskProvider, child) {
+                    // Monitor database connection status changes
+                    final isConnected = appProvider.isDatabaseConnected;
+                    if (_wasConnected != isConnected) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (isConnected) {
+                          _updateStatus('数据库已连接');
+                        } else {
+                          _updateStatus('数据库已关闭');
+                        }
+                      });
+                      _wasConnected = isConnected;
+                    }
+
                     // Refresh data when database connection changes
                     if (appProvider.isDatabaseConnected &&
                         listProvider.lists.isEmpty) {
