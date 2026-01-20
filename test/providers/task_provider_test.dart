@@ -1,8 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:taskly/interfaces/task_repository_interface.dart';
+import 'package:taskly/interfaces/database_service_interface.dart';
 import 'package:taskly/providers/task_provider.dart';
 import 'package:taskly/models/task.dart';
 import 'package:taskly/models/app_error.dart';
+import 'package:taskly/models/todo_list.dart';
 
 class MockTaskRepository implements TaskRepositoryInterface {
   final List<Task> _tasks = [];
@@ -12,38 +14,62 @@ class MockTaskRepository implements TaskRepositoryInterface {
   Future<List<Task>> getAllTasks() async => _tasks;
 
   @override
-  Future<List<Task>> getTasksByList(int listId) async {
+  Future<List<Task>> getTasksByList(
+    int listId, {
+    int limit = 50,
+    int offset = 0,
+  }) async {
     return _tasks.where((task) => task.listId == listId).toList();
   }
 
   @override
-  Future<List<Task>> getTodayTasks() async {
+  Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0}) async {
     final now = DateTime.now();
     final todayString =
         '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
     return _tasks
-        .where((task) =>
-            task.dueDate != null &&
-            task.dueDate!.startsWith(todayString) &&
-            !task.completed)
+        .where(
+          (task) =>
+              task.dueDate != null &&
+              task.dueDate!.startsWith(todayString) &&
+              !task.completed,
+        )
         .toList();
   }
 
   @override
-  Future<List<Task>> getPlannedTasks() async {
+  Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async {
     return _tasks
         .where((task) => task.dueDate != null && !task.completed)
         .toList();
   }
 
   @override
-  Future<List<Task>> getIncompleteTasks() async {
+  Future<List<Task>> getIncompleteTasks({
+    int limit = 50,
+    int offset = 0,
+  }) async {
     return _tasks.where((task) => !task.completed).toList();
   }
 
   @override
-  Future<List<Task>> getCompletedTasks() async {
+  Future<List<Task>> getCompletedTasks({int limit = 50, int offset = 0}) async {
     return _tasks.where((task) => task.completed).toList();
+  }
+
+  @override
+  Future<int> getTaskCountByList(int listId) async {
+    return _tasks.where((task) => task.listId == listId).length;
+  }
+
+  @override
+  Future<int> getIncompleteTaskCount() async {
+    return _tasks.where((task) => !task.completed).length;
+  }
+
+  @override
+  Future<int> getCompletedTaskCount() async {
+    return _tasks.where((task) => task.completed).length;
   }
 
   @override
@@ -105,6 +131,8 @@ class MockTaskRepository implements TaskRepositoryInterface {
     String viewType, {
     int? listId,
     String? keyword,
+    int limit = 50,
+    int offset = 0,
   }) async {
     switch (viewType) {
       case 'today':
@@ -151,21 +179,42 @@ class FailingLoadTaskRepository implements TaskRepositoryInterface {
   Future<List<Task>> getAllTasks() async => [];
 
   @override
-  Future<List<Task>> getTasksByList(int listId) async => [];
+  Future<List<Task>> getTasksByList(
+    int listId, {
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
 
   @override
-  Future<List<Task>> getTodayTasks() async => [];
+  Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0}) async =>
+      [];
 
   @override
-  Future<List<Task>> getPlannedTasks() async => [];
+  Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async =>
+      [];
 
   @override
-  Future<List<Task>> getIncompleteTasks() async {
+  Future<List<Task>> getIncompleteTasks({
+    int limit = 50,
+    int offset = 0,
+  }) async {
     throw Exception('Load failed');
   }
 
   @override
-  Future<List<Task>> getCompletedTasks() async => [];
+  Future<List<Task>> getCompletedTasks({
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
+
+  @override
+  Future<int> getTaskCountByList(int listId) async => 0;
+
+  @override
+  Future<int> getIncompleteTaskCount() async => 0;
+
+  @override
+  Future<int> getCompletedTaskCount() async => 0;
 
   @override
   Future<Task?> getTaskById(int id) async => null;
@@ -190,12 +239,15 @@ class FailingLoadTaskRepository implements TaskRepositoryInterface {
     String viewType, {
     int? listId,
     String? keyword,
+    int limit = 50,
+    int offset = 0,
   }) async {
     throw Exception('Load failed');
   }
 
   @override
-  Future<Map<String, List<Task>>> groupTasksByList(List<Task> tasks) async => {};
+  Future<Map<String, List<Task>>> groupTasksByList(List<Task> tasks) async =>
+      {};
 }
 
 class FailingAddTaskRepository implements TaskRepositoryInterface {
@@ -203,19 +255,40 @@ class FailingAddTaskRepository implements TaskRepositoryInterface {
   Future<List<Task>> getAllTasks() async => [];
 
   @override
-  Future<List<Task>> getTasksByList(int listId) async => [];
+  Future<List<Task>> getTasksByList(
+    int listId, {
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
 
   @override
-  Future<List<Task>> getTodayTasks() async => [];
+  Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0}) async =>
+      [];
 
   @override
-  Future<List<Task>> getPlannedTasks() async => [];
+  Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async =>
+      [];
 
   @override
-  Future<List<Task>> getIncompleteTasks() async => [];
+  Future<List<Task>> getIncompleteTasks({
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
 
   @override
-  Future<List<Task>> getCompletedTasks() async => [];
+  Future<List<Task>> getCompletedTasks({
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
+
+  @override
+  Future<int> getTaskCountByList(int listId) async => 0;
+
+  @override
+  Future<int> getIncompleteTaskCount() async => 0;
+
+  @override
+  Future<int> getCompletedTaskCount() async => 0;
 
   @override
   Future<Task?> getTaskById(int id) async => null;
@@ -242,11 +315,13 @@ class FailingAddTaskRepository implements TaskRepositoryInterface {
     String viewType, {
     int? listId,
     String? keyword,
-  }) async =>
-      throw Exception('Load failed');
+    int limit = 50,
+    int offset = 0,
+  }) async => throw Exception('Load failed');
 
   @override
-  Future<Map<String, List<Task>>> groupTasksByList(List<Task> tasks) async => {};
+  Future<Map<String, List<Task>>> groupTasksByList(List<Task> tasks) async =>
+      {};
 }
 
 class FailingUpdateTaskRepository implements TaskRepositoryInterface {
@@ -254,19 +329,40 @@ class FailingUpdateTaskRepository implements TaskRepositoryInterface {
   Future<List<Task>> getAllTasks() async => [];
 
   @override
-  Future<List<Task>> getTasksByList(int listId) async => [];
+  Future<List<Task>> getTasksByList(
+    int listId, {
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
 
   @override
-  Future<List<Task>> getTodayTasks() async => [];
+  Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0}) async =>
+      [];
 
   @override
-  Future<List<Task>> getPlannedTasks() async => [];
+  Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async =>
+      [];
 
   @override
-  Future<List<Task>> getIncompleteTasks() async => [];
+  Future<List<Task>> getIncompleteTasks({
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
 
   @override
-  Future<List<Task>> getCompletedTasks() async => [];
+  Future<List<Task>> getCompletedTasks({
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
+
+  @override
+  Future<int> getTaskCountByList(int listId) async => 0;
+
+  @override
+  Future<int> getIncompleteTaskCount() async => 0;
+
+  @override
+  Future<int> getCompletedTaskCount() async => 0;
 
   @override
   Future<Task?> getTaskById(int id) async => null;
@@ -293,11 +389,13 @@ class FailingUpdateTaskRepository implements TaskRepositoryInterface {
     String viewType, {
     int? listId,
     String? keyword,
-  }) async =>
-      throw Exception('Load failed');
+    int limit = 50,
+    int offset = 0,
+  }) async => throw Exception('Load failed');
 
   @override
-  Future<Map<String, List<Task>>> groupTasksByList(List<Task> tasks) async => {};
+  Future<Map<String, List<Task>>> groupTasksByList(List<Task> tasks) async =>
+      {};
 }
 
 class FailingToggleTaskRepository implements TaskRepositoryInterface {
@@ -307,19 +405,40 @@ class FailingToggleTaskRepository implements TaskRepositoryInterface {
   Future<List<Task>> getAllTasks() async => [];
 
   @override
-  Future<List<Task>> getTasksByList(int listId) async => [];
+  Future<List<Task>> getTasksByList(
+    int listId, {
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
 
   @override
-  Future<List<Task>> getTodayTasks() async => [];
+  Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0}) async =>
+      [];
 
   @override
-  Future<List<Task>> getPlannedTasks() async => [];
+  Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async =>
+      [];
 
   @override
-  Future<List<Task>> getIncompleteTasks() async => [];
+  Future<List<Task>> getIncompleteTasks({
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
 
   @override
-  Future<List<Task>> getCompletedTasks() async => [];
+  Future<List<Task>> getCompletedTasks({
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
+
+  @override
+  Future<int> getTaskCountByList(int listId) async => 0;
+
+  @override
+  Future<int> getIncompleteTaskCount() async => 0;
+
+  @override
+  Future<int> getCompletedTaskCount() async => 0;
 
   @override
   Future<Task?> getTaskById(int id) async => null;
@@ -346,11 +465,13 @@ class FailingToggleTaskRepository implements TaskRepositoryInterface {
     String viewType, {
     int? listId,
     String? keyword,
-  }) async =>
-      [];
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
 
   @override
-  Future<Map<String, List<Task>>> groupTasksByList(List<Task> tasks) async => {};
+  Future<Map<String, List<Task>>> groupTasksByList(List<Task> tasks) async =>
+      {};
 }
 
 class FailingDeleteTaskRepository implements TaskRepositoryInterface {
@@ -360,19 +481,40 @@ class FailingDeleteTaskRepository implements TaskRepositoryInterface {
   Future<List<Task>> getAllTasks() async => [];
 
   @override
-  Future<List<Task>> getTasksByList(int listId) async => [];
+  Future<List<Task>> getTasksByList(
+    int listId, {
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
 
   @override
-  Future<List<Task>> getTodayTasks() async => [];
+  Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0}) async =>
+      [];
 
   @override
-  Future<List<Task>> getPlannedTasks() async => [];
+  Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async =>
+      [];
 
   @override
-  Future<List<Task>> getIncompleteTasks() async => [];
+  Future<List<Task>> getIncompleteTasks({
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
 
   @override
-  Future<List<Task>> getCompletedTasks() async => [];
+  Future<List<Task>> getCompletedTasks({
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
+
+  @override
+  Future<int> getTaskCountByList(int listId) async => 0;
+
+  @override
+  Future<int> getIncompleteTaskCount() async => 0;
+
+  @override
+  Future<int> getCompletedTaskCount() async => 0;
 
   @override
   Future<Task?> getTaskById(int id) async => null;
@@ -399,11 +541,13 @@ class FailingDeleteTaskRepository implements TaskRepositoryInterface {
     String viewType, {
     int? listId,
     String? keyword,
-  }) async =>
-      [];
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
 
   @override
-  Future<Map<String, List<Task>>> groupTasksByList(List<Task> tasks) async => {};
+  Future<Map<String, List<Task>>> groupTasksByList(List<Task> tasks) async =>
+      {};
 }
 
 void main() {
@@ -509,13 +653,15 @@ void main() {
 
       test('should load tasks by list', () async {
         final mockTaskRepository = MockTaskRepository();
-        mockTaskRepository._tasks.add(Task(
-          id: 1,
-          listId: 1,
-          text: 'Task 1',
-          completed: false,
-          createdAt: DateTime.now().toIso8601String(),
-        ));
+        mockTaskRepository._tasks.add(
+          Task(
+            id: 1,
+            listId: 1,
+            text: 'Task 1',
+            completed: false,
+            createdAt: DateTime.now().toIso8601String(),
+          ),
+        );
 
         final taskProvider = TaskProvider.test(
           taskRepository: mockTaskRepository,
@@ -529,13 +675,15 @@ void main() {
 
       test('should load today tasks', () async {
         final mockTaskRepository = MockTaskRepository();
-        mockTaskRepository._tasks.add(Task(
-          id: 1,
-          listId: 1,
-          text: 'Task 1',
-          completed: false,
-          createdAt: DateTime.now().toIso8601String(),
-        ));
+        mockTaskRepository._tasks.add(
+          Task(
+            id: 1,
+            listId: 1,
+            text: 'Task 1',
+            completed: false,
+            createdAt: DateTime.now().toIso8601String(),
+          ),
+        );
 
         final taskProvider = TaskProvider.test(
           taskRepository: mockTaskRepository,
@@ -548,13 +696,15 @@ void main() {
 
       test('should load planned tasks', () async {
         final mockTaskRepository = MockTaskRepository();
-        mockTaskRepository._tasks.add(Task(
-          id: 1,
-          listId: 1,
-          text: 'Task 1',
-          completed: false,
-          createdAt: DateTime.now().toIso8601String(),
-        ));
+        mockTaskRepository._tasks.add(
+          Task(
+            id: 1,
+            listId: 1,
+            text: 'Task 1',
+            completed: false,
+            createdAt: DateTime.now().toIso8601String(),
+          ),
+        );
 
         final taskProvider = TaskProvider.test(
           taskRepository: mockTaskRepository,
@@ -579,13 +729,15 @@ void main() {
 
       test('should load completed tasks', () async {
         final mockTaskRepository = MockTaskRepository();
-        mockTaskRepository._tasks.add(Task(
-          id: 1,
-          listId: 1,
-          text: 'Task 1',
-          completed: true,
-          createdAt: DateTime.now().toIso8601String(),
-        ));
+        mockTaskRepository._tasks.add(
+          Task(
+            id: 1,
+            listId: 1,
+            text: 'Task 1',
+            completed: true,
+            createdAt: DateTime.now().toIso8601String(),
+          ),
+        );
 
         final taskProvider = TaskProvider.test(
           taskRepository: mockTaskRepository,
@@ -687,13 +839,15 @@ void main() {
     group('updateTask method', () {
       test('should update task successfully', () async {
         final mockTaskRepository = MockTaskRepository();
-        mockTaskRepository._tasks.add(Task(
-          id: 1,
-          listId: 1,
-          text: 'Task',
-          completed: false,
-          createdAt: DateTime.now().toIso8601String(),
-        ));
+        mockTaskRepository._tasks.add(
+          Task(
+            id: 1,
+            listId: 1,
+            text: 'Task',
+            completed: false,
+            createdAt: DateTime.now().toIso8601String(),
+          ),
+        );
 
         final taskProvider = TaskProvider.test(
           taskRepository: mockTaskRepository,
@@ -717,13 +871,15 @@ void main() {
 
       test('should set loading state during update', () async {
         final mockTaskRepository = MockTaskRepository();
-        mockTaskRepository._tasks.add(Task(
-          id: 1,
-          listId: 1,
-          text: 'Task',
-          completed: false,
-          createdAt: DateTime.now().toIso8601String(),
-        ));
+        mockTaskRepository._tasks.add(
+          Task(
+            id: 1,
+            listId: 1,
+            text: 'Task',
+            completed: false,
+            createdAt: DateTime.now().toIso8601String(),
+          ),
+        );
 
         final taskProvider = TaskProvider.test(
           taskRepository: mockTaskRepository,
@@ -776,13 +932,15 @@ void main() {
     group('toggleTaskCompleted method', () {
       test('should toggle task completed successfully', () async {
         final mockTaskRepository = MockTaskRepository();
-        mockTaskRepository._tasks.add(Task(
-          id: 1,
-          listId: 1,
-          text: 'Task',
-          completed: false,
-          createdAt: DateTime.now().toIso8601String(),
-        ));
+        mockTaskRepository._tasks.add(
+          Task(
+            id: 1,
+            listId: 1,
+            text: 'Task',
+            completed: false,
+            createdAt: DateTime.now().toIso8601String(),
+          ),
+        );
 
         final taskProvider = TaskProvider.test(
           taskRepository: mockTaskRepository,
@@ -797,13 +955,15 @@ void main() {
 
       test('should set loading state during toggle', () async {
         final mockTaskRepository = MockTaskRepository();
-        mockTaskRepository._tasks.add(Task(
-          id: 1,
-          listId: 1,
-          text: 'Task',
-          completed: false,
-          createdAt: DateTime.now().toIso8601String(),
-        ));
+        mockTaskRepository._tasks.add(
+          Task(
+            id: 1,
+            listId: 1,
+            text: 'Task',
+            completed: false,
+            createdAt: DateTime.now().toIso8601String(),
+          ),
+        );
 
         final taskProvider = TaskProvider.test(
           taskRepository: mockTaskRepository,
@@ -824,13 +984,15 @@ void main() {
 
       test('should set error when toggle fails', () async {
         final mockTaskRepository = FailingToggleTaskRepository();
-        mockTaskRepository._tasks.add(Task(
-          id: 1,
-          listId: 1,
-          text: 'Task',
-          completed: false,
-          createdAt: DateTime.now().toIso8601String(),
-        ));
+        mockTaskRepository._tasks.add(
+          Task(
+            id: 1,
+            listId: 1,
+            text: 'Task',
+            completed: false,
+            createdAt: DateTime.now().toIso8601String(),
+          ),
+        );
 
         final taskProvider = TaskProvider.test(
           taskRepository: mockTaskRepository,
@@ -847,13 +1009,15 @@ void main() {
     group('deleteTask method', () {
       test('should delete task successfully', () async {
         final mockTaskRepository = MockTaskRepository();
-        mockTaskRepository._tasks.add(Task(
-          id: 1,
-          listId: 1,
-          text: 'Task',
-          completed: false,
-          createdAt: DateTime.now().toIso8601String(),
-        ));
+        mockTaskRepository._tasks.add(
+          Task(
+            id: 1,
+            listId: 1,
+            text: 'Task',
+            completed: false,
+            createdAt: DateTime.now().toIso8601String(),
+          ),
+        );
 
         final taskProvider = TaskProvider.test(
           taskRepository: mockTaskRepository,
@@ -868,13 +1032,15 @@ void main() {
 
       test('should set loading state during delete', () async {
         final mockTaskRepository = MockTaskRepository();
-        mockTaskRepository._tasks.add(Task(
-          id: 1,
-          listId: 1,
-          text: 'Task',
-          completed: false,
-          createdAt: DateTime.now().toIso8601String(),
-        ));
+        mockTaskRepository._tasks.add(
+          Task(
+            id: 1,
+            listId: 1,
+            text: 'Task',
+            completed: false,
+            createdAt: DateTime.now().toIso8601String(),
+          ),
+        );
 
         final taskProvider = TaskProvider.test(
           taskRepository: mockTaskRepository,
@@ -895,13 +1061,15 @@ void main() {
 
       test('should set error when delete fails', () async {
         final mockTaskRepository = FailingDeleteTaskRepository();
-        mockTaskRepository._tasks.add(Task(
-          id: 1,
-          listId: 1,
-          text: 'Task',
-          completed: false,
-          createdAt: DateTime.now().toIso8601String(),
-        ));
+        mockTaskRepository._tasks.add(
+          Task(
+            id: 1,
+            listId: 1,
+            text: 'Task',
+            completed: false,
+            createdAt: DateTime.now().toIso8601String(),
+          ),
+        );
 
         final taskProvider = TaskProvider.test(
           taskRepository: mockTaskRepository,
@@ -918,13 +1086,15 @@ void main() {
     group('refreshTasks method', () {
       test('should reload tasks', () async {
         final mockTaskRepository = MockTaskRepository();
-        mockTaskRepository._tasks.add(Task(
-          id: 1,
-          listId: 1,
-          text: 'Task',
-          completed: false,
-          createdAt: DateTime.now().toIso8601String(),
-        ));
+        mockTaskRepository._tasks.add(
+          Task(
+            id: 1,
+            listId: 1,
+            text: 'Task',
+            completed: false,
+            createdAt: DateTime.now().toIso8601String(),
+          ),
+        );
 
         final taskProvider = TaskProvider.test(
           taskRepository: mockTaskRepository,

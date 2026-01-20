@@ -6,6 +6,7 @@ import '../models/todo_list.dart';
 import '../providers/task_provider.dart';
 import '../utils/date_parser.dart';
 import 'task_dialogs.dart';
+import 'welcome_panel.dart';
 
 class TaskListView extends StatefulWidget {
   final List<Task> tasks;
@@ -16,6 +17,7 @@ class TaskListView extends StatefulWidget {
   final String? currentViewTitle;
   final int? currentListId;
   final List<TodoList> lists;
+  final bool isDatabaseConnected;
 
   const TaskListView({
     super.key,
@@ -27,6 +29,7 @@ class TaskListView extends StatefulWidget {
     this.currentViewTitle,
     this.currentListId,
     this.lists = const [],
+    this.isDatabaseConnected = true,
   });
 
   @override
@@ -44,7 +47,7 @@ class _TaskListViewState extends State<TaskListView> {
   }
 
   void _handleQuickAdd() {
-    if (_isSubmitting) return;
+    if (_isSubmitting || !widget.isDatabaseConnected) return;
 
     final input = _quickAddController.text.trim();
     if (input.isEmpty) return;
@@ -125,7 +128,7 @@ class _TaskListViewState extends State<TaskListView> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: widget.isDatabaseConnected ? Colors.grey[50] : Colors.grey[200],
         border: Border(bottom: BorderSide(color: Colors.grey[300]!)),
       ),
       child: Row(
@@ -133,11 +136,18 @@ class _TaskListViewState extends State<TaskListView> {
           Expanded(
             child: TextField(
               controller: _quickAddController,
+              enabled: widget.isDatabaseConnected,
               decoration: InputDecoration(
-                hintText: '添加新任务... (支持 +1d, @10am 等快捷日期)',
+                hintText: widget.isDatabaseConnected
+                    ? '添加新任务... (支持 +1d, @10am 等快捷日期)'
+                    : '请先创建或打开数据库',
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                hintStyle: TextStyle(color: Colors.grey[500]),
+                hintStyle: TextStyle(
+                  color: widget.isDatabaseConnected
+                      ? Colors.grey[500]
+                      : Colors.grey[400],
+                ),
               ),
               onSubmitted: (_) => _handleQuickAdd(),
             ),
@@ -154,6 +164,10 @@ class _TaskListViewState extends State<TaskListView> {
   }
 
   Widget _buildTaskList() {
+    if (!widget.isDatabaseConnected) {
+      return const WelcomePanel();
+    }
+
     if (widget.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }

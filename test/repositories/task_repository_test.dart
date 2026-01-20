@@ -33,38 +33,62 @@ class MockDatabaseService implements DatabaseServiceInterface {
   Future<List<Task>> getAllTasks() async => _tasks;
 
   @override
-  Future<List<Task>> getTasksByList(int listId) async {
+  Future<List<Task>> getTasksByList(
+    int listId, {
+    int limit = 50,
+    int offset = 0,
+  }) async {
     return _tasks.where((task) => task.listId == listId).toList();
   }
 
   @override
-  Future<List<Task>> getTodayTasks() async {
+  Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0}) async {
     final now = DateTime.now();
     final todayString =
         '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
     return _tasks
-        .where((task) =>
-            task.dueDate != null &&
-            task.dueDate!.startsWith(todayString) &&
-            !task.completed)
+        .where(
+          (task) =>
+              task.dueDate != null &&
+              task.dueDate!.startsWith(todayString) &&
+              !task.completed,
+        )
         .toList();
   }
 
   @override
-  Future<List<Task>> getPlannedTasks() async {
+  Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async {
     return _tasks
         .where((task) => task.dueDate != null && !task.completed)
         .toList();
   }
 
   @override
-  Future<List<Task>> getIncompleteTasks() async {
+  Future<List<Task>> getIncompleteTasks({
+    int limit = 50,
+    int offset = 0,
+  }) async {
     return _tasks.where((task) => !task.completed).toList();
   }
 
   @override
-  Future<List<Task>> getCompletedTasks() async {
+  Future<List<Task>> getCompletedTasks({int limit = 50, int offset = 0}) async {
     return _tasks.where((task) => task.completed).toList();
+  }
+
+  @override
+  Future<int> getTaskCountByList(int listId) async {
+    return _tasks.where((task) => task.listId == listId).length;
+  }
+
+  @override
+  Future<int> getIncompleteTaskCount() async {
+    return _tasks.where((task) => !task.completed).length;
+  }
+
+  @override
+  Future<int> getCompletedTaskCount() async {
+    return _tasks.where((task) => task.completed).length;
   }
 
   @override
@@ -113,6 +137,12 @@ class MockDatabaseService implements DatabaseServiceInterface {
 
   @override
   Future<void> close() async {}
+
+  @override
+  bool isConnected() => false;
+
+  @override
+  void resetConnection() {}
 }
 
 void main() {
@@ -444,20 +474,23 @@ void main() {
         );
       });
 
-      test('should throw ArgumentError when task text contains only whitespace', () async {
-        final task = Task(
-          id: 0,
-          listId: 1,
-          text: '   ',
-          completed: false,
-          createdAt: DateTime.now().toIso8601String(),
-        );
+      test(
+        'should throw ArgumentError when task text contains only whitespace',
+        () async {
+          final task = Task(
+            id: 0,
+            listId: 1,
+            text: '   ',
+            completed: false,
+            createdAt: DateTime.now().toIso8601String(),
+          );
 
-        expect(
-          () => taskRepository.addTask(task),
-          throwsA(isA<ArgumentError>()),
-        );
-      });
+          expect(
+            () => taskRepository.addTask(task),
+            throwsA(isA<ArgumentError>()),
+          );
+        },
+      );
     });
 
     group('updateTask', () {
@@ -511,53 +544,59 @@ void main() {
         expect(tasks[0].text, '  Updated Task  ');
       });
 
-      test('should throw ArgumentError when updated task text is empty', () async {
-        final task = Task(
-          id: 0,
-          listId: 1,
-          text: 'Original Task',
-          completed: false,
-          createdAt: DateTime.now().toIso8601String(),
-        );
+      test(
+        'should throw ArgumentError when updated task text is empty',
+        () async {
+          final task = Task(
+            id: 0,
+            listId: 1,
+            text: 'Original Task',
+            completed: false,
+            createdAt: DateTime.now().toIso8601String(),
+          );
 
-        final taskId = await taskRepository.addTask(task);
-        final updatedTask = Task(
-          id: taskId,
-          listId: 1,
-          text: '',
-          completed: false,
-          createdAt: DateTime.now().toIso8601String(),
-        );
+          final taskId = await taskRepository.addTask(task);
+          final updatedTask = Task(
+            id: taskId,
+            listId: 1,
+            text: '',
+            completed: false,
+            createdAt: DateTime.now().toIso8601String(),
+          );
 
-        expect(
-          () => taskRepository.updateTask(updatedTask),
-          throwsA(isA<ArgumentError>()),
-        );
-      });
+          expect(
+            () => taskRepository.updateTask(updatedTask),
+            throwsA(isA<ArgumentError>()),
+          );
+        },
+      );
 
-      test('should throw ArgumentError when updated task text contains only whitespace', () async {
-        final task = Task(
-          id: 0,
-          listId: 1,
-          text: 'Original Task',
-          completed: false,
-          createdAt: DateTime.now().toIso8601String(),
-        );
+      test(
+        'should throw ArgumentError when updated task text contains only whitespace',
+        () async {
+          final task = Task(
+            id: 0,
+            listId: 1,
+            text: 'Original Task',
+            completed: false,
+            createdAt: DateTime.now().toIso8601String(),
+          );
 
-        final taskId = await taskRepository.addTask(task);
-        final updatedTask = Task(
-          id: taskId,
-          listId: 1,
-          text: '   ',
-          completed: false,
-          createdAt: DateTime.now().toIso8601String(),
-        );
+          final taskId = await taskRepository.addTask(task);
+          final updatedTask = Task(
+            id: taskId,
+            listId: 1,
+            text: '   ',
+            completed: false,
+            createdAt: DateTime.now().toIso8601String(),
+          );
 
-        expect(
-          () => taskRepository.updateTask(updatedTask),
-          throwsA(isA<ArgumentError>()),
-        );
-      });
+          expect(
+            () => taskRepository.updateTask(updatedTask),
+            throwsA(isA<ArgumentError>()),
+          );
+        },
+      );
 
       test('should return 0 when updating non-existent task', () async {
         final task = Task(
@@ -652,20 +691,23 @@ void main() {
         expect(tasks, isEmpty);
       });
 
-      test('should return empty list when keyword contains only whitespace', () async {
-        final task = Task(
-          id: 0,
-          listId: 1,
-          text: 'Task',
-          completed: false,
-          createdAt: DateTime.now().toIso8601String(),
-        );
+      test(
+        'should return empty list when keyword contains only whitespace',
+        () async {
+          final task = Task(
+            id: 0,
+            listId: 1,
+            text: 'Task',
+            completed: false,
+            createdAt: DateTime.now().toIso8601String(),
+          );
 
-        await taskRepository.addTask(task);
+          await taskRepository.addTask(task);
 
-        final tasks = await taskRepository.searchTasks('   ');
-        expect(tasks, isEmpty);
-      });
+          final tasks = await taskRepository.searchTasks('   ');
+          expect(tasks, isEmpty);
+        },
+      );
 
       test('should return tasks matching keyword (case insensitive)', () async {
         final task1 = Task(
@@ -698,7 +740,9 @@ void main() {
         expect(tasks.length, 1);
         expect(tasks[0].text, 'Buy groceries');
 
-        final tasksCaseInsensitive = await taskRepository.searchTasks('GROCERIES');
+        final tasksCaseInsensitive = await taskRepository.searchTasks(
+          'GROCERIES',
+        );
         expect(tasksCaseInsensitive.length, 1);
       });
 
@@ -755,25 +799,31 @@ void main() {
         expect(result, isA<List<Task>>());
       });
 
-      test('should return tasks by list for viewType "list" with listId', () async {
-        final task = Task(
-          id: 0,
-          listId: 1,
-          text: 'Task',
-          completed: false,
-          createdAt: DateTime.now().toIso8601String(),
-        );
+      test(
+        'should return tasks by list for viewType "list" with listId',
+        () async {
+          final task = Task(
+            id: 0,
+            listId: 1,
+            text: 'Task',
+            completed: false,
+            createdAt: DateTime.now().toIso8601String(),
+          );
 
-        await taskRepository.addTask(task);
+          await taskRepository.addTask(task);
 
-        final result = await taskRepository.getTasksByView('list', listId: 1);
-        expect(result.length, 1);
-      });
+          final result = await taskRepository.getTasksByView('list', listId: 1);
+          expect(result.length, 1);
+        },
+      );
 
-      test('should return empty list for viewType "list" without listId', () async {
-        final result = await taskRepository.getTasksByView('list');
-        expect(result, isEmpty);
-      });
+      test(
+        'should return empty list for viewType "list" without listId',
+        () async {
+          final result = await taskRepository.getTasksByView('list');
+          expect(result, isEmpty);
+        },
+      );
 
       test('should search tasks for viewType "search" with keyword', () async {
         final task = Task(
@@ -786,14 +836,20 @@ void main() {
 
         await taskRepository.addTask(task);
 
-        final result = await taskRepository.getTasksByView('search', keyword: 'test');
+        final result = await taskRepository.getTasksByView(
+          'search',
+          keyword: 'test',
+        );
         expect(result.length, 1);
       });
 
-      test('should return empty list for viewType "search" without keyword', () async {
-        final result = await taskRepository.getTasksByView('search');
-        expect(result, isEmpty);
-      });
+      test(
+        'should return empty list for viewType "search" without keyword',
+        () async {
+          final result = await taskRepository.getTasksByView('search');
+          expect(result, isEmpty);
+        },
+      );
 
       test('should return incomplete tasks for unknown viewType', () async {
         final result = await taskRepository.getTasksByView('unknown');

@@ -56,19 +56,40 @@ class MockDatabaseService implements DatabaseServiceInterface {
   Future<List<Task>> getAllTasks() async => [];
 
   @override
-  Future<List<Task>> getTasksByList(int listId) async => [];
+  Future<List<Task>> getTasksByList(
+    int listId, {
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
 
   @override
-  Future<List<Task>> getTodayTasks() async => [];
+  Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0}) async =>
+      [];
 
   @override
-  Future<List<Task>> getPlannedTasks() async => [];
+  Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async =>
+      [];
 
   @override
-  Future<List<Task>> getIncompleteTasks() async => [];
+  Future<List<Task>> getIncompleteTasks({
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
 
   @override
-  Future<List<Task>> getCompletedTasks() async => [];
+  Future<List<Task>> getCompletedTasks({
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
+
+  @override
+  Future<int> getTaskCountByList(int listId) async => 0;
+
+  @override
+  Future<int> getIncompleteTaskCount() async => 0;
+
+  @override
+  Future<int> getCompletedTaskCount() async => 0;
 
   @override
   Future<int> addTask(Task task) async => 0;
@@ -87,6 +108,12 @@ class MockDatabaseService implements DatabaseServiceInterface {
 
   @override
   Future<void> close() async {}
+
+  @override
+  bool isConnected() => false;
+
+  @override
+  void resetConnection() {}
 }
 
 void main() {
@@ -151,18 +178,18 @@ void main() {
       });
 
       test('should throw ArgumentError when list name is empty', () async {
-        expect(
-          () => listRepository.addList(''),
-          throwsA(isA<ArgumentError>()),
-        );
+        expect(() => listRepository.addList(''), throwsA(isA<ArgumentError>()));
       });
 
-      test('should throw ArgumentError when list name contains only whitespace', () async {
-        expect(
-          () => listRepository.addList('   '),
-          throwsA(isA<ArgumentError>()),
-        );
-      });
+      test(
+        'should throw ArgumentError when list name contains only whitespace',
+        () async {
+          expect(
+            () => listRepository.addList('   '),
+            throwsA(isA<ArgumentError>()),
+          );
+        },
+      );
     });
 
     group('updateList', () {
@@ -185,23 +212,29 @@ void main() {
         expect(list!.name, 'Personal');
       });
 
-      test('should throw ArgumentError when updated list name is empty', () async {
-        final listId = await listRepository.addList('Work');
+      test(
+        'should throw ArgumentError when updated list name is empty',
+        () async {
+          final listId = await listRepository.addList('Work');
 
-        expect(
-          () => listRepository.updateList(listId, ''),
-          throwsA(isA<ArgumentError>()),
-        );
-      });
+          expect(
+            () => listRepository.updateList(listId, ''),
+            throwsA(isA<ArgumentError>()),
+          );
+        },
+      );
 
-      test('should throw ArgumentError when updated list name contains only whitespace', () async {
-        final listId = await listRepository.addList('Work');
+      test(
+        'should throw ArgumentError when updated list name contains only whitespace',
+        () async {
+          final listId = await listRepository.addList('Work');
 
-        expect(
-          () => listRepository.updateList(listId, '   '),
-          throwsA(isA<ArgumentError>()),
-        );
-      });
+          expect(
+            () => listRepository.updateList(listId, '   '),
+            throwsA(isA<ArgumentError>()),
+          );
+        },
+      );
 
       test('should return 0 when updating non-existent list', () async {
         final result = await listRepository.updateList(999, 'New Name');

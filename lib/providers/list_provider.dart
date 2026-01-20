@@ -4,6 +4,7 @@ import '../interfaces/list_repository_interface.dart';
 import '../locator/service_locator.dart';
 import '../models/app_error.dart';
 import '../models/todo_list.dart';
+import '../utils/app_logger.dart';
 
 class ListProvider with ChangeNotifier {
   // Public constructor for testing purposes
@@ -63,8 +64,7 @@ class ListProvider with ChangeNotifier {
           originalError: e,
         ),
       );
-      // ignore: avoid_print
-      print('Error loading lists: $e\n$stackTrace');
+      logger.e('Error loading lists', error: e, stackTrace: stackTrace);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -76,8 +76,7 @@ class ListProvider with ChangeNotifier {
     _selectedList = list;
     // Save selected list ID to config
     _configService.saveLastSelectedListId(list.id).catchError((e, stackTrace) {
-      // ignore: avoid_print
-      print('Error saving selected list: $e\n$stackTrace');
+      logger.e('Error saving selected list', error: e, stackTrace: stackTrace);
       return false;
     });
     notifyListeners();
@@ -102,8 +101,7 @@ class ListProvider with ChangeNotifier {
           originalError: e,
         ),
       );
-      // ignore: avoid_print
-      print('Error adding list: $e\n$stackTrace');
+      logger.e('Error adding list', error: e, stackTrace: stackTrace);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -129,8 +127,7 @@ class ListProvider with ChangeNotifier {
           originalError: e,
         ),
       );
-      // ignore: avoid_print
-      print('Error updating list: $e\n$stackTrace');
+      logger.e('Error updating list', error: e, stackTrace: stackTrace);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -158,8 +155,7 @@ class ListProvider with ChangeNotifier {
           originalError: e,
         ),
       );
-      // ignore: avoid_print
-      print('Error deleting list: $e\n$stackTrace');
+      logger.e('Error deleting list', error: e, stackTrace: stackTrace);
     } finally {
       _isLoading = false;
       notifyListeners();

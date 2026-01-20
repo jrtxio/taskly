@@ -33,21 +33,30 @@ abstract class DatabaseServiceInterface {
   
   // Get all tasks
   Future<List<Task>> getAllTasks();
-  
-  // Get tasks by list
-  Future<List<Task>> getTasksByList(int listId);
-  
-  // Get today's tasks
-  Future<List<Task>> getTodayTasks();
-  
-  // Get planned tasks (with due date and not completed)
-  Future<List<Task>> getPlannedTasks();
-  
-  // Get all incomplete tasks
-  Future<List<Task>> getIncompleteTasks();
-  
-  // Get all completed tasks
-  Future<List<Task>> getCompletedTasks();
+
+  // Get tasks by list with pagination
+  Future<List<Task>> getTasksByList(int listId, {int limit = 50, int offset = 0});
+
+  // Get today's tasks with pagination
+  Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0});
+
+  // Get planned tasks (with due date and not completed) with pagination
+  Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0});
+
+  // Get all incomplete tasks with pagination
+  Future<List<Task>> getIncompleteTasks({int limit = 50, int offset = 0});
+
+  // Get all completed tasks with pagination
+  Future<List<Task>> getCompletedTasks({int limit = 50, int offset = 0});
+
+  // Get total task count by list
+  Future<int> getTaskCountByList(int listId);
+
+  // Get total incomplete task count
+  Future<int> getIncompleteTaskCount();
+
+  // Get total completed task count
+  Future<int> getCompletedTaskCount();
   
   // Add task
   Future<int> addTask(Task task);
@@ -66,4 +75,10 @@ abstract class DatabaseServiceInterface {
   
   // Close database
   Future<void> close();
+
+  // Check if database is connected
+  bool isConnected();
+
+  // Reset database connection
+  void resetConnection();
 }

@@ -4,10 +4,12 @@ import '../interfaces/config_service_interface.dart';
 import '../interfaces/database_service_interface.dart';
 import '../locator/service_locator.dart';
 import '../models/app_error.dart';
+import '../utils/app_logger.dart';
+import '../utils/path_utils.dart';
 
 class AppProvider with ChangeNotifier {
   AppProvider.test({required ConfigServiceInterface configService})
-      : _configService = configService;
+    : _configService = configService;
 
   AppProvider() : _configService = sl<ConfigServiceInterface>();
 
@@ -58,8 +60,11 @@ class AppProvider with ChangeNotifier {
             await dbService.init();
           }
         } catch (dbError, stackTrace) {
-          print('Database initialization failed: $dbError');
-          print('Stack trace: $stackTrace');
+          logger.e(
+            'Database initialization failed',
+            error: dbError,
+            stackTrace: stackTrace,
+          );
           // If database initialization fails, treat as first launch
           _isFirstLaunch = true;
           _databasePath = null;
@@ -73,7 +78,7 @@ class AppProvider with ChangeNotifier {
           originalError: e,
         ),
       );
-      print('Error initializing app: $e\n$stackTrace');
+      logger.e('Error initializing app', error: e, stackTrace: stackTrace);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -97,7 +102,7 @@ class AppProvider with ChangeNotifier {
           originalError: e,
         ),
       );
-      print('Error saving database path: $e\n$stackTrace');
+      logger.e('Error saving database path', error: e, stackTrace: stackTrace);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -126,7 +131,7 @@ class AppProvider with ChangeNotifier {
           originalError: e,
         ),
       );
-      print('Error changing language: $e\n$stackTrace');
+      logger.e('Error changing language', error: e, stackTrace: stackTrace);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -159,5 +164,126 @@ class AppProvider with ChangeNotifier {
 
   void _clearError() {
     _error = null;
+  }
+
+  // Check if database is connected
+  bool get isDatabaseConnected {
+    try {
+      final dbService = sl<DatabaseServiceInterface>();
+      return dbService.isConnected();
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Open new database
+  Future<void> openNewDatabase(String path) async {
+    _isLoading = true;
+    _clearError();
+    notifyListeners();
+
+    try {
+      // Validate database path
+      if (!PathUtils.isValidDatabasePath(path)) {
+        throw Exception('Invalid database path or insufficient permissions');
+      }
+
+      // Ensure .db extension
+      final dbPath = path.endsWith('.db') ? path : '$path.db';
+
+      // Close existing database if connected
+      await closeDatabase();
+
+      // Reset database service connection
+      final dbService = sl<DatabaseServiceInterface>();
+      dbService.setDatabasePath(dbPath);
+      dbService.resetConnection();
+
+      // Initialize new database
+      await dbService.init();
+
+      // Save to config
+      await _configService!.saveLastDbPath(dbPath);
+      _databasePath = dbPath;
+      _isFirstLaunch = false;
+
+      logger.i('Successfully opened new database: $dbPath');
+    } catch (e, stackTrace) {
+      _setError(
+        AppError(
+          message: 'Failed to open new database: ${e.toString()}',
+          type: AppErrorType.config,
+          originalError: e,
+        ),
+      );
+      logger.e('Error opening new database', error: e, stackTrace: stackTrace);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Open existing database
+  Future<void> openExistingDatabase(String path) async {
+    _isLoading = true;
+    _clearError();
+    notifyListeners();
+
+    try {
+      // Check if file exists
+      if (!PathUtils.safeFileExists(path)) {
+        throw Exception('Database file does not exist: $path');
+      }
+
+      // Close existing database if connected
+      await closeDatabase();
+
+      // Set new path and reset connection
+      final dbService = sl<DatabaseServiceInterface>();
+      dbService.setDatabasePath(path);
+      dbService.resetConnection();
+
+      // Initialize database
+      await dbService.init();
+
+      // Save to config
+      await _configService!.saveLastDbPath(path);
+      _databasePath = path;
+      _isFirstLaunch = false;
+
+      logger.i('Successfully opened existing database: $path');
+    } catch (e, stackTrace) {
+      _setError(
+        AppError(
+          message: 'Failed to open database: ${e.toString()}',
+          type: AppErrorType.config,
+          originalError: e,
+        ),
+      );
+      logger.e('Error opening database', error: e, stackTrace: stackTrace);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Close database
+  Future<void> closeDatabase() async {
+    try {
+      final dbService = sl<DatabaseServiceInterface>();
+      if (dbService.isConnected()) {
+        await dbService.close();
+        logger.i('Database closed successfully');
+      }
+    } catch (e, stackTrace) {
+      logger.e('Error closing database', error: e, stackTrace: stackTrace);
+      _setError(
+        AppError(
+          message: 'Failed to close database: ${e.toString()}',
+          type: AppErrorType.config,
+          originalError: e,
+        ),
+      );
+    }
   }
 }

@@ -1,6 +1,7 @@
 import '../interfaces/database_service_interface.dart';
 import '../interfaces/list_repository_interface.dart';
 import '../models/todo_list.dart';
+import '../utils/validation_helper.dart';
 
 class ListRepository implements ListRepositoryInterface {
   final DatabaseServiceInterface _databaseService;
@@ -23,9 +24,9 @@ class ListRepository implements ListRepositoryInterface {
   // Add a new list
   @override
   Future<int> addList(String name) async {
-    // Validate list name
-    if (name.trim().isEmpty) {
-      throw ArgumentError('List name cannot be empty');
+    final error = ValidationHelper.validateListName(name);
+    if (error != null) {
+      throw ArgumentError(error.message);
     }
     return await _databaseService.addList(name.trim());
   }
@@ -33,9 +34,9 @@ class ListRepository implements ListRepositoryInterface {
   // Update an existing list
   @override
   Future<int> updateList(int id, String name) async {
-    // Validate list name
-    if (name.trim().isEmpty) {
-      throw ArgumentError('List name cannot be empty');
+    final error = ValidationHelper.validateListName(name);
+    if (error != null) {
+      throw ArgumentError(error.message);
     }
     return await _databaseService.updateList(id, name.trim());
   }

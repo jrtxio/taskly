@@ -30,7 +30,7 @@ class DatabaseService implements DatabaseServiceInterface {
   }
 
   // Database version
-  static const int _databaseVersion = 1;
+  static const int _databaseVersion = 2;
 
   // Table names
   static const String _tableLists = 'lists';
@@ -77,6 +77,17 @@ class DatabaseService implements DatabaseServiceInterface {
       )
     ''');
 
+    // Create indexes for better query performance
+    await db.execute('''
+      CREATE INDEX idx_tasks_list_id ON $_tableTasks(list_id)
+    ''');
+    await db.execute('''
+      CREATE INDEX idx_tasks_completed ON $_tableTasks(completed)
+    ''');
+    await db.execute('''
+      CREATE INDEX idx_tasks_due_date ON $_tableTasks(due_date)
+    ''');
+
     // Insert default lists
     await db.insert(_tableLists, {
       'name': '工作',
@@ -94,7 +105,24 @@ class DatabaseService implements DatabaseServiceInterface {
 
   // Upgrade database when version changes
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Handle database schema upgrades here
+    if (oldVersion < 2 && newVersion >= 2) {
+      // Version 2: Add indexes for better query performance
+      await db.execute('''
+        CREATE INDEX IF NOT EXISTS idx_tasks_list_id ON $_tableTasks(list_id)
+      ''');
+      await db.execute('''
+        CREATE INDEX IF NOT EXISTS idx_tasks_completed ON $_tableTasks(completed)
+      ''');
+      await db.execute('''
+        CREATE INDEX IF NOT EXISTS idx_tasks_due_date ON $_tableTasks(due_date)
+      ''');
+    }
+
+    // Future migrations can be added here
+    // Example:
+    // if (oldVersion < 3 && newVersion >= 3) {
+    //   // Add new columns or tables for version 3
+    // }
   }
 
   // ------------------------
@@ -175,23 +203,28 @@ class DatabaseService implements DatabaseServiceInterface {
 
   // Get tasks by list
   @override
-  Future<List<Task>> getTasksByList(int listId) async {
+  Future<List<Task>> getTasksByList(
+    int listId, {
+    int limit = 50,
+    int offset = 0,
+  }) async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.rawQuery(
       '''
-      SELECT t.*, l.name as list_name 
-      FROM $_tableTasks t 
+      SELECT t.*, l.name as list_name
+      FROM $_tableTasks t
       LEFT JOIN $_tableLists l ON t.list_id = l.id
       WHERE t.list_id = ?
+      LIMIT ? OFFSET ?
     ''',
-      [listId],
+      [listId, limit, offset],
     );
     return List.generate(maps.length, (i) => Task.fromMap(maps[i]));
   }
 
   // Get today's tasks
   @override
-  Future<List<Task>> getTodayTasks() async {
+  Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0}) async {
     final db = await database;
     final today = DateTime.now().toLocal();
     final todayString =
@@ -199,54 +232,101 @@ class DatabaseService implements DatabaseServiceInterface {
 
     final List<Map<String, dynamic>> maps = await db.rawQuery(
       '''
-      SELECT t.*, l.name as list_name 
-      FROM $_tableTasks t 
+      SELECT t.*, l.name as list_name
+      FROM $_tableTasks t
       LEFT JOIN $_tableLists l ON t.list_id = l.id
       WHERE date(t.due_date) = ? AND t.completed = 0
+      LIMIT ? OFFSET ?
     ''',
-      [todayString],
+      [todayString, limit, offset],
     );
     return List.generate(maps.length, (i) => Task.fromMap(maps[i]));
   }
 
   // Get planned tasks (with due date and not completed)
   @override
-  Future<List<Task>> getPlannedTasks() async {
+  Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.rawQuery('''
-      SELECT t.*, l.name as list_name 
-      FROM $_tableTasks t 
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+      '''
+      SELECT t.*, l.name as list_name
+      FROM $_tableTasks t
       LEFT JOIN $_tableLists l ON t.list_id = l.id
       WHERE t.due_date IS NOT NULL AND t.completed = 0
       ORDER BY t.due_date ASC
-    ''');
+      LIMIT ? OFFSET ?
+    ''',
+      [limit, offset],
+    );
     return List.generate(maps.length, (i) => Task.fromMap(maps[i]));
   }
 
   // Get all incomplete tasks
   @override
-  Future<List<Task>> getIncompleteTasks() async {
+  Future<List<Task>> getIncompleteTasks({
+    int limit = 50,
+    int offset = 0,
+  }) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.rawQuery('''
-      SELECT t.*, l.name as list_name 
-      FROM $_tableTasks t 
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+      '''
+      SELECT t.*, l.name as list_name
+      FROM $_tableTasks t
       LEFT JOIN $_tableLists l ON t.list_id = l.id
       WHERE t.completed = 0
-    ''');
+      LIMIT ? OFFSET ?
+    ''',
+      [limit, offset],
+    );
     return List.generate(maps.length, (i) => Task.fromMap(maps[i]));
   }
 
   // Get all completed tasks
   @override
-  Future<List<Task>> getCompletedTasks() async {
+  Future<List<Task>> getCompletedTasks({int limit = 50, int offset = 0}) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.rawQuery('''
-      SELECT t.*, l.name as list_name 
-      FROM $_tableTasks t 
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+      '''
+      SELECT t.*, l.name as list_name
+      FROM $_tableTasks t
       LEFT JOIN $_tableLists l ON t.list_id = l.id
       WHERE t.completed = 1
-    ''');
+      LIMIT ? OFFSET ?
+    ''',
+      [limit, offset],
+    );
     return List.generate(maps.length, (i) => Task.fromMap(maps[i]));
+  }
+
+  // Get total task count by list
+  @override
+  Future<int> getTaskCountByList(int listId) async {
+    final db = await database;
+    final result = await db.rawQuery(
+      'SELECT COUNT(*) as count FROM $_tableTasks WHERE list_id = ?',
+      [listId],
+    );
+    return result.first['count'] as int;
+  }
+
+  // Get total incomplete task count
+  @override
+  Future<int> getIncompleteTaskCount() async {
+    final db = await database;
+    final result = await db.rawQuery(
+      'SELECT COUNT(*) as count FROM $_tableTasks WHERE completed = 0',
+    );
+    return result.first['count'] as int;
+  }
+
+  // Get total completed task count
+  @override
+  Future<int> getCompletedTaskCount() async {
+    final db = await database;
+    final result = await db.rawQuery(
+      'SELECT COUNT(*) as count FROM $_tableTasks WHERE completed = 1',
+    );
+    return result.first['count'] as int;
   }
 
   // Add task
@@ -324,5 +404,16 @@ class DatabaseService implements DatabaseServiceInterface {
       await db.close();
       _database = null;
     }
+  }
+
+  // Check if database is connected
+  bool isConnected() {
+    return _database != null && _database!.isOpen;
+  }
+
+  // Reset database connection
+  void resetConnection() {
+    _database = null;
+    _customDatabasePath = null;
   }
 }

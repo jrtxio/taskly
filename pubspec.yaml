@@ -20,6 +20,7 @@ dependencies:
   shared_preferences: ^2.3.2
   desktop_window: ^0.4.2
   get_it: ^7.7.0
+  logger: ^2.4.0
 
 dev_dependencies:
   flutter_test:

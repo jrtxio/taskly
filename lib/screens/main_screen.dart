@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:desktop_window/desktop_window.dart';
+import '../providers/app_provider.dart';
 import '../providers/list_provider.dart';
 import '../providers/task_provider.dart';
 import '../widgets/list_navigation.dart';
@@ -39,6 +40,7 @@ class _MainScreenState extends State<MainScreen> {
   Future<void> _loadInitialData() async {
     final listProvider = Provider.of<ListProvider>(context, listen: false);
     final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+    final appProvider = Provider.of<AppProvider>(context, listen: false);
 
     await listProvider.loadLists();
 
@@ -52,6 +54,11 @@ class _MainScreenState extends State<MainScreen> {
 
     _updateTaskCounts();
     _updateStatus('数据已加载');
+
+    // Listen for database changes
+    if (appProvider.isDatabaseConnected) {
+      _updateStatus('数据库已连接');
+    }
   }
 
   void _updateViewTitle(String title) {
@@ -96,81 +103,92 @@ class _MainScreenState extends State<MainScreen> {
           const AppMenuBar(),
 
           Expanded(
-            child: Consumer2<ListProvider, TaskProvider>(
-              builder: (context, listProvider, taskProvider, child) {
-                return Row(
-                  children: [
-                    SizedBox(
-                      width: 300,
-                      child: ListNavigation(
-                        lists: listProvider.lists,
-                        selectedList: listProvider.selectedList,
-                        onSelectList: (list) {
-                          listProvider.selectList(list);
-                          taskProvider.loadTasksByList(list.id);
-                          _updateViewTitle(list.name);
-                          _updateStatus('切换到列表: ${list.name}');
-                        },
-                        onAddList: (name) {
-                          listProvider.addList(name);
-                          _updateStatus('创建列表: $name');
-                        },
-                        onDeleteList: (id) {
-                          listProvider.deleteList(id);
-                          _updateStatus('删除列表成功');
-                        },
-                        onTodayTap: () {
-                          taskProvider.loadTodayTasks();
-                          _updateViewTitle('今天');
-                          _updateStatus('显示今天的任务');
-                        },
-                        onPlannedTap: () {
-                          taskProvider.loadPlannedTasks();
-                          _updateViewTitle('计划');
-                          _updateStatus('显示计划中的任务');
-                        },
-                        onAllTap: () {
-                          taskProvider.loadAllTasks();
-                          _updateViewTitle('全部');
-                          _updateStatus('显示全部任务');
-                        },
-                        onCompletedTap: () {
-                          taskProvider.loadCompletedTasks();
-                          _updateViewTitle('已完成');
-                          _updateStatus('显示已完成的任务');
-                        },
-                        todayCount: _todayCount,
-                        plannedCount: _plannedCount,
-                        allCount: _allCount,
-                        completedCount: _completedCount,
-                      ),
-                    ),
+            child: Consumer3<AppProvider, ListProvider, TaskProvider>(
+              builder:
+                  (context, appProvider, listProvider, taskProvider, child) {
+                    // Refresh data when database connection changes
+                    if (appProvider.isDatabaseConnected &&
+                        listProvider.lists.isEmpty) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        listProvider.loadLists();
+                        taskProvider.loadAllTasks();
+                      });
+                    }
+                    return Row(
+                      children: [
+                        SizedBox(
+                          width: 300,
+                          child: ListNavigation(
+                            lists: listProvider.lists,
+                            selectedList: listProvider.selectedList,
+                            onSelectList: (list) {
+                              listProvider.selectList(list);
+                              taskProvider.loadTasksByList(list.id);
+                              _updateViewTitle(list.name);
+                              _updateStatus('切换到列表: ${list.name}');
+                            },
+                            onAddList: (name) {
+                              listProvider.addList(name);
+                              _updateStatus('创建列表: $name');
+                            },
+                            onDeleteList: (id) {
+                              listProvider.deleteList(id);
+                              _updateStatus('删除列表成功');
+                            },
+                            onTodayTap: () {
+                              taskProvider.loadTodayTasks();
+                              _updateViewTitle('今天');
+                              _updateStatus('显示今天的任务');
+                            },
+                            onPlannedTap: () {
+                              taskProvider.loadPlannedTasks();
+                              _updateViewTitle('计划');
+                              _updateStatus('显示计划中的任务');
+                            },
+                            onAllTap: () {
+                              taskProvider.loadAllTasks();
+                              _updateViewTitle('全部');
+                              _updateStatus('显示全部任务');
+                            },
+                            onCompletedTap: () {
+                              taskProvider.loadCompletedTasks();
+                              _updateViewTitle('已完成');
+                              _updateStatus('显示已完成的任务');
+                            },
+                            todayCount: _todayCount,
+                            plannedCount: _plannedCount,
+                            allCount: _allCount,
+                            completedCount: _completedCount,
+                          ),
+                        ),
 
-                    const VerticalDivider(width: 1),
+                        const VerticalDivider(width: 1),
 
-                    Expanded(
-                      child: TaskListView(
-                        tasks: taskProvider.tasks,
-                        isLoading: taskProvider.isLoading,
-                        onToggleTask: (id) {
-                          taskProvider.toggleTaskCompleted(id);
-                          _updateTaskCounts();
-                          _updateStatus('更新任务状态');
-                        },
-                        onEditTask: (task) {
-                          _showEditTaskDialog(task);
-                        },
-                        onDeleteTask: (id) {
-                          _showDeleteConfirmDialog(id);
-                        },
-                        currentViewTitle: _currentViewTitle,
-                        currentListId: listProvider.selectedList?.id,
-                        lists: listProvider.lists,
-                      ),
-                    ),
-                  ],
-                );
-              },
+                        Expanded(
+                          child: TaskListView(
+                            tasks: taskProvider.tasks,
+                            isLoading: taskProvider.isLoading,
+                            isDatabaseConnected:
+                                appProvider.isDatabaseConnected,
+                            onToggleTask: (id) {
+                              taskProvider.toggleTaskCompleted(id);
+                              _updateTaskCounts();
+                              _updateStatus('更新任务状态');
+                            },
+                            onEditTask: (task) {
+                              _showEditTaskDialog(task);
+                            },
+                            onDeleteTask: (id) {
+                              _showDeleteConfirmDialog(id);
+                            },
+                            currentViewTitle: _currentViewTitle,
+                            currentListId: listProvider.selectedList?.id,
+                            lists: listProvider.lists,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
             ),
           ),
 

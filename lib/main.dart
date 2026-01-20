@@ -59,19 +59,11 @@ class _MyAppState extends State<MyApp> {
     if (_appProvider == null) {
       if (_errorMessage == null) {
         return const MaterialApp(
-          home: Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          ),
+          home: Scaffold(body: Center(child: CircularProgressIndicator())),
         );
       } else {
         return MaterialApp(
-          home: Scaffold(
-            body: Center(
-              child: Text(_errorMessage!),
-            ),
-          ),
+          home: Scaffold(body: Center(child: Text(_errorMessage!))),
         );
       }
     }
@@ -84,12 +76,16 @@ class _MyAppState extends State<MyApp> {
           create: (context) => TaskProvider(),
           update: (context, appProvider, listProvider, taskProvider) {
             taskProvider?.updateDatabasePath(appProvider.databasePath);
+            _updateWindowTitle(appProvider.databasePath);
             return taskProvider ?? TaskProvider();
           },
         ),
       ],
       child: Consumer<AppProvider>(
         builder: (context, appProvider, child) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _updateWindowTitle(appProvider.databasePath);
+          });
           return MaterialApp(
             title: 'Taskly',
             debugShowCheckedModeBanner: false,
@@ -105,5 +101,10 @@ class _MyAppState extends State<MyApp> {
         },
       ),
     );
+  }
+
+  void _updateWindowTitle(String? databasePath) {
+    // Window title management to be implemented with window_manager package
+    // Currently using default app title from MaterialApp
   }
 }

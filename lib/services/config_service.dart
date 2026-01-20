@@ -1,6 +1,7 @@
 import 'dart:io';
 import '../interfaces/config_service_interface.dart';
 import '../utils/path_utils.dart';
+import '../utils/app_logger.dart';
 
 class ConfigService implements ConfigServiceInterface {
   // Initialize config service (no async needed for file-based config)
@@ -48,9 +49,7 @@ class ConfigService implements ConfigServiceInterface {
         }
       }
     } catch (e) {
-      // Using print for now, but should be replaced with proper logging in production
-      // ignore: avoid_print
-      print('Error reading config file: $e');
+      logger.e('Error reading config file', error: e);
     }
 
     return configs;
@@ -69,9 +68,7 @@ class ConfigService implements ConfigServiceInterface {
       file.writeAsStringSync(content);
       return true;
     } catch (e) {
-      // Using print for now, but should be replaced with proper logging in production
-      // ignore: avoid_print
-      print('Error saving config file: $e');
+      logger.e('Error saving config file', error: e);
       return false;
     }
   }
@@ -137,9 +134,7 @@ class ConfigService implements ConfigServiceInterface {
       }
       return true;
     } catch (e) {
-      // Using print for now, but should be replaced with proper logging in production
-      // ignore: avoid_print
-      print('Error clearing configs: $e');
+      logger.e('Error clearing configs', error: e);
       return false;
     }
   }

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:path/path.dart' as p;
+import 'app_logger.dart';
 
 class PathUtils {
   // Get user home directory
@@ -53,9 +54,7 @@ class PathUtils {
       }
       return true;
     } catch (e) {
-      // Using print for now, but should be replaced with proper logging in production
-      // ignore: avoid_print
-      print('Error ensuring directory exists: $e');
+      logger.e('Error ensuring directory exists', error: e);
       return false;
     }
   }
@@ -66,9 +65,7 @@ class PathUtils {
       final file = File(path);
       return file.existsSync();
     } catch (e) {
-      // Using print for now, but should be replaced with proper logging in production
-      // ignore: avoid_print
-      print('Error checking file existence: $e');
+      logger.e('Error checking file existence', error: e);
       return false;
     }
   }
@@ -88,9 +85,7 @@ class PathUtils {
       testFile.deleteSync();
       return true;
     } catch (e) {
-      // Using print for now, but should be replaced with proper logging in production
-      // ignore: avoid_print
-      print('Error validating database path: $e');
+      logger.e('Error validating database path', error: e);
       return false;
     }
   }

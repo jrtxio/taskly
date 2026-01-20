@@ -3,21 +3,30 @@ import '../models/task.dart';
 abstract class TaskRepositoryInterface {
   // Get all tasks
   Future<List<Task>> getAllTasks();
-  
-  // Get tasks by list
-  Future<List<Task>> getTasksByList(int listId);
-  
-  // Get today's tasks
-  Future<List<Task>> getTodayTasks();
-  
-  // Get planned tasks (with due date and not completed)
-  Future<List<Task>> getPlannedTasks();
-  
-  // Get all incomplete tasks
-  Future<List<Task>> getIncompleteTasks();
-  
-  // Get all completed tasks
-  Future<List<Task>> getCompletedTasks();
+
+  // Get tasks by list with pagination
+  Future<List<Task>> getTasksByList(int listId, {int limit = 50, int offset = 0});
+
+  // Get today's tasks with pagination
+  Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0});
+
+  // Get planned tasks (with due date and not completed) with pagination
+  Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0});
+
+  // Get all incomplete tasks with pagination
+  Future<List<Task>> getIncompleteTasks({int limit = 50, int offset = 0});
+
+  // Get all completed tasks with pagination
+  Future<List<Task>> getCompletedTasks({int limit = 50, int offset = 0});
+
+  // Get total task count by list
+  Future<int> getTaskCountByList(int listId);
+
+  // Get total incomplete task count
+  Future<int> getIncompleteTaskCount();
+
+  // Get total completed task count
+  Future<int> getCompletedTaskCount();
   
   // Add a new task
   Future<int> addTask(Task task);
@@ -35,7 +44,7 @@ abstract class TaskRepositoryInterface {
   Future<List<Task>> searchTasks(String keyword);
   
   // Get tasks by view type
-  Future<List<Task>> getTasksByView(String viewType, {int? listId, String? keyword});
+  Future<List<Task>> getTasksByView(String viewType, {int? listId, String? keyword, int limit = 50, int offset = 0});
   
   // Group tasks by list
   Future<Map<String, List<Task>>> groupTasksByList(List<Task> tasks);
