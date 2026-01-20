@@ -15,7 +15,43 @@ void main() {
 
     late Task? addedTask;
 
-    testWidgets('should display dialog with title', (WidgetTester tester) async {
+    testWidgets(
+      'should show database disconnected message when not connected',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => TaskInputDialog(
+                        lists: testLists,
+                        selectedList: selectedList,
+                        onAdd: (task) {},
+                        isDatabaseConnected: false,
+                      ),
+                    );
+                  },
+                  child: const Text('Show Dialog'),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await tester.tap(find.text('Show Dialog'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('无法添加任务'), findsOneWidget);
+        expect(find.text('数据库未连接，请先创建或打开数据库文件'), findsOneWidget);
+      },
+    );
+
+    testWidgets('should display dialog with title when connected', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -28,6 +64,7 @@ void main() {
                       lists: testLists,
                       selectedList: selectedList,
                       onAdd: (task) {},
+                      isDatabaseConnected: true,
                     ),
                   );
                 },
@@ -57,6 +94,7 @@ void main() {
                       lists: testLists,
                       selectedList: selectedList,
                       onAdd: (task) {},
+                      isDatabaseConnected: true,
                     ),
                   );
                 },
@@ -73,10 +111,15 @@ void main() {
       expect(find.text('任务描述:'), findsOneWidget);
       expect(find.text('截止日期 (可选):'), findsOneWidget);
       expect(find.text('任务列表:'), findsOneWidget);
-      expect(find.text('支持智能日期格式: +1d (明天), @10am (上午10点), +1w (下周)'), findsOneWidget);
+      expect(
+        find.text('支持智能日期格式: +1d (明天), @10am (上午10点), +1w (下周)'),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('should pre-select the selected list', (WidgetTester tester) async {
+    testWidgets('should pre-select the selected list', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -89,6 +132,7 @@ void main() {
                       lists: testLists,
                       selectedList: selectedList,
                       onAdd: (task) {},
+                      isDatabaseConnected: true,
                     ),
                   );
                 },
@@ -105,7 +149,9 @@ void main() {
       expect(find.text('Work'), findsOneWidget);
     });
 
-    testWidgets('should show validation error when text is empty', (WidgetTester tester) async {
+    testWidgets('should show validation error when text is empty', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -118,6 +164,7 @@ void main() {
                       lists: testLists,
                       selectedList: selectedList,
                       onAdd: (task) {},
+                      isDatabaseConnected: true,
                     ),
                   );
                 },
@@ -137,7 +184,9 @@ void main() {
       expect(find.text('请输入任务描述'), findsOneWidget);
     });
 
-    testWidgets('should call onAdd with valid task', (WidgetTester tester) async {
+    testWidgets('should call onAdd with valid task', (
+      WidgetTester tester,
+    ) async {
       addedTask = null;
 
       await tester.pumpWidget(
@@ -154,6 +203,7 @@ void main() {
                       onAdd: (task) {
                         addedTask = task;
                       },
+                      isDatabaseConnected: true,
                     ),
                   );
                 },
@@ -178,7 +228,9 @@ void main() {
       expect(addedTask?.listId, 1);
     });
 
-    testWidgets('should show error when onAdd fails', (WidgetTester tester) async {
+    testWidgets('should show error when onAdd fails', (
+      WidgetTester tester,
+    ) async {
       addedTask = null;
 
       await tester.pumpWidget(
@@ -195,6 +247,7 @@ void main() {
                       onAdd: (task) {
                         throw Exception('Add failed');
                       },
+                      isDatabaseConnected: true,
                     ),
                   );
                 },
@@ -235,7 +288,9 @@ void main() {
 
     late Task? updatedTask;
 
-    testWidgets('should display dialog with title', (WidgetTester tester) async {
+    testWidgets('should display dialog with title', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -290,18 +345,16 @@ void main() {
       await tester.tap(find.text('Show Dialog'));
       await tester.pumpAndSettle();
 
-      final textField = tester.widget<TextField>(
-        find.byType(TextField).first,
-      );
+      final textField = tester.widget<TextField>(find.byType(TextField).first);
       expect(textField.controller?.text, 'Original Task');
 
-      final dateField = tester.widget<TextField>(
-        find.byType(TextField).at(1),
-      );
+      final dateField = tester.widget<TextField>(find.byType(TextField).at(1));
       expect(dateField.controller?.text, '2024-12-31');
     });
 
-    testWidgets('should pre-select the correct list', (WidgetTester tester) async {
+    testWidgets('should pre-select the correct list', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -330,7 +383,9 @@ void main() {
       expect(find.text('Work'), findsOneWidget);
     });
 
-    testWidgets('should call onUpdate with updated task', (WidgetTester tester) async {
+    testWidgets('should call onUpdate with updated task', (
+      WidgetTester tester,
+    ) async {
       updatedTask = null;
 
       await tester.pumpWidget(
@@ -416,7 +471,9 @@ void main() {
       expect(updatedTask?.listId, 2);
     });
 
-    testWidgets('should show error when onUpdate fails', (WidgetTester tester) async {
+    testWidgets('should show error when onUpdate fails', (
+      WidgetTester tester,
+    ) async {
       updatedTask = null;
 
       await tester.pumpWidget(
@@ -455,7 +512,9 @@ void main() {
       expect(find.textContaining('更新任务失败'), findsOneWidget);
     });
 
-    testWidgets('should show validation error when text is empty', (WidgetTester tester) async {
+    testWidgets('should show validation error when text is empty', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(

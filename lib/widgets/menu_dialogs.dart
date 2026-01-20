@@ -252,13 +252,6 @@ class AppMenuBar extends StatelessWidget {
                       backgroundColor: Colors.red,
                     ),
                   );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('数据库创建成功'),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
                 }
               }
             },
@@ -288,13 +281,6 @@ class AppMenuBar extends StatelessWidget {
             SnackBar(
               content: Text(appProvider.error!.message),
               backgroundColor: Colors.red,
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('数据库打开成功'),
-              backgroundColor: Colors.green,
             ),
           );
         }
@@ -333,13 +319,6 @@ class AppMenuBar extends StatelessWidget {
                     SnackBar(
                       content: Text(appProvider.error!.message),
                       backgroundColor: Colors.red,
-                    ),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('数据库已关闭'),
-                      backgroundColor: Colors.green,
                     ),
                   );
                 }

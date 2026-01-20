@@ -17,6 +17,7 @@ class ListNavigation extends StatefulWidget {
   final int? plannedCount;
   final int? allCount;
   final int? completedCount;
+  final bool isDatabaseConnected;
 
   const ListNavigation({
     super.key,
@@ -33,6 +34,7 @@ class ListNavigation extends StatefulWidget {
     this.plannedCount,
     this.allCount,
     this.completedCount,
+    this.isDatabaseConnected = true,
   });
 
   @override
@@ -160,12 +162,14 @@ class _ListNavigationState extends State<ListNavigation> {
                       IconButton(
                         icon: const Icon(Icons.add),
                         iconSize: 18,
-                        onPressed: () {
-                          setState(() {
-                            _isAddingList = true;
-                          });
-                          _newListController.clear();
-                        },
+                        onPressed: widget.isDatabaseConnected
+                            ? () {
+                                setState(() {
+                                  _isAddingList = true;
+                                });
+                                _newListController.clear();
+                              }
+                            : null,
                       ),
                     ],
                   ),
@@ -325,20 +329,24 @@ class _ListNavigationState extends State<ListNavigation> {
     int count,
     VoidCallback onTap,
   ) {
+    final isEnabled = widget.isDatabaseConnected;
+
     return GestureDetector(
-      onTap: onTap,
+      onTap: isEnabled ? onTap : null,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
-          color: color,
+          color: isEnabled ? color : Colors.grey[300],
           borderRadius: BorderRadius.circular(14),
-          boxShadow: [
-            BoxShadow(
-              color: Color.fromRGBO(0, 0, 0, 0.1),
-              blurRadius: 3,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          boxShadow: isEnabled
+              ? [
+                  BoxShadow(
+                    color: Color.fromRGBO(0, 0, 0, 0.1),
+                    blurRadius: 3,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
         ),
         child: Stack(
           children: [

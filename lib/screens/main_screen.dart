@@ -213,6 +213,8 @@ class _MainScreenState extends State<MainScreen> {
                             plannedCount: _plannedCount,
                             allCount: _allCount,
                             completedCount: _completedCount,
+                            isDatabaseConnected:
+                                appProvider.isDatabaseConnected,
                           ),
                         ),
 

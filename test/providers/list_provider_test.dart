@@ -1,9 +1,103 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:taskly/interfaces/config_service_interface.dart';
 import 'package:taskly/interfaces/list_repository_interface.dart';
+import 'package:taskly/interfaces/database_service_interface.dart';
 import 'package:taskly/providers/list_provider.dart';
 import 'package:taskly/models/todo_list.dart';
 import 'package:taskly/models/app_error.dart';
+import 'package:taskly/models/task.dart';
+
+class MockDatabaseService implements DatabaseServiceInterface {
+  bool _isConnected = true;
+
+  @override
+  Future<void> init() async {}
+
+  @override
+  void setDatabasePath(String path) {}
+
+  @override
+  Future<List<TodoList>> getAllLists() async => [];
+
+  @override
+  Future<TodoList?> getListById(int id) async => null;
+
+  @override
+  Future<int> addList(String name) async => 0;
+
+  @override
+  Future<int> updateList(int id, String name) async => 0;
+
+  @override
+  Future<int> deleteList(int id) async => 0;
+
+  @override
+  Future<void> close() async {}
+
+  @override
+  bool isConnected() => _isConnected;
+
+  @override
+  void resetConnection() {}
+
+  @override
+  Future<List<Task>> getAllTasks() async => [];
+
+  @override
+  Future<List<Task>> getTasksByList(
+    int listId, {
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
+
+  @override
+  Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0}) async =>
+      [];
+
+  @override
+  Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async =>
+      [];
+
+  @override
+  Future<List<Task>> getIncompleteTasks({
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
+
+  @override
+  Future<List<Task>> getCompletedTasks({
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
+
+  @override
+  Future<int> getIncompleteTaskCount() async => 0;
+
+  @override
+  Future<int> getCompletedTaskCount() async => 0;
+
+  @override
+  Future<int> getTaskCountByList(int listId) async => 0;
+
+  @override
+  Future<int> addTask(Task task) async => 0;
+
+  @override
+  Future<int> updateTask(Task task) async => 0;
+
+  @override
+  Future<int> deleteTask(int id) async => 0;
+
+  @override
+  Future<int> toggleTaskCompleted(int id) async => 0;
+
+  @override
+  Future<List<Task>> searchTasks(String query) async => [];
+
+  void setConnected(bool connected) {
+    _isConnected = connected;
+  }
+}
 
 class MockListRepository implements ListRepositoryInterface {
   final List<TodoList> _lists = [];
@@ -180,10 +274,12 @@ void main() {
       test('should initialize with empty lists and no selected list', () {
         final mockListRepository = MockListRepository();
         final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         expect(listProvider.lists, isEmpty);
@@ -196,10 +292,12 @@ void main() {
       test('should have correct getters', () {
         final mockListRepository = MockListRepository();
         final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         expect(listProvider.lists, isList);
@@ -218,10 +316,12 @@ void main() {
           TodoList(id: 2, name: 'Personal'),
         ]);
         final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         await listProvider.loadLists();
@@ -237,10 +337,12 @@ void main() {
         final mockListRepository = MockListRepository();
         mockListRepository._lists.add(TodoList(id: 1, name: 'Work'));
         final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         await listProvider.loadLists();
@@ -258,10 +360,12 @@ void main() {
         ]);
         final mockConfigService = MockConfigService();
         mockConfigService._lastSelectedListId = 2;
+        final mockDatabaseService = MockDatabaseService();
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         await listProvider.loadLists();
@@ -274,10 +378,12 @@ void main() {
       test('should set loading state during load', () async {
         final mockListRepository = MockListRepository();
         final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         bool wasLoading = false;
@@ -296,10 +402,12 @@ void main() {
       test('should set error when load fails', () async {
         final mockListRepository = FailingLoadListRepository();
         final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         await listProvider.loadLists();
@@ -315,10 +423,12 @@ void main() {
       test('should select list and save to config', () async {
         final mockListRepository = MockListRepository();
         final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         final list = TodoList(id: 1, name: 'Work');
@@ -331,10 +441,12 @@ void main() {
       test('should notify listeners when list is selected', () {
         final mockListRepository = MockListRepository();
         final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         bool notified = false;
@@ -353,10 +465,13 @@ void main() {
       test('should add list successfully', () async {
         final mockListRepository = MockListRepository();
         final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
+        mockDatabaseService.setConnected(true);
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         await listProvider.addList('New List');
@@ -370,10 +485,13 @@ void main() {
       test('should set loading state during add', () async {
         final mockListRepository = MockListRepository();
         final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
+        mockDatabaseService.setConnected(true);
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         bool wasLoading = false;
@@ -392,16 +510,40 @@ void main() {
       test('should set error when add fails', () async {
         final mockListRepository = FailingAddListRepository();
         final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
+        mockDatabaseService.setConnected(true);
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         await listProvider.addList('');
 
         expect(listProvider.hasError, isTrue);
         expect(listProvider.error, isNotNull);
+        expect(listProvider.error!.type, AppErrorType.validation);
+      });
+
+      test('should set error when database is not connected', () async {
+        final mockListRepository = MockListRepository();
+        final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
+        mockDatabaseService.setConnected(false);
+
+        final listProvider = ListProvider.test(
+          listRepository: mockListRepository,
+          configService: mockConfigService,
+          databaseService: mockDatabaseService,
+        );
+
+        await listProvider.addList('New List');
+
+        expect(mockListRepository._lists.length, 0);
+        expect(listProvider.hasError, isTrue);
+        expect(listProvider.error, isNotNull);
+        expect(listProvider.error!.message, '数据库未连接，请先创建或打开数据库文件');
         expect(listProvider.error!.type, AppErrorType.validation);
       });
     });
@@ -411,10 +553,13 @@ void main() {
         final mockListRepository = MockListRepository();
         mockListRepository._lists.add(TodoList(id: 1, name: 'Work'));
         final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
+        mockDatabaseService.setConnected(true);
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         await listProvider.updateList(1, 'Updated Work');
@@ -428,10 +573,13 @@ void main() {
         final mockListRepository = MockListRepository();
         mockListRepository._lists.add(TodoList(id: 1, name: 'Work'));
         final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
+        mockDatabaseService.setConnected(true);
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         bool wasLoading = false;
@@ -450,16 +598,41 @@ void main() {
       test('should set error when update fails', () async {
         final mockListRepository = FailingUpdateListRepository();
         final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
+        mockDatabaseService.setConnected(true);
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         await listProvider.updateList(1, '');
 
         expect(listProvider.hasError, isTrue);
         expect(listProvider.error, isNotNull);
+        expect(listProvider.error!.type, AppErrorType.validation);
+      });
+
+      test('should set error when database is not connected', () async {
+        final mockListRepository = MockListRepository();
+        mockListRepository._lists.add(TodoList(id: 1, name: 'Work'));
+        final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
+        mockDatabaseService.setConnected(false);
+
+        final listProvider = ListProvider.test(
+          listRepository: mockListRepository,
+          configService: mockConfigService,
+          databaseService: mockDatabaseService,
+        );
+
+        await listProvider.updateList(1, 'Updated Work');
+
+        expect(mockListRepository._lists[0].name, 'Work');
+        expect(listProvider.hasError, isTrue);
+        expect(listProvider.error, isNotNull);
+        expect(listProvider.error!.message, '数据库未连接，请先创建或打开数据库文件');
         expect(listProvider.error!.type, AppErrorType.validation);
       });
     });
@@ -472,10 +645,13 @@ void main() {
           TodoList(id: 2, name: 'Personal'),
         ]);
         final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
+        mockDatabaseService.setConnected(true);
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         await listProvider.deleteList(1);
@@ -490,10 +666,13 @@ void main() {
         final mockListRepository = MockListRepository();
         mockListRepository._lists.add(TodoList(id: 1, name: 'Work'));
         final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
+        mockDatabaseService.setConnected(true);
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         listProvider.selectList(TodoList(id: 1, name: 'Work'));
@@ -506,10 +685,13 @@ void main() {
         final mockListRepository = MockListRepository();
         mockListRepository._lists.add(TodoList(id: 1, name: 'Work'));
         final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
+        mockDatabaseService.setConnected(true);
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         bool wasLoading = false;
@@ -529,10 +711,13 @@ void main() {
         final mockListRepository = FailingDeleteListRepository();
         mockListRepository._lists.add(TodoList(id: 1, name: 'Work'));
         final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
+        mockDatabaseService.setConnected(true);
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         await listProvider.deleteList(1);
@@ -541,16 +726,40 @@ void main() {
         expect(listProvider.error, isNotNull);
         expect(listProvider.error!.type, AppErrorType.database);
       });
+
+      test('should set error when database is not connected', () async {
+        final mockListRepository = MockListRepository();
+        mockListRepository._lists.add(TodoList(id: 1, name: 'Work'));
+        final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
+        mockDatabaseService.setConnected(false);
+
+        final listProvider = ListProvider.test(
+          listRepository: mockListRepository,
+          configService: mockConfigService,
+          databaseService: mockDatabaseService,
+        );
+
+        await listProvider.deleteList(1);
+
+        expect(mockListRepository._lists.length, 1);
+        expect(listProvider.hasError, isTrue);
+        expect(listProvider.error, isNotNull);
+        expect(listProvider.error!.message, '数据库未连接，请先创建或打开数据库文件');
+        expect(listProvider.error!.type, AppErrorType.validation);
+      });
     });
 
     group('refreshLists method', () {
       test('should reload lists', () async {
         final mockListRepository = MockListRepository();
         final mockConfigService = MockConfigService();
+        final mockDatabaseService = MockDatabaseService();
 
         final listProvider = ListProvider.test(
           listRepository: mockListRepository,
           configService: mockConfigService,
+          databaseService: mockDatabaseService,
         );
 
         mockListRepository._lists.add(TodoList(id: 1, name: 'Work'));

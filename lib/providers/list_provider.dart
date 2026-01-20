@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../interfaces/config_service_interface.dart';
 import '../interfaces/list_repository_interface.dart';
+import '../interfaces/database_service_interface.dart';
 import '../locator/service_locator.dart';
 import '../models/app_error.dart';
 import '../models/todo_list.dart';
@@ -11,16 +12,20 @@ class ListProvider with ChangeNotifier {
   ListProvider.test({
     required ListRepositoryInterface listRepository,
     required ConfigServiceInterface configService,
+    DatabaseServiceInterface? databaseService,
   }) : _listRepository = listRepository,
-       _configService = configService;
+       _configService = configService,
+       _databaseService = databaseService ?? sl<DatabaseServiceInterface>();
 
   // Regular constructor with service locator
   ListProvider()
     : _listRepository = sl<ListRepositoryInterface>(),
-      _configService = sl<ConfigServiceInterface>();
+      _configService = sl<ConfigServiceInterface>(),
+      _databaseService = sl<DatabaseServiceInterface>();
 
   final ListRepositoryInterface _listRepository;
   final ConfigServiceInterface _configService;
+  final DatabaseServiceInterface _databaseService;
   List<TodoList> _lists = [];
   TodoList? _selectedList;
   bool _isLoading = false;
@@ -84,6 +89,14 @@ class ListProvider with ChangeNotifier {
 
   // Add a new list
   Future<void> addList(String name) async {
+    if (!_databaseService.isConnected()) {
+      _setError(
+        AppError(message: '数据库未连接，请先创建或打开数据库文件', type: AppErrorType.validation),
+      );
+      notifyListeners();
+      return;
+    }
+
     _isLoading = true;
     _clearError();
     notifyListeners();
@@ -110,6 +123,14 @@ class ListProvider with ChangeNotifier {
 
   // Update an existing list
   Future<void> updateList(int id, String name) async {
+    if (!_databaseService.isConnected()) {
+      _setError(
+        AppError(message: '数据库未连接，请先创建或打开数据库文件', type: AppErrorType.validation),
+      );
+      notifyListeners();
+      return;
+    }
+
     _isLoading = true;
     _clearError();
     notifyListeners();
@@ -136,6 +157,14 @@ class ListProvider with ChangeNotifier {
 
   // Delete a list
   Future<void> deleteList(int id) async {
+    if (!_databaseService.isConnected()) {
+      _setError(
+        AppError(message: '数据库未连接，请先创建或打开数据库文件', type: AppErrorType.validation),
+      );
+      notifyListeners();
+      return;
+    }
+
     _isLoading = true;
     _clearError();
     notifyListeners();

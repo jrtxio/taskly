@@ -6,12 +6,14 @@ class TaskInputDialog extends StatefulWidget {
   final List<TodoList> lists;
   final TodoList? selectedList;
   final Function(Task) onAdd;
+  final bool isDatabaseConnected;
 
   const TaskInputDialog({
     super.key,
     required this.lists,
     this.selectedList,
     required this.onAdd,
+    this.isDatabaseConnected = true,
   });
 
   @override
@@ -89,6 +91,19 @@ class _TaskInputDialogState extends State<TaskInputDialog> {
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.isDatabaseConnected) {
+      return AlertDialog(
+        title: const Text('无法添加任务'),
+        content: const Text('数据库未连接，请先创建或打开数据库文件'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('确定'),
+          ),
+        ],
+      );
+    }
+
     return AlertDialog(
       title: const Text('添加新任务'),
       content: SizedBox(
