@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:desktop_window/desktop_window.dart';
@@ -8,6 +9,7 @@ import '../widgets/list_navigation.dart';
 import '../widgets/task_list_view.dart';
 import '../widgets/task_dialogs.dart';
 import '../widgets/menu_dialogs.dart';
+import '../widgets/native_menu_bar.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -113,7 +115,7 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: Column(
         children: [
-          const AppMenuBar(),
+          Platform.isMacOS ? const NativeMenuBar() : const AppMenuBar(),
 
           Expanded(
             child: Consumer3<AppProvider, ListProvider, TaskProvider>(
