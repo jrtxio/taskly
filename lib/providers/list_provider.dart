@@ -88,7 +88,7 @@ class ListProvider with ChangeNotifier {
   }
 
   // Add a new list
-  Future<void> addList(String name) async {
+  Future<void> addList(String name, {String? icon, Color? color}) async {
     if (!_databaseService.isConnected()) {
       _setError(
         AppError(message: '数据库未连接，请先创建或打开数据库文件', type: AppErrorType.validation),
@@ -102,7 +102,11 @@ class ListProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      await _listRepository.addList(name);
+      await _listRepository.addList(
+        name,
+        icon: icon,
+        color: color?.value,
+      );
       await loadLists();
     } catch (e, stackTrace) {
       _setError(
@@ -122,7 +126,14 @@ class ListProvider with ChangeNotifier {
   }
 
   // Update an existing list
-  Future<void> updateList(int id, String name) async {
+  Future<void> updateList(
+    int id,
+    String name, {
+    String? icon,
+    Color? color,
+    bool clearIcon = false,
+    bool clearColor = false,
+  }) async {
     if (!_databaseService.isConnected()) {
       _setError(
         AppError(message: '数据库未连接，请先创建或打开数据库文件', type: AppErrorType.validation),
@@ -136,8 +147,18 @@ class ListProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      await _listRepository.updateList(id, name);
+      print('DEBUG: ListProvider.updateList - id: $id, name: $name, icon: $icon, color: $color, clearIcon: $clearIcon, clearColor: $clearColor');
+      await _listRepository.updateList(
+        id,
+        name,
+        icon: icon,
+        color: color?.value,
+        clearIcon: clearIcon,
+        clearColor: clearColor,
+      );
+      print('DEBUG: ListProvider.updateList - repository update completed, calling loadLists');
       await loadLists();
+      print('DEBUG: ListProvider.updateList - loadLists completed, current lists: ${_lists.map((l) => "id=${l.id}, name=${l.name}, icon=${l.icon}, color=${l.color}").toList()}');
     } catch (e, stackTrace) {
       _setError(
         AppError(
@@ -149,6 +170,75 @@ class ListProvider with ChangeNotifier {
         ),
       );
       logger.e('Error updating list', error: e, stackTrace: stackTrace);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Rename a list (alias for updateList with just name)
+  Future<void> renameList(int id, String name) async {
+    await updateList(id, name);
+  }
+
+  // Update list icon
+  Future<void> updateListIcon(int id, String icon) async {
+    if (!_databaseService.isConnected()) {
+      _setError(
+        AppError(message: '数据库未连接，请先创建或打开数据库文件', type: AppErrorType.validation),
+      );
+      notifyListeners();
+      return;
+    }
+
+    _isLoading = true;
+    _clearError();
+    notifyListeners();
+
+    try {
+      await _listRepository.updateListIcon(id, icon);
+      await loadLists();
+    } catch (e, stackTrace) {
+      _setError(
+        AppError(
+          message: 'Failed to update list icon: ${e.toString()}',
+          type: AppErrorType.database,
+          originalError: e,
+        ),
+      );
+      logger.e('Error updating list icon', error: e, stackTrace: stackTrace);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Update list color
+  Future<void> updateListColor(int id, Color color) async {
+    if (!_databaseService.isConnected()) {
+      _setError(
+        AppError(message: '数据库未连接，请先创建或打开数据库文件', type: AppErrorType.validation),
+      );
+      notifyListeners();
+      return;
+    }
+
+    _isLoading = true;
+    _clearError();
+    notifyListeners();
+
+    try {
+      await _listRepository.updateListColor(id, color.value);
+      await loadLists();
+    } catch (e, stackTrace) {
+      _setError(
+        AppError(
+          message: 'Failed to update list color: ${e.toString()}',
+          type: AppErrorType.database,
+          originalError: e,
+        ),
+      );
+      logger.e('Error updating list color', error: e, stackTrace: stackTrace);
     } finally {
       _isLoading = false;
       notifyListeners();

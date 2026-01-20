@@ -19,10 +19,17 @@ abstract class DatabaseServiceInterface {
   Future<TodoList?> getListById(int id);
   
   // Add list
-  Future<int> addList(String name);
+  Future<int> addList(String name, {String? icon, int? color});
   
   // Update list
-  Future<int> updateList(int id, String name);
+  Future<int> updateList(
+    int id,
+    String name, {
+    String? icon,
+    int? color,
+    bool clearIcon = false,
+    bool clearColor = false,
+  });
   
   // Delete list
   Future<int> deleteList(int id);

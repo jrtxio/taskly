@@ -25,6 +25,7 @@ class _MainScreenState extends State<MainScreen> {
   int? _plannedCount;
   int? _allCount;
   int? _completedCount;
+  Map<int, int> _listTaskCounts = {};
   bool _wasConnected = false;
 
   @override
@@ -88,6 +89,7 @@ class _MainScreenState extends State<MainScreen> {
           _plannedCount = null;
           _allCount = null;
           _completedCount = null;
+          _listTaskCounts = {};
         });
       }
       return;
@@ -100,12 +102,20 @@ class _MainScreenState extends State<MainScreen> {
     final allTasks = await taskProvider.repository.getIncompleteTasks();
     final completedTasks = await taskProvider.repository.getCompletedTasks();
 
+    final listProvider = Provider.of<ListProvider>(context, listen: false);
+    final Map<int, int> counts = {};
+    for (final list in listProvider.lists) {
+      final count = await taskProvider.repository.getTaskCountByList(list.id);
+      counts[list.id] = count;
+    }
+
     if (mounted) {
       setState(() {
         _todayCount = todayTasks.length;
         _plannedCount = plannedTasks.length;
         _allCount = allTasks.length;
         _completedCount = completedTasks.length;
+        _listTaskCounts = counts;
       });
     }
   }
@@ -159,14 +169,19 @@ class _MainScreenState extends State<MainScreen> {
                           child: ListNavigation(
                             lists: listProvider.lists,
                             selectedList: listProvider.selectedList,
+                            taskCounts: _listTaskCounts,
                             onSelectList: (list) {
                               listProvider.selectList(list);
                               taskProvider.loadTasksByList(list.id);
                               _updateViewTitle(list.name);
                               _updateStatus('切换到列表: ${list.name}');
                             },
-                            onAddList: (name) {
-                              listProvider.addList(name);
+                            onAddList: (name, {icon, color}) {
+                              listProvider.addList(
+                                name,
+                                icon: icon,
+                                color: color,
+                              );
                               _updateStatus('创建列表: $name');
                             },
                             onDeleteList: (id) {
@@ -300,9 +315,7 @@ class _MainScreenState extends State<MainScreen> {
 
     final addedList = listProvider.lists.firstWhere(
       (list) => list.id == listId,
-      orElse: () => listProvider.lists.isNotEmpty
-          ? listProvider.lists.first
-          : listProvider.lists[0],
+      orElse: () => listProvider.lists.first,
     );
 
     await taskProvider.loadTasksByList(listId);

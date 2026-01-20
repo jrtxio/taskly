@@ -8,10 +8,23 @@ abstract class ListRepositoryInterface {
   Future<TodoList?> getListById(int id);
   
   // Add a new list
-  Future<int> addList(String name);
+  Future<int> addList(String name, {String? icon, int? color});
   
   // Update an existing list
-  Future<int> updateList(int id, String name);
+  Future<int> updateList(
+    int id,
+    String name, {
+    String? icon,
+    int? color,
+    bool clearIcon = false,
+    bool clearColor = false,
+  });
+  
+  // Update list icon
+  Future<int> updateListIcon(int id, String icon);
+  
+  // Update list color
+  Future<int> updateListColor(int id, int color);
   
   // Delete a list
   Future<int> deleteList(int id);

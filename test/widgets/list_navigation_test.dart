@@ -12,7 +12,7 @@ void main() {
     ];
 
     void mockOnSelectList(TodoList list) {}
-    void mockOnAddList(String name) {}
+    void mockOnAddList(String name, {String? icon, Color? color}) {}
     void mockOnDeleteList(int id) {}
     void mockOnTodayTap() {}
     void mockOnPlannedTap() {}
@@ -44,7 +44,7 @@ void main() {
       expect(find.text('计划'), findsOneWidget);
       expect(find.text('全部'), findsOneWidget);
       expect(find.text('完成'), findsOneWidget);
-      expect(find.text('任务列表'), findsOneWidget);
+      expect(find.text('我的列表'), findsOneWidget);
     });
 
     testWidgets('should call onTodayTap when Today tile is tapped', (

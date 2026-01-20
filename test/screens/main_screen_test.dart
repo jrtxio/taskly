@@ -228,10 +228,17 @@ class MockListProvider extends ListProvider {
   void selectList(TodoList list) {}
 
   @override
-  Future<void> addList(String name) async {}
+  Future<void> addList(String name, {String? icon, Color? color}) async {}
 
   @override
-  Future<void> updateList(int id, String name) async {}
+  Future<void> updateList(
+    int id,
+    String name, {
+    String? icon,
+    Color? color,
+    bool clearIcon = false,
+    bool clearColor = false,
+  }) async {}
 
   @override
   Future<void> deleteList(int id) async {}
@@ -355,10 +362,18 @@ class MockDatabaseService implements DatabaseServiceInterface {
   Future<TodoList?> getListById(int id) async => null;
 
   @override
-  Future<int> addList(String name) async => 0;
+  Future<int> addList(String name, {String? icon, int? color}) async => 0;
 
   @override
-  Future<int> updateList(int id, String name) async => 0;
+  Future<int> updateList(
+    int id,
+    String name, {
+    String? icon,
+    int? color,
+    bool clearIcon = false,
+    bool clearColor = false,
+  }) async =>
+      0;
 
   @override
   Future<int> deleteList(int id) async => 0;

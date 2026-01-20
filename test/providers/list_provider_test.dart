@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:taskly/interfaces/config_service_interface.dart';
 import 'package:taskly/interfaces/list_repository_interface.dart';
@@ -23,10 +24,18 @@ class MockDatabaseService implements DatabaseServiceInterface {
   Future<TodoList?> getListById(int id) async => null;
 
   @override
-  Future<int> addList(String name) async => 0;
+  Future<int> addList(String name, {String? icon, int? color}) async => 0;
 
   @override
-  Future<int> updateList(int id, String name) async => 0;
+  Future<int> updateList(
+    int id,
+    String name, {
+    String? icon,
+    int? color,
+    bool clearIcon = false,
+    bool clearColor = false,
+  }) async =>
+      0;
 
   @override
   Future<int> deleteList(int id) async => 0;
@@ -117,17 +126,56 @@ class MockListRepository implements ListRepositoryInterface {
   }
 
   @override
-  Future<int> addList(String name) async {
-    final list = TodoList(id: _nextId++, name: name);
+  Future<int> addList(String name, {String? icon, int? color}) async {
+    final list = TodoList(
+      id: _nextId++,
+      name: name,
+      icon: icon,
+      color: color != null ? Color(color) : null,
+    );
     _lists.add(list);
     return list.id;
   }
 
   @override
-  Future<int> updateList(int id, String name) async {
+  Future<int> updateList(
+    int id,
+    String name, {
+    String? icon,
+    int? color,
+    bool clearIcon = false,
+    bool clearColor = false,
+  }) async {
     for (int i = 0; i < _lists.length; i++) {
       if (_lists[i].id == id) {
-        _lists[i] = TodoList(id: id, name: name);
+        _lists[i] = TodoList(
+          id: id,
+          name: name,
+          icon: clearIcon ? null : icon,
+          color: clearColor ? null : (color != null ? Color(color) : null),
+        );
+        return 1;
+      }
+    }
+    return 0;
+  }
+
+  @override
+  Future<int> updateListIcon(int id, String icon) async {
+    for (int i = 0; i < _lists.length; i++) {
+      if (_lists[i].id == id) {
+        _lists[i] = _lists[i].copyWith(icon: icon);
+        return 1;
+      }
+    }
+    return 0;
+  }
+
+  @override
+  Future<int> updateListColor(int id, int color) async {
+    for (int i = 0; i < _lists.length; i++) {
+      if (_lists[i].id == id) {
+        _lists[i] = _lists[i].copyWith(color: Color(color));
         return 1;
       }
     }
@@ -157,10 +205,24 @@ class FailingLoadListRepository implements ListRepositoryInterface {
   Future<TodoList?> getListById(int id) async => null;
 
   @override
-  Future<int> addList(String name) async => 0;
+  Future<int> addList(String name, {String? icon, int? color}) async => 0;
 
   @override
-  Future<int> updateList(int id, String name) async => 0;
+  Future<int> updateList(
+    int id,
+    String name, {
+    String? icon,
+    int? color,
+    bool clearIcon = false,
+    bool clearColor = false,
+  }) async =>
+      0;
+
+  @override
+  Future<int> updateListIcon(int id, String icon) async => 0;
+
+  @override
+  Future<int> updateListColor(int id, int color) async => 0;
 
   @override
   Future<int> deleteList(int id) async => 0;
@@ -177,12 +239,26 @@ class FailingAddListRepository implements ListRepositoryInterface {
   Future<TodoList?> getListById(int id) async => null;
 
   @override
-  Future<int> addList(String name) async {
+  Future<int> addList(String name, {String? icon, int? color}) async {
     throw ArgumentError('Empty name');
   }
 
   @override
-  Future<int> updateList(int id, String name) async => 0;
+  Future<int> updateList(
+    int id,
+    String name, {
+    String? icon,
+    int? color,
+    bool clearIcon = false,
+    bool clearColor = false,
+  }) async =>
+      0;
+
+  @override
+  Future<int> updateListIcon(int id, String icon) async => 0;
+
+  @override
+  Future<int> updateListColor(int id, int color) async => 0;
 
   @override
   Future<int> deleteList(int id) async => 0;
@@ -199,12 +275,25 @@ class FailingUpdateListRepository implements ListRepositoryInterface {
   Future<TodoList?> getListById(int id) async => null;
 
   @override
-  Future<int> addList(String name) async => 0;
+  Future<int> addList(String name, {String? icon, int? color}) async => 0;
 
   @override
-  Future<int> updateList(int id, String name) async {
+  Future<int> updateList(
+    int id,
+    String name, {
+    String? icon,
+    int? color,
+    bool clearIcon = false,
+    bool clearColor = false,
+  }) async {
     throw ArgumentError('Empty name');
   }
+
+  @override
+  Future<int> updateListIcon(int id, String icon) async => 0;
+
+  @override
+  Future<int> updateListColor(int id, int color) async => 0;
 
   @override
   Future<int> deleteList(int id) async => 0;
@@ -223,10 +312,24 @@ class FailingDeleteListRepository implements ListRepositoryInterface {
   Future<TodoList?> getListById(int id) async => null;
 
   @override
-  Future<int> addList(String name) async => 0;
+  Future<int> addList(String name, {String? icon, int? color}) async => 0;
 
   @override
-  Future<int> updateList(int id, String name) async => 0;
+  Future<int> updateList(
+    int id,
+    String name, {
+    String? icon,
+    int? color,
+    bool clearIcon = false,
+    bool clearColor = false,
+  }) async =>
+      0;
+
+  @override
+  Future<int> updateListIcon(int id, String icon) async => 0;
+
+  @override
+  Future<int> updateListColor(int id, int color) async => 0;
 
   @override
   Future<int> deleteList(int id) async {

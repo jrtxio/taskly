@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:taskly/repositories/list_repository.dart';
 import 'package:taskly/interfaces/database_service_interface.dart';
@@ -28,17 +29,34 @@ class MockDatabaseService implements DatabaseServiceInterface {
   }
 
   @override
-  Future<int> addList(String name) async {
-    final list = TodoList(id: _nextId++, name: name);
+  Future<int> addList(String name, {String? icon, int? color}) async {
+    final list = TodoList(
+      id: _nextId++,
+      name: name,
+      icon: icon,
+      color: color != null ? Color(color) : null,
+    );
     _lists.add(list);
     return list.id;
   }
 
   @override
-  Future<int> updateList(int id, String name) async {
+  Future<int> updateList(
+    int id,
+    String name, {
+    String? icon,
+    int? color,
+    bool clearIcon = false,
+    bool clearColor = false,
+  }) async {
     for (int i = 0; i < _lists.length; i++) {
       if (_lists[i].id == id) {
-        _lists[i] = TodoList(id: id, name: name);
+        _lists[i] = TodoList(
+          id: id,
+          name: name,
+          icon: clearIcon ? null : icon,
+          color: clearColor ? null : (color != null ? Color(color) : null),
+        );
         return 1;
       }
     }

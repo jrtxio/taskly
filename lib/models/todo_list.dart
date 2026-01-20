@@ -26,12 +26,12 @@ class TodoList {
   }
 
   // Create a copy with updated values
-  TodoList copyWith({int? id, String? name, String? icon, Color? color}) {
+  TodoList copyWith({int? id, String? name, String? icon, Color? color, bool clearIcon = false, bool clearColor = false}) {
     return TodoList(
       id: id ?? this.id,
       name: name ?? this.name,
-      icon: icon ?? this.icon,
-      color: color ?? this.color,
+      icon: clearIcon ? null : (icon ?? this.icon),
+      color: clearColor ? null : (color ?? this.color),
     );
   }
 

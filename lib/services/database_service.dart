@@ -3,6 +3,7 @@ import '../interfaces/database_service_interface.dart';
 import '../models/task.dart';
 import '../models/todo_list.dart';
 import '../utils/path_utils.dart';
+import '../utils/app_logger.dart';
 
 class DatabaseService implements DatabaseServiceInterface {
   Database? _database;
@@ -30,7 +31,7 @@ class DatabaseService implements DatabaseServiceInterface {
   }
 
   // Database version
-  static const int _databaseVersion = 2;
+  static const int _databaseVersion = 3;
 
   // Table names
   static const String _tableLists = 'lists';
@@ -45,12 +46,50 @@ class DatabaseService implements DatabaseServiceInterface {
   // Initialize database
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasePath();
-    return await openDatabase(
+    final db = await openDatabase(
       dbPath,
       version: _databaseVersion,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
+
+    // Ensure icon and color columns exist (for databases that might be in inconsistent state)
+    await _ensureColumnsExist(db);
+
+    return db;
+  }
+
+  // Ensure icon and color columns exist in lists table
+  Future<void> _ensureColumnsExist(Database db) async {
+    try {
+      // Check if icon column exists by querying table info
+      final result = await db.rawQuery(
+        "PRAGMA table_info($_tableLists)",
+      );
+
+      print('DEBUG: _ensureColumnsExist - table structure: ${result.map((r) => "${r['name']}: ${r['type']}").toList()}');
+
+      final hasIconColumn = result.any((row) => row['name'] == 'icon');
+      final hasColorColumn = result.any((row) => row['name'] == 'color');
+
+      print('DEBUG: _ensureColumnsExist - hasIconColumn: $hasIconColumn, hasColorColumn: $hasColorColumn');
+
+      // Add missing columns
+      if (!hasIconColumn) {
+        await db.execute('ALTER TABLE $_tableLists ADD COLUMN icon TEXT');
+        logger.i('Added icon column to $_tableLists table');
+        print('DEBUG: _ensureColumnsExist - Added icon column');
+      }
+
+      if (!hasColorColumn) {
+        await db.execute('ALTER TABLE $_tableLists ADD COLUMN color INTEGER');
+        logger.i('Added color column to $_tableLists table');
+        print('DEBUG: _ensureColumnsExist - Added color column');
+      }
+    } catch (e, stackTrace) {
+      logger.e('Error ensuring columns exist', error: e, stackTrace: stackTrace);
+      print('DEBUG: _ensureColumnsExist - Error: $e');
+    }
   }
 
   // Create tables when database is first created
@@ -60,6 +99,8 @@ class DatabaseService implements DatabaseServiceInterface {
       CREATE TABLE $_tableLists (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
+        icon TEXT,
+        color INTEGER,
         created_at TEXT NOT NULL
       )
     ''');
@@ -118,10 +159,16 @@ class DatabaseService implements DatabaseServiceInterface {
       ''');
     }
 
+    if (oldVersion < 3 && newVersion >= 3) {
+      // Version 3: Add icon and color columns to lists table
+      await db.execute('ALTER TABLE $_tableLists ADD COLUMN icon TEXT');
+      await db.execute('ALTER TABLE $_tableLists ADD COLUMN color INTEGER');
+    }
+
     // Future migrations can be added here
     // Example:
-    // if (oldVersion < 3 && newVersion >= 3) {
-    //   // Add new columns or tables for version 3
+    // if (oldVersion < 4 && newVersion >= 4) {
+    //   // Add new columns or tables for version 4
     // }
   }
 
@@ -134,7 +181,10 @@ class DatabaseService implements DatabaseServiceInterface {
   Future<List<TodoList>> getAllLists() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(_tableLists);
-    return List.generate(maps.length, (i) => TodoList.fromMap(maps[i]));
+    print('DEBUG: getAllLists - raw data: $maps');
+    final lists = List.generate(maps.length, (i) => TodoList.fromMap(maps[i]));
+    print('DEBUG: getAllLists - parsed lists: ${lists.map((l) => "id=${l.id}, name=${l.name}, icon=${l.icon}, color=${l.color}").toList()}');
+    return lists;
   }
 
   // Get list by id
@@ -155,24 +205,63 @@ class DatabaseService implements DatabaseServiceInterface {
 
   // Add list
   @override
-  Future<int> addList(String name) async {
+  Future<int> addList(String name, {String? icon, int? color}) async {
     final db = await database;
-    return await db.insert(_tableLists, {
+    final Map<String, Object?> data = {
       'name': name,
       'created_at': DateTime.now().toIso8601String(),
-    });
+    };
+    if (icon != null) data['icon'] = icon;
+    if (color != null) data['color'] = color;
+    return await db.insert(_tableLists, data);
   }
 
   // Update list
   @override
-  Future<int> updateList(int id, String name) async {
+  Future<int> updateList(
+    int id,
+    String name, {
+    String? icon,
+    int? color,
+    bool clearIcon = false,
+    bool clearColor = false,
+  }) async {
     final db = await database;
-    return await db.update(
+    final Map<String, Object?> data = {'name': name};
+
+    if (clearIcon) {
+      data['icon'] = null;
+    } else if (icon != null) {
+      data['icon'] = icon;
+    }
+
+    if (clearColor) {
+      data['color'] = null;
+    } else if (color != null) {
+      data['color'] = color;
+    }
+
+    print('DEBUG: DatabaseService.updateList - id: $id, data: $data, clearIcon: $clearIcon, clearColor: $clearColor');
+    final result = await db.update(
       _tableLists,
-      {'name': name},
+      data,
       where: 'id = ?',
       whereArgs: [id],
     );
+    print('DEBUG: DatabaseService.updateList - update result: $result');
+
+    // Verify the update by reading back the list
+    final verify = await db.query(
+      _tableLists,
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
+    if (verify.isNotEmpty) {
+      print('DEBUG: DatabaseService.updateList - verified data: ${verify.first}');
+    }
+
+    return result;
   }
 
   // Delete list
@@ -407,11 +496,13 @@ class DatabaseService implements DatabaseServiceInterface {
   }
 
   // Check if database is connected
+  @override
   bool isConnected() {
     return _database != null && _database!.isOpen;
   }
 
   // Reset database connection
+  @override
   void resetConnection() {
     _database = null;
     _customDatabasePath = null;

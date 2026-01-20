@@ -149,10 +149,18 @@ class MockDatabaseService implements DatabaseServiceInterface {
   Future<TodoList?> getListById(int id) async => null;
 
   @override
-  Future<int> addList(String name) async => 0;
+  Future<int> addList(String name, {String? icon, int? color}) async => 0;
 
   @override
-  Future<int> updateList(int id, String name) async => 0;
+  Future<int> updateList(
+    int id,
+    String name, {
+    String? icon,
+    int? color,
+    bool clearIcon = false,
+    bool clearColor = false,
+  }) async =>
+      0;
 
   @override
   Future<int> deleteList(int id) async => 0;
