@@ -115,6 +115,10 @@ class _TaskListViewState extends State<TaskListView> {
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.isDatabaseConnected) {
+      return _buildTaskList();
+    }
+
     return Column(
       children: [
         _buildQuickAddInput(),
