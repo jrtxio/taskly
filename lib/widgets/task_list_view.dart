@@ -130,8 +130,6 @@ class _TaskListViewState extends State<TaskListView> {
       ),
       child: Row(
         children: [
-          const Icon(Icons.add_circle_outline, color: Colors.blue),
-          const SizedBox(width: 12),
           Expanded(
             child: TextField(
               controller: _quickAddController,
