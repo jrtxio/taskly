@@ -7,7 +7,6 @@ import 'providers/app_provider.dart';
 import 'providers/list_provider.dart';
 import 'providers/task_provider.dart';
 import 'screens/main_screen.dart';
-import 'screens/welcome_screen.dart';
 import 'theme/app_theme.dart';
 
 void main() {
@@ -94,9 +93,7 @@ class _MyAppState extends State<MyApp> {
             themeMode: appProvider.isDarkMode
                 ? ThemeMode.dark
                 : ThemeMode.light,
-            home: appProvider.isFirstLaunch
-                ? const WelcomeScreen()
-                : const MainScreen(),
+            home: const MainScreen(),
           );
         },
       ),
