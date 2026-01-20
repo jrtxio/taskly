@@ -12,6 +12,7 @@ class TaskListView extends StatefulWidget {
   final Function(int) onToggleTask;
   final Function(Task) onEditTask;
   final Function(int) onDeleteTask;
+  final Function(int)? onTaskAdded;
   final String? currentViewTitle;
   final int? currentListId;
   final List<TodoList> lists;
@@ -24,6 +25,7 @@ class TaskListView extends StatefulWidget {
     required this.onToggleTask,
     required this.onEditTask,
     required this.onDeleteTask,
+    this.onTaskAdded,
     this.currentViewTitle,
     this.currentListId,
     this.lists = const [],
@@ -101,6 +103,7 @@ class _TaskListViewState extends State<TaskListView> {
             _quickAddController.clear();
             _isSubmitting = false;
           });
+          widget.onTaskAdded?.call(task.listId);
         })
         .catchError((error) {
           setState(() {
@@ -169,7 +172,7 @@ class _TaskListViewState extends State<TaskListView> {
     if (!widget.isDatabaseConnected) {
       return const Center(
         child: Text(
-          '请打开数据库',
+          '请点击"文件"菜单创建或打开数据库',
           style: TextStyle(fontSize: 16, color: Colors.grey),
         ),
       );

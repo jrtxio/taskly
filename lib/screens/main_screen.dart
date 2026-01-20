@@ -235,6 +235,9 @@ class _MainScreenState extends State<MainScreen> {
                             onDeleteTask: (id) {
                               _showDeleteConfirmDialog(id);
                             },
+                            onTaskAdded: (listId) {
+                              _handleTaskAdded(listId);
+                            },
                             currentViewTitle: _currentViewTitle,
                             currentListId: listProvider.selectedList?.id,
                             lists: listProvider.lists,
@@ -292,6 +295,24 @@ class _MainScreenState extends State<MainScreen> {
         },
       ),
     );
+  }
+
+  void _handleTaskAdded(int listId) async {
+    final listProvider = Provider.of<ListProvider>(context, listen: false);
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+
+    final addedList = listProvider.lists.firstWhere(
+      (list) => list.id == listId,
+      orElse: () => listProvider.lists.isNotEmpty
+          ? listProvider.lists.first
+          : listProvider.lists[0],
+    );
+
+    await taskProvider.loadTasksByList(listId);
+    listProvider.selectList(addedList);
+    _updateViewTitle(addedList.name);
+    _updateTaskCounts();
+    _updateStatus('任务已添加');
   }
 
   void _showDeleteConfirmDialog(int taskId) {
