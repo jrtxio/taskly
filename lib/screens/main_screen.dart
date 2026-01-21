@@ -159,9 +159,10 @@ class _MainScreenState extends State<MainScreen> {
                     // Refresh data when database connection changes
                     if (appProvider.isDatabaseConnected &&
                         listProvider.lists.isEmpty) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        listProvider.loadLists();
-                        taskProvider.loadAllTasks();
+                      WidgetsBinding.instance.addPostFrameCallback((_) async {
+                        await listProvider.loadLists();
+                        await taskProvider.loadAllTasks();
+                        await _updateTaskCounts();
                       });
                     }
                     // Clear data when database is disconnected
