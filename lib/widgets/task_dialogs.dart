@@ -122,7 +122,17 @@ class _TaskInputDialogState extends State<TaskInputDialog> {
               controller: _textController,
               maxLines: 3,
               decoration: const InputDecoration(
-                border: OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF007AFF)),
+                ),
                 hintText: '输入任务内容...',
               ),
             ),
@@ -132,7 +142,17 @@ class _TaskInputDialogState extends State<TaskInputDialog> {
             TextField(
               controller: _dateController,
               decoration: const InputDecoration(
-                border: OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF007AFF)),
+                ),
                 hintText: '例如: +1d, @10am, 2025-08-07',
               ),
             ),
@@ -366,7 +386,19 @@ class _TaskDetailDialogState extends State<TaskDetailDialog> {
             const SizedBox(height: 8),
             TextField(
               controller: _textController,
-              decoration: const InputDecoration(border: OutlineInputBorder()),
+              decoration: const InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF007AFF)),
+                ),
+              ),
             ),
             const SizedBox(height: 20),
             const Text('备注:'),
@@ -375,7 +407,17 @@ class _TaskDetailDialogState extends State<TaskDetailDialog> {
               controller: _notesController,
               maxLines: 4,
               decoration: const InputDecoration(
-                border: OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF007AFF)),
+                ),
                 hintText: '添加备注信息...',
               ),
             ),
@@ -564,7 +606,19 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
             TextField(
               controller: _textController,
               maxLines: 3,
-              decoration: const InputDecoration(border: OutlineInputBorder()),
+              decoration: const InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF007AFF)),
+                ),
+              ),
             ),
             const SizedBox(height: 16),
             const Text('截止日期 (可选):'),
@@ -572,7 +626,17 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
             TextField(
               controller: _dateController,
               decoration: const InputDecoration(
-                border: OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF007AFF)),
+                ),
                 hintText: '例如: +1d, @10am, 2025-08-07',
               ),
             ),

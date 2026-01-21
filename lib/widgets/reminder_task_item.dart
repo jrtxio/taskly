@@ -28,6 +28,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
   late FocusNode _textFocusNode;
   late FocusNode _notesFocusNode;
   bool _isHovered = false;
+  bool _isSelected = false;
 
   @override
   void initState() {
@@ -114,32 +115,37 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
-      child: Container(
-        decoration: BoxDecoration(
-          color: _isHovered ? Colors.grey[50] : Colors.white,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildCheckbox(),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildTitleField(),
-                    if (widget.task.notes != null &&
-                        widget.task.notes!.isNotEmpty)
-                      _buildNotesField(),
-                    _buildDateTime(),
-                  ],
+      child: GestureDetector(
+        onTap: () => setState(() => _isSelected = true),
+        child: Container(
+          decoration: BoxDecoration(
+            color: (_isHovered || _isSelected) ? Colors.grey[50] : Colors.white,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildCheckbox(),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildTitleField(),
+                      if (widget.task.notes != null &&
+                          widget.task.notes!.isNotEmpty)
+                        _buildNotesField(),
+                      _buildDateTime(),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              _buildInfoButton(),
-            ],
+                if (_isSelected) ...[
+                  const SizedBox(width: 8),
+                  _buildInfoButton(),
+                ],
+              ],
+            ),
           ),
         ),
       ),
@@ -177,12 +183,10 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
       decoration: const InputDecoration(
         border: InputBorder.none,
         enabledBorder: InputBorder.none,
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFF007AFF), width: 1.5),
-          borderRadius: BorderRadius.all(Radius.circular(4)),
-        ),
+        focusedBorder: InputBorder.none,
         contentPadding: EdgeInsets.zero,
         isDense: true,
+        fillColor: Colors.transparent,
       ),
       style: TextStyle(
         fontSize: 15,
@@ -204,12 +208,10 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
       decoration: const InputDecoration(
         border: InputBorder.none,
         enabledBorder: InputBorder.none,
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey, width: 1),
-          borderRadius: BorderRadius.all(Radius.circular(4)),
-        ),
+        focusedBorder: InputBorder.none,
         contentPadding: EdgeInsets.zero,
         isDense: true,
+        fillColor: Colors.transparent,
       ),
       style: const TextStyle(fontSize: 13, color: Colors.grey, height: 1.3),
       onSubmitted: _handleNotesSubmitted,

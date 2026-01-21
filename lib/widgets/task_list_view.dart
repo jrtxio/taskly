@@ -176,7 +176,7 @@ class _TaskListViewState extends State<TaskListView> {
               color: Colors.grey[600],
             ),
             onPressed: widget.onToggleSidebar,
-            padding: const EdgeInsets.only(left: -4),
+            padding: const EdgeInsets.only(left: -12),
             constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
             tooltip: widget.isSidebarVisible ? '隐藏侧边栏' : '显示侧边栏',
           ),
