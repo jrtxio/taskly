@@ -89,7 +89,9 @@ class MockTaskRepository implements TaskRepositoryInterface {
 
   @override
   Future<int> getPlannedTaskCount() async {
-    return _tasks.where((task) => task.dueDate != null && !task.completed).length;
+    return _tasks
+        .where((task) => task.dueDate != null && !task.completed)
+        .length;
   }
 
   @override
@@ -174,7 +176,7 @@ class MockTaskRepository implements TaskRepositoryInterface {
   Future<Map<String, List<Task>>> groupTasksByList(List<Task> tasks) async {
     final Map<String, List<Task>> grouped = {};
     for (final task in tasks) {
-      final key = task.listName ?? 'Unknown List';
+      final key = 'list_${task.listId}';
       grouped.putIfAbsent(key, () => []);
       grouped[key]!.add(task);
     }
@@ -210,8 +212,7 @@ class MockDatabaseService implements DatabaseServiceInterface {
     int? color,
     bool clearIcon = false,
     bool clearColor = false,
-  }) async =>
-      0;
+  }) async => 0;
 
   @override
   Future<int> deleteList(int id) async => 0;

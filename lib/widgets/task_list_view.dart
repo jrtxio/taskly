@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import '../models/task.dart';
 import '../models/todo_list.dart';
 import '../providers/task_provider.dart';
 import '../utils/date_parser.dart';
+import 'reminder_task_item.dart';
 
 class TaskListView extends StatefulWidget {
   final List<Task> tasks;
@@ -12,11 +12,15 @@ class TaskListView extends StatefulWidget {
   final Function(int) onToggleTask;
   final Function(Task) onEditTask;
   final Function(int) onDeleteTask;
+  final Function(int)? onTaskUpdated;
   final Function(int)? onTaskAdded;
   final String? currentViewTitle;
   final int? currentListId;
   final List<TodoList> lists;
   final bool isDatabaseConnected;
+  final TodoList? selectedList;
+  final VoidCallback? onToggleSidebar;
+  final bool isSidebarVisible;
 
   const TaskListView({
     super.key,
@@ -25,11 +29,15 @@ class TaskListView extends StatefulWidget {
     required this.onToggleTask,
     required this.onEditTask,
     required this.onDeleteTask,
+    this.onTaskUpdated,
     this.onTaskAdded,
     this.currentViewTitle,
     this.currentListId,
     this.lists = const [],
     this.isDatabaseConnected = true,
+    this.selectedList,
+    this.onToggleSidebar,
+    this.isSidebarVisible = true,
   });
 
   @override
@@ -115,18 +123,127 @@ class _TaskListViewState extends State<TaskListView> {
         });
   }
 
+  Future<void> _handleTaskUpdate(Task updatedTask) async {
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+    await taskProvider.updateTask(updatedTask);
+    widget.onTaskUpdated?.call(updatedTask.listId);
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!widget.isDatabaseConnected) {
-      return _buildTaskList();
+      return Column(
+        children: [
+          _buildHeader(),
+          Expanded(child: _buildTaskList()),
+        ],
+      );
     }
 
     return Column(
       children: [
+        _buildHeader(),
         _buildQuickAddInput(),
         Expanded(child: _buildTaskList()),
       ],
     );
+  }
+
+  Widget _buildHeader() {
+    String title;
+    IconData? icon;
+    Color? iconColor;
+
+    if (widget.selectedList != null) {
+      final list = widget.selectedList!;
+      title = list.name;
+      iconColor = list.color ?? Colors.blue;
+      icon = list.icon != null ? null : Icons.folder;
+    } else {
+      title = widget.currentViewTitle ?? '';
+      iconColor = _getViewTitleColor(title);
+      icon = _getViewTitleIcon(title);
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(bottom: BorderSide(color: Colors.grey[300]!)),
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            icon: Icon(
+              widget.isSidebarVisible ? Icons.chevron_left : Icons.menu,
+              color: Colors.grey[600],
+            ),
+            onPressed: widget.onToggleSidebar,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+            tooltip: widget.isSidebarVisible ? '隐藏侧边栏' : '显示侧边栏',
+          ),
+          const SizedBox(width: 8),
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: iconColor ?? Colors.blue,
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: icon != null
+                  ? Icon(icon, color: Colors.white, size: 14)
+                  : (widget.selectedList?.icon != null
+                        ? Text(
+                            widget.selectedList!.icon!,
+                            style: const TextStyle(fontSize: 14),
+                          )
+                        : const Icon(
+                            Icons.folder,
+                            color: Colors.white,
+                            size: 14,
+                          )),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    );
+  }
+
+  IconData _getViewTitleIcon(String title) {
+    switch (title) {
+      case '今天':
+        return Icons.today;
+      case '计划':
+        return Icons.calendar_month;
+      case '全部':
+        return Icons.list;
+      case '完成':
+        return Icons.check_circle;
+      default:
+        return Icons.inbox;
+    }
+  }
+
+  Color _getViewTitleColor(String title) {
+    switch (title) {
+      case '今天':
+        return const Color(0xFF007AFF);
+      case '计划':
+        return const Color(0xFFFF3B30);
+      case '全部':
+        return const Color(0xFF8E8E93);
+      case '完成':
+        return const Color(0xFFFF9500);
+      default:
+        return Colors.blue;
+    }
   }
 
   Widget _buildQuickAddInput() {
@@ -203,110 +320,14 @@ class _TaskListViewState extends State<TaskListView> {
       itemCount: widget.tasks.length,
       itemBuilder: (context, index) {
         final task = widget.tasks[index];
-        return TaskItem(
+        return ReminderTaskItem(
           task: task,
           onToggle: () => widget.onToggleTask(task.id),
-          onEdit: () => widget.onEditTask(task),
+          onUpdate: _handleTaskUpdate,
           onDelete: () => widget.onDeleteTask(task.id),
+          onShowDetail: () => widget.onEditTask(task),
         );
       },
-    );
-  }
-}
-
-class TaskItem extends StatelessWidget {
-  final Task task;
-  final VoidCallback onToggle;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
-
-  const TaskItem({
-    super.key,
-    required this.task,
-    required this.onToggle,
-    required this.onEdit,
-    required this.onDelete,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Slidable(
-      endActionPane: ActionPane(
-        motion: const ScrollMotion(),
-        children: [
-          SlidableAction(
-            onPressed: (context) => onEdit(),
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
-            icon: Icons.edit,
-            label: '编辑',
-          ),
-          SlidableAction(
-            onPressed: (context) => onDelete(),
-            backgroundColor: Colors.red,
-            foregroundColor: Colors.white,
-            icon: Icons.delete,
-            label: '删除',
-          ),
-        ],
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
-        ),
-        child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 8,
-          ),
-          leading: Transform.scale(
-            scale: 1.2,
-            child: Checkbox(
-              value: task.completed,
-              onChanged: (value) => onToggle(),
-              shape: const CircleBorder(),
-              side: BorderSide(color: Colors.grey, width: 2),
-            ),
-          ),
-          title: Text(
-            task.text,
-            style: TextStyle(
-              fontSize: 15,
-              decoration: task.completed ? TextDecoration.lineThrough : null,
-              color: task.completed ? Colors.grey : Colors.black87,
-              height: 1.4,
-            ),
-          ),
-          subtitle: task.dueDate != null && task.dueDate!.isNotEmpty
-              ? Row(
-                  children: [
-                    const Icon(Icons.access_time, size: 14, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Text(
-                      DateParser.formatDateForDisplay(task.dueDate),
-                      style: const TextStyle(fontSize: 13, color: Colors.grey),
-                    ),
-                  ],
-                )
-              : null,
-          trailing: task.listName != null
-              ? Chip(
-                  label: Text(
-                    task.listName!,
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                  backgroundColor: Colors.blue[50],
-                  side: BorderSide.none,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                )
-              : null,
-          onTap: onToggle,
-        ),
-      ),
     );
   }
 }

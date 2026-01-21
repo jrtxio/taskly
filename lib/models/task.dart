@@ -6,18 +6,20 @@ class Task {
   final int listId;
   final String text;
   final String? dueDate;
+  final String? dueTime;
   final bool completed;
   final String createdAt;
-  final String? listName;
+  final String? notes;
 
   const Task({
     required this.id,
     required this.listId,
     required this.text,
     this.dueDate,
+    this.dueTime,
     required this.completed,
     required this.createdAt,
-    this.listName,
+    this.notes,
   });
 
   // Convert from map to Task
@@ -27,9 +29,10 @@ class Task {
       listId: map['list_id'] as int,
       text: map['text'] as String,
       dueDate: map['due_date'] as String?,
+      dueTime: map['due_time'] as String?,
       completed: (map['completed'] as int) == 1,
       createdAt: map['created_at'] as String,
-      listName: map['list_name'] as String?,
+      notes: map['notes'] as String?,
     );
   }
 
@@ -39,8 +42,10 @@ class Task {
       'list_id': listId,
       'text': text,
       'due_date': dueDate,
+      'due_time': dueTime,
       'completed': completed ? 1 : 0,
       'created_at': createdAt,
+      'notes': notes,
     };
 
     // Only include id if it's not 0 (for updates, not inserts)
@@ -57,18 +62,20 @@ class Task {
     int? listId,
     String? text,
     String? dueDate,
+    String? dueTime,
     bool? completed,
     String? createdAt,
-    String? listName,
+    String? notes,
   }) {
     return Task(
       id: id ?? this.id,
       listId: listId ?? this.listId,
       text: text ?? this.text,
       dueDate: dueDate ?? this.dueDate,
+      dueTime: dueTime ?? this.dueTime,
       completed: completed ?? this.completed,
       createdAt: createdAt ?? this.createdAt,
-      listName: listName ?? this.listName,
+      notes: notes ?? this.notes,
     );
   }
 
@@ -80,9 +87,10 @@ class Task {
         other.listId == listId &&
         other.text == text &&
         other.dueDate == dueDate &&
+        other.dueTime == dueTime &&
         other.completed == completed &&
         other.createdAt == createdAt &&
-        other.listName == listName;
+        other.notes == notes;
   }
 
   @override
@@ -91,13 +99,14 @@ class Task {
         listId.hashCode ^
         text.hashCode ^
         dueDate.hashCode ^
+        dueTime.hashCode ^
         completed.hashCode ^
         createdAt.hashCode ^
-        listName.hashCode;
+        notes.hashCode;
   }
 
   @override
   String toString() {
-    return 'Task(id: $id, listId: $listId, text: $text, dueDate: $dueDate, completed: $completed, createdAt: $createdAt, listName: $listName)';
+    return 'Task(id: $id, listId: $listId, text: $text, dueDate: $dueDate, dueTime: $dueTime, completed: $completed, createdAt: $createdAt, notes: $notes)';
   }
 }

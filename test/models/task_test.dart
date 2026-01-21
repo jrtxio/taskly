@@ -7,9 +7,10 @@ void main() {
     const testListId = 1;
     const testText = 'Test Task';
     const testDueDate = '2024-12-31';
+    const testDueTime = '14:30';
     const testCompleted = false;
     const testCreatedAt = '2024-01-01T00:00:00Z';
-    const testListName = 'Test List';
+    const testNotes = 'Test notes';
 
     // Test data
     final testTask = Task(
@@ -17,9 +18,10 @@ void main() {
       listId: testListId,
       text: testText,
       dueDate: testDueDate,
+      dueTime: testDueTime,
       completed: testCompleted,
       createdAt: testCreatedAt,
-      listName: testListName,
+      notes: testNotes,
     );
 
     final testMap = {
@@ -27,9 +29,10 @@ void main() {
       'list_id': testListId,
       'text': testText,
       'due_date': testDueDate,
+      'due_time': testDueTime,
       'completed': 0,
       'created_at': testCreatedAt,
-      'list_name': testListName,
+      'notes': testNotes,
     };
 
     test('should create a Task instance with valid parameters', () {
@@ -37,9 +40,10 @@ void main() {
       expect(testTask.listId, testListId);
       expect(testTask.text, testText);
       expect(testTask.dueDate, testDueDate);
+      expect(testTask.dueTime, testDueTime);
       expect(testTask.completed, testCompleted);
       expect(testTask.createdAt, testCreatedAt);
-      expect(testTask.listName, testListName);
+      expect(testTask.notes, testNotes);
     });
 
     test('should convert from map to Task', () {
@@ -54,8 +58,10 @@ void main() {
         'list_id': testListId,
         'text': testText,
         'due_date': testDueDate,
+        'due_time': testDueTime,
         'completed': 0,
         'created_at': testCreatedAt,
+        'notes': testNotes,
       });
     });
 
@@ -97,7 +103,7 @@ void main() {
       expect(updatedTask.completed, newCompleted);
       expect(updatedTask.dueDate, newDueDate);
       expect(updatedTask.createdAt, testCreatedAt);
-      expect(updatedTask.listName, testListName);
+      expect(updatedTask.notes, testNotes);
     });
 
     test('should have correct equality comparison', () {
@@ -106,9 +112,10 @@ void main() {
         listId: testListId,
         text: testText,
         dueDate: testDueDate,
+        dueTime: testDueTime,
         completed: testCompleted,
         createdAt: testCreatedAt,
-        listName: testListName,
+        notes: testNotes,
       );
 
       final differentTask = testTask.copyWith(text: 'Different Task');
@@ -124,9 +131,10 @@ void main() {
         listId: testListId,
         text: testText,
         dueDate: testDueDate,
+        dueTime: testDueTime,
         completed: testCompleted,
         createdAt: testCreatedAt,
-        listName: testListName,
+        notes: testNotes,
       );
 
       final differentTask = testTask.copyWith(text: 'Different Task');
@@ -143,7 +151,7 @@ void main() {
       expect(toStringResult, contains('completed: $testCompleted'));
     });
 
-    test('should handle null dueDate and listName', () {
+    test('should handle null dueDate, dueTime, and notes', () {
       final taskWithoutDueDate = Task(
         id: testId,
         listId: testListId,
@@ -153,10 +161,13 @@ void main() {
       );
 
       expect(taskWithoutDueDate.dueDate, null);
-      expect(taskWithoutDueDate.listName, null);
+      expect(taskWithoutDueDate.dueTime, null);
+      expect(taskWithoutDueDate.notes, null);
 
       final map = taskWithoutDueDate.toMap();
       expect(map['due_date'], null);
+      expect(map['due_time'], null);
+      expect(map['notes'], null);
     });
 
     test('should correctly convert from map with null values', () {
@@ -165,14 +176,16 @@ void main() {
         'list_id': testListId,
         'text': testText,
         'due_date': null,
+        'due_time': null,
         'completed': 0,
         'created_at': testCreatedAt,
-        'list_name': null,
+        'notes': null,
       };
 
       final task = Task.fromMap(mapWithNulls);
       expect(task.dueDate, null);
-      expect(task.listName, null);
+      expect(task.dueTime, null);
+      expect(task.notes, null);
     });
   });
 }

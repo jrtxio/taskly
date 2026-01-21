@@ -100,7 +100,8 @@ class _MainScreenState extends State<MainScreen> {
     final todayCount = await taskProvider.repository.getTodayTaskCount();
     final plannedCount = await taskProvider.repository.getPlannedTaskCount();
     final allCount = await taskProvider.repository.getIncompleteTaskCount();
-    final completedCount = await taskProvider.repository.getCompletedTaskCount();
+    final completedCount = await taskProvider.repository
+        .getCompletedTaskCount();
 
     final listProvider = Provider.of<ListProvider>(context, listen: false);
     final Map<int, int> counts = {};
@@ -164,76 +165,78 @@ class _MainScreenState extends State<MainScreen> {
                     }
                     return Row(
                       children: [
-                        SizedBox(
-                          width: 280,
-                          child: ListNavigation(
-                            lists: listProvider.lists,
-                            selectedList: listProvider.selectedList,
-                            taskCounts: _listTaskCounts,
-                            onSelectList: (list) {
-                              listProvider.selectList(list);
-                              taskProvider.loadTasksByList(list.id);
-                              _updateViewTitle(list.name);
-                              _updateStatus('切换到列表: ${list.name}');
-                            },
-                            onAddList: (name, {icon, color}) {
-                              listProvider.addList(
-                                name,
-                                icon: icon,
-                                color: color,
-                              );
-                              _updateStatus('创建列表: $name');
-                            },
-                            onDeleteList: (id) {
-                              listProvider.deleteList(id);
-                              _updateStatus('删除列表成功');
-                            },
-                            onTodayTap: () {
-                              if (!appProvider.isDatabaseConnected) {
-                                _updateStatus('请先打开数据库');
-                                return;
-                              }
-                              taskProvider.loadTodayTasks();
-                              _updateViewTitle('今天');
-                              _updateStatus('显示今天的任务');
-                            },
-                            onPlannedTap: () {
-                              if (!appProvider.isDatabaseConnected) {
-                                _updateStatus('请先打开数据库');
-                                return;
-                              }
-                              taskProvider.loadPlannedTasks();
-                              _updateViewTitle('计划');
-                              _updateStatus('显示计划中的任务');
-                            },
-                            onAllTap: () {
-                              if (!appProvider.isDatabaseConnected) {
-                                _updateStatus('请先打开数据库');
-                                return;
-                              }
-                              taskProvider.loadAllTasks();
-                              _updateViewTitle('全部');
-                              _updateStatus('显示全部任务');
-                            },
-                            onCompletedTap: () {
-                              if (!appProvider.isDatabaseConnected) {
-                                _updateStatus('请先打开数据库');
-                                return;
-                              }
-                              taskProvider.loadCompletedTasks();
-                              _updateViewTitle('完成');
-                              _updateStatus('显示完成的任务');
-                            },
-                            todayCount: _todayCount,
-                            plannedCount: _plannedCount,
-                            allCount: _allCount,
-                            completedCount: _completedCount,
-                            isDatabaseConnected:
-                                appProvider.isDatabaseConnected,
+                        if (appProvider.isSidebarVisible)
+                          SizedBox(
+                            width: 280,
+                            child: ListNavigation(
+                              lists: listProvider.lists,
+                              selectedList: listProvider.selectedList,
+                              taskCounts: _listTaskCounts,
+                              onSelectList: (list) {
+                                listProvider.selectList(list);
+                                taskProvider.loadTasksByList(list.id);
+                                _updateViewTitle(list.name);
+                                _updateStatus('切换到列表: ${list.name}');
+                              },
+                              onAddList: (name, {icon, color}) {
+                                listProvider.addList(
+                                  name,
+                                  icon: icon,
+                                  color: color,
+                                );
+                                _updateStatus('创建列表: $name');
+                              },
+                              onDeleteList: (id) {
+                                listProvider.deleteList(id);
+                                _updateStatus('删除列表成功');
+                              },
+                              onTodayTap: () {
+                                if (!appProvider.isDatabaseConnected) {
+                                  _updateStatus('请先打开数据库');
+                                  return;
+                                }
+                                taskProvider.loadTodayTasks();
+                                _updateViewTitle('今天');
+                                _updateStatus('显示今天的任务');
+                              },
+                              onPlannedTap: () {
+                                if (!appProvider.isDatabaseConnected) {
+                                  _updateStatus('请先打开数据库');
+                                  return;
+                                }
+                                taskProvider.loadPlannedTasks();
+                                _updateViewTitle('计划');
+                                _updateStatus('显示计划中的任务');
+                              },
+                              onAllTap: () {
+                                if (!appProvider.isDatabaseConnected) {
+                                  _updateStatus('请先打开数据库');
+                                  return;
+                                }
+                                taskProvider.loadAllTasks();
+                                _updateViewTitle('全部');
+                                _updateStatus('显示全部任务');
+                              },
+                              onCompletedTap: () {
+                                if (!appProvider.isDatabaseConnected) {
+                                  _updateStatus('请先打开数据库');
+                                  return;
+                                }
+                                taskProvider.loadCompletedTasks();
+                                _updateViewTitle('完成');
+                                _updateStatus('显示完成的任务');
+                              },
+                              todayCount: _todayCount,
+                              plannedCount: _plannedCount,
+                              allCount: _allCount,
+                              completedCount: _completedCount,
+                              isDatabaseConnected:
+                                  appProvider.isDatabaseConnected,
+                            ),
                           ),
-                        ),
 
-                        const VerticalDivider(width: 1),
+                        if (appProvider.isSidebarVisible)
+                          const VerticalDivider(width: 1),
 
                         Expanded(
                           child: TaskListView(
@@ -255,9 +258,15 @@ class _MainScreenState extends State<MainScreen> {
                             onTaskAdded: (listId) {
                               _handleTaskAdded(listId);
                             },
+                            onTaskUpdated: (listId) {
+                              _updateTaskCounts();
+                            },
                             currentViewTitle: _currentViewTitle,
                             currentListId: listProvider.selectedList?.id,
                             lists: listProvider.lists,
+                            selectedList: listProvider.selectedList,
+                            onToggleSidebar: appProvider.toggleSidebar,
+                            isSidebarVisible: appProvider.isSidebarVisible,
                           ),
                         ),
                       ],
@@ -292,14 +301,12 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _showEditTaskDialog(dynamic task) {
-    final listProvider = Provider.of<ListProvider>(context, listen: false);
     final taskProvider = Provider.of<TaskProvider>(context, listen: false);
 
     showDialog(
       context: context,
-      builder: (context) => EditTaskDialog(
+      builder: (context) => TaskDetailDialog(
         task: task,
-        lists: listProvider.lists,
         onUpdate: (updatedTask) async {
           await taskProvider.updateTask(updatedTask);
           _updateTaskCounts();

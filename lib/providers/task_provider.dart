@@ -28,6 +28,7 @@ class TaskProvider with ChangeNotifier {
   int _currentPage = 0;
   static const int _pageSize = 50;
   bool _hasMoreData = true;
+  int? _currentListId;
 
   List<Task> get tasks => _tasks;
   String get currentView => _currentView;
@@ -38,6 +39,7 @@ class TaskProvider with ChangeNotifier {
   AppError? get error => _error;
   bool get hasError => _error != null;
   bool get hasMoreData => _hasMoreData;
+  int? get currentListId => _currentListId;
 
   Future<void> loadTasks({
     String viewType = 'all',
@@ -91,6 +93,7 @@ class TaskProvider with ChangeNotifier {
   }
 
   Future<void> loadTasksByList(int listId) async {
+    _currentListId = listId;
     await loadTasks(viewType: 'list', listId: listId);
   }
 
@@ -162,7 +165,11 @@ class TaskProvider with ChangeNotifier {
 
     try {
       await _taskRepository.updateTask(task);
-      await loadTasks(viewType: _currentView, keyword: _searchKeyword);
+      await loadTasks(
+        viewType: _currentView,
+        listId: _currentListId,
+        keyword: _searchKeyword,
+      );
     } catch (e, stackTrace) {
       _setError(
         AppError(

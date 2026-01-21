@@ -897,7 +897,6 @@ void main() {
           id: 0,
           listId: 1,
           text: 'Task 1',
-          listName: 'Work',
           completed: false,
           createdAt: DateTime.now().toIso8601String(),
         );
@@ -905,7 +904,6 @@ void main() {
           id: 0,
           listId: 1,
           text: 'Task 2',
-          listName: 'Work',
           completed: false,
           createdAt: DateTime.now().toIso8601String(),
         );
@@ -913,7 +911,6 @@ void main() {
           id: 0,
           listId: 2,
           text: 'Task 3',
-          listName: 'Personal',
           completed: false,
           createdAt: DateTime.now().toIso8601String(),
         );
@@ -921,7 +918,6 @@ void main() {
           id: 0,
           listId: 3,
           text: 'Task 4',
-          listName: null,
           completed: false,
           createdAt: DateTime.now().toIso8601String(),
         );
@@ -930,9 +926,9 @@ void main() {
         final result = await taskRepository.groupTasksByList(tasks);
 
         expect(result.length, 3);
-        expect(result['Work']?.length, 2);
-        expect(result['Personal']?.length, 1);
-        expect(result['Unknown List']?.length, 1);
+        expect(result['list_1']?.length, 2);
+        expect(result['list_2']?.length, 1);
+        expect(result['list_3']?.length, 1);
       });
     });
   });

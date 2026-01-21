@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../models/task.dart';
 import '../models/todo_list.dart';
 
@@ -47,16 +48,16 @@ class _TaskInputDialogState extends State<TaskInputDialog> {
 
     final text = _textController.text.trim();
     if (text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请输入任务描述')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请输入任务描述')));
       return;
     }
 
     if (_selectedList == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请选择任务列表')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请选择任务列表')));
       return;
     }
 
@@ -77,16 +78,19 @@ class _TaskInputDialogState extends State<TaskInputDialog> {
       _isSubmitting = true;
     });
 
-    widget.onAdd(task).then((_) {
-      Navigator.of(context).pop();
-    }).catchError((error) {
-      setState(() {
-        _isSubmitting = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('添加任务失败: $error')),
-      );
-    });
+    widget
+        .onAdd(task)
+        .then((_) {
+          Navigator.of(context).pop();
+        })
+        .catchError((error) {
+          setState(() {
+            _isSubmitting = false;
+          });
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('添加任务失败: $error')));
+        });
   }
 
   @override
@@ -135,18 +139,16 @@ class _TaskInputDialogState extends State<TaskInputDialog> {
             const SizedBox(height: 8),
             Text(
               '支持智能日期格式: +1d (明天), @10am (上午10点), +1w (下周)',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
             ),
             const SizedBox(height: 16),
             const Text('任务列表:'),
             const SizedBox(height: 8),
             DropdownButtonFormField<TodoList>(
               value: _selectedList,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-              ),
+              decoration: const InputDecoration(border: OutlineInputBorder()),
               items: widget.lists.map((list) {
                 return DropdownMenuItem<TodoList>(
                   value: list,
@@ -154,9 +156,11 @@ class _TaskInputDialogState extends State<TaskInputDialog> {
                 );
               }).toList(),
               onChanged: (list) {
-                setState(() {
-                  _selectedList = list;
-                });
+                if (list != null) {
+                  setState(() {
+                    _selectedList = list;
+                  });
+                }
               },
             ),
           ],
@@ -182,6 +186,281 @@ class _TaskInputDialogState extends State<TaskInputDialog> {
   }
 }
 
+class TaskDetailDialog extends StatefulWidget {
+  final Task task;
+  final Function(Task) onUpdate;
+  final VoidCallback? onDelete;
+
+  const TaskDetailDialog({
+    super.key,
+    required this.task,
+    required this.onUpdate,
+    this.onDelete,
+  });
+
+  @override
+  State<TaskDetailDialog> createState() => _TaskDetailDialogState();
+}
+
+class _TaskDetailDialogState extends State<TaskDetailDialog> {
+  late final TextEditingController _textController = TextEditingController(
+    text: widget.task.text,
+  );
+  late final TextEditingController _notesController = TextEditingController(
+    text: widget.task.notes ?? '',
+  );
+  DateTime? _selectedDate;
+  TimeOfDay? _selectedTime;
+  bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeDateAndTime();
+  }
+
+  void _initializeDateAndTime() {
+    if (widget.task.dueDate != null && widget.task.dueDate!.isNotEmpty) {
+      try {
+        _selectedDate = DateTime.parse(widget.task.dueDate!);
+      } catch (e) {
+        _selectedDate = null;
+      }
+    }
+
+    if (widget.task.dueTime != null && widget.task.dueTime!.isNotEmpty) {
+      try {
+        final parts = widget.task.dueTime!.split(':');
+        _selectedTime = TimeOfDay(
+          hour: int.parse(parts[0]),
+          minute: int.parse(parts[1]),
+        );
+      } catch (e) {
+        _selectedTime = null;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _selectDate() async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? now,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+    );
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
+
+  Future<void> _selectTime() async {
+    final now = TimeOfDay.now();
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime ?? now,
+    );
+    if (picked != null) {
+      setState(() {
+        _selectedTime = picked;
+      });
+    }
+  }
+
+  String _getCombinedDueDate() {
+    if (_selectedDate == null) return '';
+    return DateFormat('yyyy-MM-dd').format(_selectedDate!);
+  }
+
+  String _getDueTime() {
+    if (_selectedTime == null) return '';
+    return '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}';
+  }
+
+  void _submit() {
+    if (_isSubmitting) return;
+
+    final text = _textController.text.trim();
+    if (text.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请输入任务描述')));
+      return;
+    }
+
+    final notes = _notesController.text.trim();
+    final dueDate = _getCombinedDueDate();
+
+    final updatedTask = widget.task.copyWith(
+      text: text,
+      notes: notes.isEmpty ? null : notes,
+      dueDate: dueDate,
+      dueTime: _getDueTime(),
+      completed: widget.task.completed,
+    );
+
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    widget
+        .onUpdate(updatedTask)
+        .then((_) {
+          Navigator.of(context).pop();
+        })
+        .catchError((error) {
+          setState(() {
+            _isSubmitting = false;
+          });
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('更新任务失败: $error')));
+        });
+  }
+
+  void _handleDelete() {
+    if (widget.onDelete == null) return;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('确认删除'),
+        content: const Text('确定要删除这个任务吗？此操作无法撤销。'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              widget.onDelete!();
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('删除'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('任务详情'),
+      content: SizedBox(
+        width: 450,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('任务:'),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _textController,
+              decoration: const InputDecoration(border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 20),
+            const Text('备注:'),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _notesController,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: '添加备注信息...',
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text('日期:'),
+            const SizedBox(height: 8),
+            InkWell(
+              onTap: _selectDate,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey[300]!),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.calendar_today, size: 20),
+                    const SizedBox(width: 8),
+                    Text(
+                      _getCombinedDueDate(),
+                      style: TextStyle(
+                        color: _selectedDate != null
+                            ? Colors.black87
+                            : Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text('时间:'),
+            const SizedBox(height: 8),
+            InkWell(
+              onTap: _selectTime,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey[300]!),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.access_time, size: 20),
+                    const SizedBox(width: 8),
+                    Text(
+                      _getDueTime(),
+                      style: TextStyle(
+                        color: _selectedTime != null
+                            ? Colors.black87
+                            : Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        if (widget.onDelete != null)
+          TextButton(
+            onPressed: _isSubmitting ? null : _handleDelete,
+            child: const Text('删除'),
+          ),
+        TextButton(
+          onPressed: _isSubmitting ? null : () => Navigator.of(context).pop(),
+          child: const Text('取消'),
+        ),
+        ElevatedButton(
+          onPressed: _isSubmitting ? null : _submit,
+          child: _isSubmitting
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text('保存'),
+        ),
+      ],
+    );
+  }
+}
+
 class EditTaskDialog extends StatefulWidget {
   final Task task;
   final List<TodoList> lists;
@@ -200,17 +479,19 @@ class EditTaskDialog extends StatefulWidget {
 
 class _EditTaskDialogState extends State<EditTaskDialog> {
   late final _textController = TextEditingController(text: widget.task.text);
-  late final _dateController =
-      TextEditingController(text: widget.task.dueDate ?? '');
-  late TodoList _selectedList;
+  late final _dateController = TextEditingController(
+    text: widget.task.dueDate ?? '',
+  );
+  TodoList? _selectedList;
   bool _isSubmitting = false;
 
   @override
   void initState() {
     super.initState();
+    if (widget.lists.isEmpty) return;
     _selectedList = widget.lists.firstWhere(
       (list) => list.id == widget.task.listId,
-      orElse: () => widget.lists.isNotEmpty ? widget.lists.first : widget.lists[0],
+      orElse: () => widget.lists.first,
     );
   }
 
@@ -226,9 +507,9 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
 
     final text = _textController.text.trim();
     if (text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请输入任务描述')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请输入任务描述')));
       return;
     }
 
@@ -236,26 +517,36 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
         ? null
         : _dateController.text.trim();
 
+    if (_selectedList == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请选择任务列表')));
+      return;
+    }
+
     final updatedTask = widget.task.copyWith(
       text: text,
       dueDate: dueDate,
-      listId: _selectedList.id,
+      listId: _selectedList!.id,
     );
 
     setState(() {
       _isSubmitting = true;
     });
 
-    widget.onUpdate(updatedTask).then((_) {
-      Navigator.of(context).pop();
-    }).catchError((error) {
-      setState(() {
-        _isSubmitting = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('更新任务失败: $error')),
-      );
-    });
+    widget
+        .onUpdate(updatedTask)
+        .then((_) {
+          Navigator.of(context).pop();
+        })
+        .catchError((error) {
+          setState(() {
+            _isSubmitting = false;
+          });
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('更新任务失败: $error')));
+        });
   }
 
   @override
@@ -273,9 +564,7 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
             TextField(
               controller: _textController,
               maxLines: 3,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-              ),
+              decoration: const InputDecoration(border: OutlineInputBorder()),
             ),
             const SizedBox(height: 16),
             const Text('截止日期 (可选):'),
@@ -290,18 +579,16 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
             const SizedBox(height: 8),
             Text(
               '支持智能日期格式: +1d (明天), @10am (上午10点), +1w (下周)',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
             ),
             const SizedBox(height: 16),
             const Text('任务列表:'),
             const SizedBox(height: 8),
             DropdownButtonFormField<TodoList>(
-              value: _selectedList,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-              ),
+              initialValue: _selectedList,
+              decoration: const InputDecoration(border: OutlineInputBorder()),
               items: widget.lists.map((list) {
                 return DropdownMenuItem<TodoList>(
                   value: list,
@@ -310,7 +597,7 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
               }).toList(),
               onChanged: (list) {
                 setState(() {
-                  _selectedList = list!;
+                  _selectedList = list;
                 });
               },
             ),

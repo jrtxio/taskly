@@ -172,11 +172,11 @@ class TaskRepository implements TaskRepositoryInterface {
     final Map<String, List<Task>> groups = {};
 
     for (final task in tasks) {
-      final listName = task.listName ?? 'Unknown List';
-      if (!groups.containsKey(listName)) {
-        groups[listName] = [];
+      final key = 'list_${task.listId}';
+      if (!groups.containsKey(key)) {
+        groups[key] = [];
       }
-      groups[listName]!.add(task);
+      groups[key]!.add(task);
     }
 
     return groups;

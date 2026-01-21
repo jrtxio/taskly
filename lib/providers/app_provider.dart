@@ -20,6 +20,7 @@ class AppProvider with ChangeNotifier {
   bool _isFirstLaunch = true;
   bool _isLoading = false;
   AppError? _error;
+  bool _isSidebarVisible = true;
 
   String? get databasePath => _databasePath;
   String get language => _language;
@@ -28,6 +29,7 @@ class AppProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   AppError? get error => _error;
   bool get hasError => _error != null;
+  bool get isSidebarVisible => _isSidebarVisible;
 
   Future<void> init() async {
     _isLoading = true;
@@ -164,6 +166,18 @@ class AppProvider with ChangeNotifier {
 
   void _clearError() {
     _error = null;
+  }
+
+  // Toggle sidebar visibility
+  void toggleSidebar() {
+    _isSidebarVisible = !_isSidebarVisible;
+    notifyListeners();
+  }
+
+  // Set sidebar visibility
+  void setSidebarVisible(bool visible) {
+    _isSidebarVisible = visible;
+    notifyListeners();
   }
 
   // Check if database is connected

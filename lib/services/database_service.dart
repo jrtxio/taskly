@@ -31,7 +31,7 @@ class DatabaseService implements DatabaseServiceInterface {
   }
 
   // Database version
-  static const int _databaseVersion = 3;
+  static const int _databaseVersion = 4;
 
   // Table names
   static const String _tableLists = 'lists';
@@ -63,16 +63,18 @@ class DatabaseService implements DatabaseServiceInterface {
   Future<void> _ensureColumnsExist(Database db) async {
     try {
       // Check if icon column exists by querying table info
-      final result = await db.rawQuery(
-        "PRAGMA table_info($_tableLists)",
-      );
+      final result = await db.rawQuery("PRAGMA table_info($_tableLists)");
 
-      print('DEBUG: _ensureColumnsExist - table structure: ${result.map((r) => "${r['name']}: ${r['type']}").toList()}');
+      print(
+        'DEBUG: _ensureColumnsExist - table structure: ${result.map((r) => "${r['name']}: ${r['type']}").toList()}',
+      );
 
       final hasIconColumn = result.any((row) => row['name'] == 'icon');
       final hasColorColumn = result.any((row) => row['name'] == 'color');
 
-      print('DEBUG: _ensureColumnsExist - hasIconColumn: $hasIconColumn, hasColorColumn: $hasColorColumn');
+      print(
+        'DEBUG: _ensureColumnsExist - hasIconColumn: $hasIconColumn, hasColorColumn: $hasColorColumn',
+      );
 
       // Add missing columns
       if (!hasIconColumn) {
@@ -87,7 +89,11 @@ class DatabaseService implements DatabaseServiceInterface {
         print('DEBUG: _ensureColumnsExist - Added color column');
       }
     } catch (e, stackTrace) {
-      logger.e('Error ensuring columns exist', error: e, stackTrace: stackTrace);
+      logger.e(
+        'Error ensuring columns exist',
+        error: e,
+        stackTrace: stackTrace,
+      );
       print('DEBUG: _ensureColumnsExist - Error: $e');
     }
   }
@@ -112,8 +118,10 @@ class DatabaseService implements DatabaseServiceInterface {
         list_id INTEGER,
         text TEXT NOT NULL,
         due_date TEXT,
+        due_time TEXT,
         completed INTEGER DEFAULT 0,
         created_at TEXT NOT NULL,
+        notes TEXT,
         FOREIGN KEY (list_id) REFERENCES $_tableLists (id)
       )
     ''');
@@ -165,6 +173,12 @@ class DatabaseService implements DatabaseServiceInterface {
       await db.execute('ALTER TABLE $_tableLists ADD COLUMN color INTEGER');
     }
 
+    if (oldVersion < 4 && newVersion >= 4) {
+      // Version 4: Add due_time and notes columns to tasks table
+      await db.execute('ALTER TABLE $_tableTasks ADD COLUMN due_time TEXT');
+      await db.execute('ALTER TABLE $_tableTasks ADD COLUMN notes TEXT');
+    }
+
     // Future migrations can be added here
     // Example:
     // if (oldVersion < 4 && newVersion >= 4) {
@@ -183,7 +197,9 @@ class DatabaseService implements DatabaseServiceInterface {
     final List<Map<String, dynamic>> maps = await db.query(_tableLists);
     print('DEBUG: getAllLists - raw data: $maps');
     final lists = List.generate(maps.length, (i) => TodoList.fromMap(maps[i]));
-    print('DEBUG: getAllLists - parsed lists: ${lists.map((l) => "id=${l.id}, name=${l.name}, icon=${l.icon}, color=${l.color}").toList()}');
+    print(
+      'DEBUG: getAllLists - parsed lists: ${lists.map((l) => "id=${l.id}, name=${l.name}, icon=${l.icon}, color=${l.color}").toList()}',
+    );
     return lists;
   }
 
@@ -241,7 +257,9 @@ class DatabaseService implements DatabaseServiceInterface {
       data['color'] = color;
     }
 
-    print('DEBUG: DatabaseService.updateList - id: $id, data: $data, clearIcon: $clearIcon, clearColor: $clearColor');
+    print(
+      'DEBUG: DatabaseService.updateList - id: $id, data: $data, clearIcon: $clearIcon, clearColor: $clearColor',
+    );
     final result = await db.update(
       _tableLists,
       data,
@@ -258,7 +276,9 @@ class DatabaseService implements DatabaseServiceInterface {
       limit: 1,
     );
     if (verify.isNotEmpty) {
-      print('DEBUG: DatabaseService.updateList - verified data: ${verify.first}');
+      print(
+        'DEBUG: DatabaseService.updateList - verified data: ${verify.first}',
+      );
     }
 
     return result;
@@ -441,13 +461,11 @@ class DatabaseService implements DatabaseServiceInterface {
   @override
   Future<int> getPlannedTaskCount() async {
     final db = await database;
-    final result = await db.rawQuery(
-      '''
+    final result = await db.rawQuery('''
       SELECT COUNT(*) as count
       FROM $_tableTasks
       WHERE due_date IS NOT NULL AND completed = 0
-    ''',
-    );
+    ''');
     return result.first['count'] as int;
   }
 

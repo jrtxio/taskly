@@ -159,4 +159,85 @@ class DateParser {
       return dateStr;
     }
   }
+
+  /// Format date part only for user-friendly display.
+  ///
+  /// Returns:
+  /// - '今天' for today
+  /// - '明天' for tomorrow
+  /// - '昨天' for yesterday
+  /// - 'yyyy-MM-dd' for other dates
+  ///
+  /// Returns original string if parsing fails.
+  static String formatDateOnlyForDisplay(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return '';
+    try {
+      final date = DateTime.parse(dateStr);
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final taskDate = DateTime(date.year, date.month, date.day);
+
+      if (taskDate == today) {
+        return '今天';
+      } else if (taskDate == today.add(const Duration(days: 1))) {
+        return '明天';
+      } else if (taskDate == today.subtract(const Duration(days: 1))) {
+        return '昨天';
+      } else {
+        return DateFormat('yyyy-MM-dd').format(date);
+      }
+    } catch (e) {
+      return dateStr;
+    }
+  }
+
+  /// Format time part only for display.
+  ///
+  /// Input format: 'HH:mm' or 'yyyy-MM-dd HH:mm:ss'
+  /// Returns: 'HH:mm' format
+  ///
+  /// Returns empty string if parsing fails.
+  static String formatTimeForDisplay(String? timeStr) {
+    if (timeStr == null || timeStr.isEmpty) return '';
+    try {
+      // If it's a full datetime string, extract time
+      if (timeStr.contains('-')) {
+        final date = DateTime.parse(timeStr);
+        return DateFormat('HH:mm').format(date);
+      }
+      // If it's already a time string, validate and return
+      final parts = timeStr.split(':');
+      if (parts.length >= 2) {
+        final hour = int.tryParse(parts[0]);
+        final minute = int.tryParse(parts[1]);
+        if (hour == null || minute == null) return timeStr;
+        if (hour >= 0 && hour < 24 && minute >= 0 && minute < 60) {
+          return timeStr;
+        }
+      }
+      return timeStr;
+    } catch (e) {
+      return '';
+    }
+  }
+
+  /// Combine date and time into a full datetime string.
+  ///
+  /// Takes separate date (yyyy-MM-dd) and time (HH:mm) strings
+  /// and combines them into 'yyyy-MM-dd HH:mm:ss' format.
+  static String combineDateTime(String dateStr, String? timeStr) {
+    if (timeStr == null || timeStr.isEmpty) {
+      return '$dateStr 00:00:00';
+    }
+    try {
+      final date = DateFormat('yyyy-MM-dd').parse(dateStr);
+      final parts = timeStr.split(':');
+      final hour = int.parse(parts[0]);
+      final minute = int.parse(parts[1]);
+      final combined = DateTime(date.year, date.month, date.day, hour, minute);
+      return DateFormat('yyyy-MM-dd HH:mm:ss').format(combined);
+    } catch (e) {
+      return '$dateStr 00:00:00';
+    }
+  }
 }
