@@ -37,6 +37,8 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
   late FocusNode _textFocusNode;
   late FocusNode _notesFocusNode;
   bool _isHovered = false;
+  bool _isTitleEditing = false;
+  bool _isNotesEditing = false;
 
   @override
   void initState() {
@@ -46,17 +48,29 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
     _textFocusNode = FocusNode()
       ..addListener(() {
         if (_textFocusNode.hasFocus) {
+          setState(() {
+            _isTitleEditing = true;
+          });
           widget.onSelect();
         } else {
           _saveTextChanges();
+          setState(() {
+            _isTitleEditing = false;
+          });
         }
       });
     _notesFocusNode = FocusNode()
       ..addListener(() {
         if (_notesFocusNode.hasFocus) {
+          setState(() {
+            _isNotesEditing = true;
+          });
           widget.onSelect();
         } else {
           _saveNotesChanges();
+          setState(() {
+            _isNotesEditing = false;
+          });
         }
       });
   }
@@ -161,6 +175,11 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
     }
   }
 
+  void _handleRightClick(Offset offset) {
+    if (_isTitleEditing || _isNotesEditing) return;
+    _showContextMenu(offset);
+  }
+
   void _showContextMenu(Offset offset) {
     final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
 
@@ -263,7 +282,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
       onExit: (_) => setState(() => _isHovered = false),
       child: GestureDetector(
         onTap: _handleContainerTap,
-        onSecondaryTapDown: (details) => _showContextMenu(details.globalPosition),
+        onSecondaryTapDown: (details) => _handleRightClick(details.globalPosition),
         behavior: HitTestBehavior.translucent,
         child: Container(
           decoration: BoxDecoration(
@@ -278,13 +297,13 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
               children: [
                 _buildCheckbox(),
                 const SizedBox(width: 14),
-                Expanded(
+                Flexible(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildTitleField(),
-                      if (_textFocusNode.hasFocus ||
-                          _notesFocusNode.hasFocus ||
+                      if (_isTitleEditing ||
+                          _isNotesEditing ||
                           (widget.task.notes != null &&
                               widget.task.notes!.isNotEmpty))
                         _buildNotesField(),
@@ -333,42 +352,58 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
   }
 
   Widget _buildTitleField() {
-    return TextField(
-      controller: _textController,
-      focusNode: _textFocusNode,
-      cursorColor: const Color(0xFF007AFF),
-      cursorWidth: 1.5,
-      decoration: const InputDecoration(
-        filled: false,
-        border: InputBorder.none,
-        enabledBorder: InputBorder.none,
-        focusedBorder: InputBorder.none,
-        contentPadding: EdgeInsets.zero,
-        isDense: true,
-      ),
-      style: TextStyle(
-        fontSize: 15,
-        fontWeight: FontWeight.w400,
-        decoration: widget.task.completed ? TextDecoration.lineThrough : null,
-        color: widget.task.completed ? Colors.grey[500] : Colors.black87,
-        height: 1.5,
-      ),
-      onSubmitted: _handleTextSubmitted,
-      onEditingComplete: () => _textFocusNode.unfocus(),
-      maxLines: null,
-      textInputAction: TextInputAction.done,
-    );
+    if (_isTitleEditing) {
+      return TextField(
+        controller: _textController,
+        focusNode: _textFocusNode,
+        cursorColor: const Color(0xFF007AFF),
+        cursorWidth: 1.5,
+        enableInteractiveSelection: true,
+        decoration: const InputDecoration(
+          filled: false,
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          contentPadding: EdgeInsets.zero,
+          isDense: true,
+        ),
+        style: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w400,
+          color: widget.task.completed ? Colors.grey[500] : Colors.black87,
+          height: 1.5,
+        ),
+        onSubmitted: _handleTextSubmitted,
+        onEditingComplete: () => _textFocusNode.unfocus(),
+        maxLines: null,
+        textInputAction: TextInputAction.done,
+      );
+    } else {
+      return GestureDetector(
+        onTap: () => _textFocusNode.requestFocus(),
+        behavior: HitTestBehavior.opaque,
+        child: Text(
+          widget.task.text,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w400,
+            decoration: widget.task.completed ? TextDecoration.lineThrough : null,
+            color: widget.task.completed ? Colors.grey[500] : Colors.black87,
+            height: 1.5,
+          ),
+        ),
+      );
+    }
   }
 
   Widget _buildNotesField() {
-    return GestureDetector(
-      onTap: () => _notesFocusNode.requestFocus(),
-      behavior: HitTestBehavior.opaque,
-      child: TextField(
+    if (_isNotesEditing) {
+      return TextField(
         controller: _notesController,
         focusNode: _notesFocusNode,
         cursorColor: const Color(0xFF007AFF),
         cursorWidth: 1.5,
+        enableInteractiveSelection: true,
         decoration: const InputDecoration(
           filled: false,
           border: InputBorder.none,
@@ -387,15 +422,29 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
         onEditingComplete: () => _notesFocusNode.unfocus(),
         maxLines: null,
         textInputAction: TextInputAction.done,
-      ),
-    );
+      );
+    } else {
+      return GestureDetector(
+        onTap: () => _notesFocusNode.requestFocus(),
+        behavior: HitTestBehavior.opaque,
+        child: Text(
+          widget.task.notes ?? '',
+          style: TextStyle(
+            fontSize: 13,
+            color: Colors.grey[600],
+            height: 1.4,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      );
+    }
   }
 
   Widget _buildDateTime() {
     final hasDate =
         widget.task.dueDate != null && widget.task.dueDate!.isNotEmpty;
 
-    final isEditing = _textFocusNode.hasFocus || _notesFocusNode.hasFocus;
+    final isEditing = _isTitleEditing || _isNotesEditing;
 
     if (!hasDate && !isEditing) {
       return const SizedBox.shrink();

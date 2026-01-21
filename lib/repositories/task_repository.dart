@@ -29,6 +29,46 @@ class TaskRepository implements TaskRepositoryInterface {
     );
   }
 
+  // Get completed tasks by list
+  @override
+  Future<List<Task>> getCompletedTasksByList(
+    int listId, {
+    int limit = 50,
+    int offset = 0,
+  }) async {
+    return await _databaseService.getCompletedTasksByList(
+      listId,
+      limit: limit,
+      offset: offset,
+    );
+  }
+
+  // Get tasks by list including completed tasks
+  @override
+  Future<List<Task>> getTasksByListIncludingCompleted(
+    int listId, {
+    int limit = 50,
+    int offset = 0,
+  }) async {
+    return await _databaseService.getTasksByListIncludingCompleted(
+      listId,
+      limit: limit,
+      offset: offset,
+    );
+  }
+
+  // Get all tasks including completed
+  @override
+  Future<List<Task>> getAllTasksIncludingCompleted({
+    int limit = 50,
+    int offset = 0,
+  }) async {
+    return await _databaseService.getAllTasksIncludingCompleted(
+      limit: limit,
+      offset: offset,
+    );
+  }
+
   // Get today's tasks
   @override
   Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0}) async {
@@ -39,6 +79,12 @@ class TaskRepository implements TaskRepositoryInterface {
   @override
   Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async {
     return await _databaseService.getPlannedTasks(limit: limit, offset: offset);
+  }
+
+  // Get planned tasks including completed
+  @override
+  Future<List<Task>> getPlannedTasksIncludingCompleted({int limit = 50, int offset = 0}) async {
+    return await _databaseService.getPlannedTasksIncludingCompleted(limit: limit, offset: offset);
   }
 
   // Get all incomplete tasks
@@ -141,18 +187,28 @@ class TaskRepository implements TaskRepositoryInterface {
     String? keyword,
     int limit = 50,
     int offset = 0,
+    bool showCompleted = false,
   }) async {
     switch (viewType) {
       case 'today':
         return await getTodayTasks(limit: limit, offset: offset);
       case 'planned':
+        if (showCompleted) {
+          return await getPlannedTasksIncludingCompleted(limit: limit, offset: offset);
+        }
         return await getPlannedTasks(limit: limit, offset: offset);
       case 'all':
+        if (showCompleted) {
+          return await getAllTasksIncludingCompleted(limit: limit, offset: offset);
+        }
         return await getIncompleteTasks(limit: limit, offset: offset);
       case 'completed':
         return await getCompletedTasks(limit: limit, offset: offset);
       case 'list':
         if (listId != null) {
+          if (showCompleted) {
+            return await getTasksByListIncludingCompleted(listId, limit: limit, offset: offset);
+          }
           return await getTasksByList(listId, limit: limit, offset: offset);
         }
         return [];

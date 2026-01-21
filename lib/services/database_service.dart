@@ -323,10 +323,73 @@ class DatabaseService implements DatabaseServiceInterface {
       SELECT t.*, l.name as list_name
       FROM $_tableTasks t
       LEFT JOIN $_tableLists l ON t.list_id = l.id
-      WHERE t.list_id = ?
+      WHERE t.list_id = ? AND t.completed = 0
       LIMIT ? OFFSET ?
     ''',
       [listId, limit, offset],
+    );
+    return List.generate(maps.length, (i) => Task.fromMap(maps[i]));
+  }
+
+  // Get completed tasks by list
+  @override
+  Future<List<Task>> getCompletedTasksByList(
+    int listId, {
+    int limit = 50,
+    int offset = 0,
+  }) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+      '''
+      SELECT t.*, l.name as list_name
+      FROM $_tableTasks t
+      LEFT JOIN $_tableLists l ON t.list_id = l.id
+      WHERE t.list_id = ? AND t.completed = 1
+      LIMIT ? OFFSET ?
+    ''',
+      [listId, limit, offset],
+    );
+    return List.generate(maps.length, (i) => Task.fromMap(maps[i]));
+  }
+
+  // Get tasks by list including completed tasks
+  @override
+  Future<List<Task>> getTasksByListIncludingCompleted(
+    int listId, {
+    int limit = 50,
+    int offset = 0,
+  }) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+      '''
+      SELECT t.*, l.name as list_name
+      FROM $_tableTasks t
+      LEFT JOIN $_tableLists l ON t.list_id = l.id
+      WHERE t.list_id = ?
+      ORDER BY t.completed ASC, t.id DESC
+      LIMIT ? OFFSET ?
+    ''',
+      [listId, limit, offset],
+    );
+    return List.generate(maps.length, (i) => Task.fromMap(maps[i]));
+  }
+
+  // Get all tasks including completed
+  @override
+  Future<List<Task>> getAllTasksIncludingCompleted({
+    int limit = 50,
+    int offset = 0,
+  }) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+      '''
+      SELECT t.*, l.name as list_name
+      FROM $_tableTasks t
+      LEFT JOIN $_tableLists l ON t.list_id = l.id
+      ORDER BY t.completed ASC, t.id DESC
+      LIMIT ? OFFSET ?
+    ''',
+      [limit, offset],
     );
     return List.generate(maps.length, (i) => Task.fromMap(maps[i]));
   }
@@ -363,6 +426,24 @@ class DatabaseService implements DatabaseServiceInterface {
       LEFT JOIN $_tableLists l ON t.list_id = l.id
       WHERE t.due_date IS NOT NULL AND t.completed = 0
       ORDER BY t.due_date ASC
+      LIMIT ? OFFSET ?
+    ''',
+      [limit, offset],
+    );
+    return List.generate(maps.length, (i) => Task.fromMap(maps[i]));
+  }
+
+  // Get planned tasks including completed
+  @override
+  Future<List<Task>> getPlannedTasksIncludingCompleted({int limit = 50, int offset = 0}) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+      '''
+      SELECT t.*, l.name as list_name
+      FROM $_tableTasks t
+      LEFT JOIN $_tableLists l ON t.list_id = l.id
+      WHERE t.due_date IS NOT NULL
+      ORDER BY t.completed ASC, t.due_date ASC
       LIMIT ? OFFSET ?
     ''',
       [limit, offset],

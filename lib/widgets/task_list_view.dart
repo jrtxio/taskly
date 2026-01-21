@@ -218,9 +218,29 @@ class _TaskListViewState extends State<TaskListView> {
               ),
             ),
             const SizedBox(width: 10),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+            ),
+            Consumer<TaskProvider>(
+              builder: (context, taskProvider, child) {
+                final showCompleted = taskProvider.showCompletedTasks;
+                return TextButton(
+                  onPressed: () async {
+                    taskProvider.setShowCompletedTasks(!showCompleted);
+                    await taskProvider.refreshTasks();
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.blue,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(showCompleted ? '隐藏' : '显示'),
+                );
+              },
             ),
           ],
         ],
@@ -334,15 +354,46 @@ class _TaskListViewState extends State<TaskListView> {
       itemCount: widget.tasks.length,
       itemBuilder: (context, index) {
         final task = widget.tasks[index];
-        return ReminderTaskItem(
-          task: task,
-          isSelected: _selectedTaskId == task.id,
-          onToggle: () => widget.onToggleTask(task.id),
-          onUpdate: _handleTaskUpdate,
-          onDelete: () => widget.onDeleteTask(task.id),
-          onShowDetail: () => widget.onEditTask(task),
-          onSelect: () => _handleTaskSelection(task.id),
-          onMoveToList: (newListId) => _handleTaskMove(task.id, newListId!),
+
+        if (task.completed && index > 0 && !widget.tasks[index - 1].completed) {
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                child: Container(
+                  height: 1,
+                  color: Colors.grey[300],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: ReminderTaskItem(
+                  task: task,
+                  isSelected: _selectedTaskId == task.id,
+                  onToggle: () => widget.onToggleTask(task.id),
+                  onUpdate: _handleTaskUpdate,
+                  onDelete: () => widget.onDeleteTask(task.id),
+                  onShowDetail: () => widget.onEditTask(task),
+                  onSelect: () => _handleTaskSelection(task.id),
+                  onMoveToList: (newListId) => _handleTaskMove(task.id, newListId!),
+                ),
+              ),
+            ],
+          );
+        }
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: ReminderTaskItem(
+            task: task,
+            isSelected: _selectedTaskId == task.id,
+            onToggle: () => widget.onToggleTask(task.id),
+            onUpdate: _handleTaskUpdate,
+            onDelete: () => widget.onDeleteTask(task.id),
+            onShowDetail: () => widget.onEditTask(task),
+            onSelect: () => _handleTaskSelection(task.id),
+            onMoveToList: (newListId) => _handleTaskMove(task.id, newListId!),
+          ),
         );
       },
     );
@@ -375,25 +426,44 @@ class _TaskListViewState extends State<TaskListView> {
           ),
         );
 
+        final taskWidgets = <Widget>[];
+        for (int i = 0; i < tasks.length; i++) {
+          final task = tasks[i];
+          
+          if (task.completed && i > 0 && !tasks[i - 1].completed) {
+            taskWidgets.add(
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                child: Container(
+                  height: 1,
+                  color: Colors.grey[300],
+                ),
+              ),
+            );
+          }
+
+          taskWidgets.add(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: ReminderTaskItem(
+                task: task,
+                isSelected: _selectedTaskId == task.id,
+                onToggle: () => widget.onToggleTask(task.id),
+                onUpdate: _handleTaskUpdate,
+                onDelete: () => widget.onDeleteTask(task.id),
+                onShowDetail: () => widget.onEditTask(task),
+                onSelect: () => _handleTaskSelection(task.id),
+                onMoveToList: (newListId) => _handleTaskMove(task.id, newListId!),
+              ),
+            ),
+          );
+        }
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildListHeader(list, tasks.length),
-            ...tasks.map(
-              (task) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: ReminderTaskItem(
-                  task: task,
-                  isSelected: _selectedTaskId == task.id,
-                  onToggle: () => widget.onToggleTask(task.id),
-                  onUpdate: _handleTaskUpdate,
-                  onDelete: () => widget.onDeleteTask(task.id),
-                  onShowDetail: () => widget.onEditTask(task),
-                  onSelect: () => _handleTaskSelection(task.id),
-                  onMoveToList: (newListId) => _handleTaskMove(task.id, newListId!),
-                ),
-              ),
-            ),
+            ...taskWidgets,
             const SizedBox(height: 16),
           ],
         );
