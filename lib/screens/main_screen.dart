@@ -27,6 +27,7 @@ class _MainScreenState extends State<MainScreen> {
   int? _completedCount;
   Map<int, int> _listTaskCounts = {};
   bool _wasConnected = false;
+  bool _showQuickAddInput = true;
 
   @override
   void initState() {
@@ -53,12 +54,22 @@ class _MainScreenState extends State<MainScreen> {
       if (listProvider.selectedList != null) {
         await taskProvider.loadTasksByList(listProvider.selectedList!.id);
         _updateViewTitle(listProvider.selectedList!.name);
+        if (mounted) {
+          setState(() {
+            _showQuickAddInput = true;
+          });
+        }
       } else {
         await taskProvider.loadAllTasks();
         _updateViewTitle('全部');
+        if (mounted) {
+          setState(() {
+            _showQuickAddInput = false;
+          });
+        }
       }
 
-      _updateTaskCounts();
+      await _updateTaskCounts();
       _updateStatus('数据已加载');
     }
   }
@@ -85,10 +96,10 @@ class _MainScreenState extends State<MainScreen> {
     if (!appProvider.isDatabaseConnected) {
       if (mounted) {
         setState(() {
-          _todayCount = null;
-          _plannedCount = null;
-          _allCount = null;
-          _completedCount = null;
+          _todayCount = 0;
+          _plannedCount = 0;
+          _allCount = 0;
+          _completedCount = 0;
           _listTaskCounts = {};
         });
       }
@@ -177,6 +188,11 @@ class _MainScreenState extends State<MainScreen> {
                                 taskProvider.loadTasksByList(list.id);
                                 _updateViewTitle(list.name);
                                 _updateStatus('切换到列表: ${list.name}');
+                                if (mounted) {
+                                  setState(() {
+                                    _showQuickAddInput = true;
+                                  });
+                                }
                               },
                               onAddList: (name, {icon, color}) {
                                 listProvider.addList(
@@ -199,6 +215,11 @@ class _MainScreenState extends State<MainScreen> {
                                 taskProvider.loadTodayTasks();
                                 _updateViewTitle('今天');
                                 _updateStatus('显示今天的任务');
+                                if (mounted) {
+                                  setState(() {
+                                    _showQuickAddInput = false;
+                                  });
+                                }
                               },
                               onPlannedTap: () {
                                 if (!appProvider.isDatabaseConnected) {
@@ -209,6 +230,11 @@ class _MainScreenState extends State<MainScreen> {
                                 taskProvider.loadPlannedTasks();
                                 _updateViewTitle('计划');
                                 _updateStatus('显示计划中的任务');
+                                if (mounted) {
+                                  setState(() {
+                                    _showQuickAddInput = false;
+                                  });
+                                }
                               },
                               onAllTap: () {
                                 if (!appProvider.isDatabaseConnected) {
@@ -219,6 +245,11 @@ class _MainScreenState extends State<MainScreen> {
                                 taskProvider.loadAllTasks();
                                 _updateViewTitle('全部');
                                 _updateStatus('显示全部任务');
+                                if (mounted) {
+                                  setState(() {
+                                    _showQuickAddInput = false;
+                                  });
+                                }
                               },
                               onCompletedTap: () {
                                 if (!appProvider.isDatabaseConnected) {
@@ -229,6 +260,11 @@ class _MainScreenState extends State<MainScreen> {
                                 taskProvider.loadCompletedTasks();
                                 _updateViewTitle('完成');
                                 _updateStatus('显示完成的任务');
+                                if (mounted) {
+                                  setState(() {
+                                    _showQuickAddInput = false;
+                                  });
+                                }
                               },
                               todayCount: _todayCount,
                               plannedCount: _plannedCount,
@@ -271,6 +307,7 @@ class _MainScreenState extends State<MainScreen> {
                             selectedList: listProvider.selectedList,
                             onToggleSidebar: appProvider.toggleSidebar,
                             isSidebarVisible: appProvider.isSidebarVisible,
+                            showQuickAddInput: _showQuickAddInput,
                           ),
                         ),
                       ],

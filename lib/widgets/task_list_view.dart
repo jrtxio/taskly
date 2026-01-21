@@ -21,6 +21,7 @@ class TaskListView extends StatefulWidget {
   final TodoList? selectedList;
   final VoidCallback? onToggleSidebar;
   final bool isSidebarVisible;
+  final bool showQuickAddInput;
 
   const TaskListView({
     super.key,
@@ -38,6 +39,7 @@ class TaskListView extends StatefulWidget {
     this.selectedList,
     this.onToggleSidebar,
     this.isSidebarVisible = true,
+    this.showQuickAddInput = true,
   });
 
   @override
@@ -143,7 +145,7 @@ class _TaskListViewState extends State<TaskListView> {
     return Column(
       children: [
         _buildHeader(),
-        _buildQuickAddInput(),
+        if (widget.showQuickAddInput) _buildQuickAddInput(),
         Expanded(child: _buildTaskList()),
       ],
     );
@@ -180,34 +182,36 @@ class _TaskListViewState extends State<TaskListView> {
             constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
             tooltip: widget.isSidebarVisible ? '隐藏侧边栏' : '显示侧边栏',
           ),
-          const SizedBox(width: 8),
-          Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              color: iconColor ?? Colors.blue,
-              shape: BoxShape.circle,
+          if (widget.isDatabaseConnected) ...[
+            const SizedBox(width: 8),
+            Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                color: iconColor ?? Colors.blue,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: icon != null
+                    ? Icon(icon, color: Colors.white, size: 14)
+                    : (widget.selectedList?.icon != null
+                          ? Text(
+                              widget.selectedList!.icon!,
+                              style: const TextStyle(fontSize: 14),
+                            )
+                          : const Icon(
+                              Icons.folder,
+                              color: Colors.white,
+                              size: 14,
+                            )),
+              ),
             ),
-            child: Center(
-              child: icon != null
-                  ? Icon(icon, color: Colors.white, size: 14)
-                  : (widget.selectedList?.icon != null
-                        ? Text(
-                            widget.selectedList!.icon!,
-                            style: const TextStyle(fontSize: 14),
-                          )
-                        : const Icon(
-                            Icons.folder,
-                            color: Colors.white,
-                            size: 14,
-                          )),
+            const SizedBox(width: 10),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
-          ),
-          const SizedBox(width: 10),
-          Text(
-            title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
+          ],
         ],
       ),
     );
