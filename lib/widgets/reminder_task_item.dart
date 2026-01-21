@@ -30,6 +30,8 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
   late FocusNode _itemFocusNode;
   bool _isHovered = false;
   bool _isSelected = false;
+  bool _isEditingText = false;
+  bool _isEditingNotes = false;
 
   @override
   void initState() {
@@ -46,6 +48,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
       ..addListener(() {
         if (_textFocusNode.hasFocus) {
           _itemFocusNode.requestFocus();
+          setState(() => _isEditingText = true);
         } else {
           _saveTextChanges();
         }
@@ -54,6 +57,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
       ..addListener(() {
         if (_notesFocusNode.hasFocus) {
           _itemFocusNode.requestFocus();
+          setState(() => _isEditingNotes = true);
         } else {
           _saveNotesChanges();
         }
@@ -64,10 +68,14 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
   void didUpdateWidget(ReminderTaskItem oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.task.text != widget.task.text) {
-      _textController.text = widget.task.text;
+      if (!_isEditingText) {
+        _textController.text = widget.task.text;
+      }
     }
     if (oldWidget.task.notes != widget.task.notes) {
-      _notesController.text = widget.task.notes ?? '';
+      if (!_isEditingNotes) {
+        _notesController.text = widget.task.notes ?? '';
+      }
     }
   }
 
@@ -82,6 +90,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
   }
 
   void _saveTextChanges() {
+    setState(() => _isEditingText = false);
     final value = _textController.text;
     if (value != widget.task.text) {
       final updatedTask = widget.task.copyWith(text: value);
@@ -90,6 +99,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
   }
 
   void _saveNotesChanges() {
+    setState(() => _isEditingNotes = false);
     final value = _notesController.text;
     final updatedNotes = value.isEmpty ? null : value;
     if (updatedNotes != widget.task.notes) {
@@ -154,9 +164,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildTitleField(),
-                        if (widget.task.notes != null &&
-                            widget.task.notes!.isNotEmpty)
-                          _buildNotesField(),
+                        _buildNotesField(),
                         _buildDateTime(),
                       ],
                     ),
@@ -202,6 +210,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
     return TextField(
       controller: _textController,
       focusNode: _textFocusNode,
+      cursorColor: const Color(0xFF007AFF),
       decoration: const InputDecoration(
         filled: true,
         fillColor: Colors.transparent,
@@ -228,6 +237,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
     return TextField(
       controller: _notesController,
       focusNode: _notesFocusNode,
+      cursorColor: const Color(0xFF007AFF),
       decoration: const InputDecoration(
         filled: true,
         fillColor: Colors.transparent,

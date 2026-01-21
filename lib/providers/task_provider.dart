@@ -165,11 +165,10 @@ class TaskProvider with ChangeNotifier {
 
     try {
       await _taskRepository.updateTask(task);
-      await loadTasks(
-        viewType: _currentView,
-        listId: _currentListId,
-        keyword: _searchKeyword,
-      );
+      final taskIndex = _tasks.indexWhere((t) => t.id == task.id);
+      if (taskIndex != -1) {
+        _tasks[taskIndex] = task;
+      }
     } catch (e, stackTrace) {
       _setError(
         AppError(
