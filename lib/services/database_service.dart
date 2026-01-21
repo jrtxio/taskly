@@ -415,6 +415,28 @@ class DatabaseService implements DatabaseServiceInterface {
     return List.generate(maps.length, (i) => Task.fromMap(maps[i]));
   }
 
+  // Get today's tasks including completed
+  @override
+  Future<List<Task>> getTodayTasksIncludingCompleted({int limit = 50, int offset = 0}) async {
+    final db = await database;
+    final today = DateTime.now().toLocal();
+    final todayString =
+        '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+      '''
+      SELECT t.*, l.name as list_name
+      FROM $_tableTasks t
+      LEFT JOIN $_tableLists l ON t.list_id = l.id
+      WHERE date(t.due_date) = ?
+      ORDER BY t.completed ASC, t.id DESC
+      LIMIT ? OFFSET ?
+    ''',
+      [todayString, limit, offset],
+    );
+    return List.generate(maps.length, (i) => Task.fromMap(maps[i]));
+  }
+
   // Get planned tasks (with due date and not completed)
   @override
   Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async {

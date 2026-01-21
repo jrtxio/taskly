@@ -14,6 +14,7 @@ class ReminderTaskItem extends StatefulWidget {
   final VoidCallback onShowDetail;
   final VoidCallback onSelect;
   final Function(int?) onMoveToList;
+  final List<TodoList> lists;
 
   const ReminderTaskItem({
     super.key,
@@ -25,6 +26,7 @@ class ReminderTaskItem extends StatefulWidget {
     required this.onShowDetail,
     required this.onSelect,
     required this.onMoveToList,
+    this.lists = const [],
   });
 
   @override
@@ -213,7 +215,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
           value: 'move',
           child: const ListTile(
             leading: Icon(Icons.drive_file_move),
-            title: Text('移动到列表'),
+            title: Text('列表'),
             trailing: Icon(Icons.chevron_right),
           ),
         ),
@@ -244,8 +246,6 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
   void _showMoveMenu(Offset offset) {
     final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
 
-    final allLists = Provider.of<List<TodoList>>(context, listen: false);
-
     showMenu<int>(
       context: context,
       position: RelativeRect.fromLTRB(
@@ -254,7 +254,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
         overlay.size.width - offset.dx,
         overlay.size.height - offset.dy,
       ),
-      items: allLists.map((list) {
+      items: widget.lists.map((list) {
         return PopupMenuItem(
           value: list.id,
           child: ListTile(
@@ -368,7 +368,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
           isDense: true,
         ),
         style: TextStyle(
-          fontSize: 15,
+          fontSize: 14,
           fontWeight: FontWeight.w400,
           color: widget.task.completed ? Colors.grey[500] : Colors.black87,
           height: 1.5,
@@ -385,7 +385,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
         child: Text(
           widget.task.text,
           style: TextStyle(
-            fontSize: 15,
+            fontSize: 14,
             fontWeight: FontWeight.w400,
             decoration: widget.task.completed ? TextDecoration.lineThrough : null,
             color: widget.task.completed ? Colors.grey[500] : Colors.black87,
@@ -413,7 +413,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
           isDense: true,
         ),
         style: TextStyle(
-          fontSize: 13,
+          fontSize: 12,
           color: Colors.grey[600],
           height: 1.4,
           fontWeight: FontWeight.w400,
@@ -430,7 +430,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
         child: Text(
           widget.task.notes ?? '',
           style: TextStyle(
-            fontSize: 13,
+            fontSize: 12,
             color: Colors.grey[600],
             height: 1.4,
             fontWeight: FontWeight.w400,
@@ -480,7 +480,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                             ? DateParser.formatDateOnlyForDisplay(widget.task.dueDate!)
                             : '添加日期',
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 12,
                           color: isEditing ? Colors.blue[700] : (hasDate ? Colors.grey[600] : Colors.grey[400]),
                           fontStyle: FontStyle.normal,
                         ),
@@ -525,7 +525,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                             ? DateParser.formatTimeForDisplay(widget.task.dueTime)
                             : '添加时间',
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 12,
                           color: isEditing
                               ? Colors.blue[700]
                               : (widget.task.dueTime != null &&

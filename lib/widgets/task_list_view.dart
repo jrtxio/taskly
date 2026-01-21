@@ -376,6 +376,7 @@ class _TaskListViewState extends State<TaskListView> {
                   onShowDetail: () => widget.onEditTask(task),
                   onSelect: () => _handleTaskSelection(task.id),
                   onMoveToList: (newListId) => _handleTaskMove(task.id, newListId!),
+                  lists: widget.lists,
                 ),
               ),
             ],
@@ -393,6 +394,7 @@ class _TaskListViewState extends State<TaskListView> {
             onShowDetail: () => widget.onEditTask(task),
             onSelect: () => _handleTaskSelection(task.id),
             onMoveToList: (newListId) => _handleTaskMove(task.id, newListId!),
+            lists: widget.lists,
           ),
         );
       },
@@ -478,20 +480,20 @@ class _TaskListViewState extends State<TaskListView> {
       child: Row(
         children: [
           Container(
-            width: 24,
-            height: 24,
+            width: 28,
+            height: 28,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             child: Center(
               child: list.icon != null
-                  ? Text(list.icon!, style: const TextStyle(fontSize: 14))
-                  : const Icon(Icons.folder, color: Colors.white, size: 14),
+                  ? Text(list.icon!, style: const TextStyle(fontSize: 16))
+                  : const Icon(Icons.folder, color: Colors.white, size: 16),
             ),
           ),
           const SizedBox(width: 8),
           Text(
             list.name,
             style: const TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.w600,
               color: Color(0xFF424242),
             ),
@@ -506,7 +508,7 @@ class _TaskListViewState extends State<TaskListView> {
             child: Text(
               taskCount.toString(),
               style: const TextStyle(
-                fontSize: 11,
+                fontSize: 12,
                 fontWeight: FontWeight.w500,
                 color: Color(0xFF424242),
               ),

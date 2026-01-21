@@ -253,7 +253,12 @@ class TaskProvider with ChangeNotifier {
   }
 
   Future<void> refreshTasks() async {
-    await loadTasks(viewType: _currentView, keyword: _searchKeyword, showCompleted: _showCompletedTasks);
+    final shouldApplyShowCompleted = _currentView == 'list' || _currentView == 'all';
+    await loadTasks(
+      viewType: _currentView,
+      keyword: _searchKeyword,
+      showCompleted: shouldApplyShowCompleted ? _showCompletedTasks : null,
+    );
   }
 
   void setShowCompletedTasks(bool value) {
