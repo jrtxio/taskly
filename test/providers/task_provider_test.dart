@@ -69,6 +69,23 @@ class MockTaskRepository implements TaskRepositoryInterface {
   }
 
   @override
+  Future<List<Task>> getTodayTasksIncludingCompleted({int limit = 50, int offset = 0}) async {
+    final now = DateTime.now();
+    final todayString =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    final todayTasks = _tasks
+        .where(
+          (task) =>
+              task.dueDate != null &&
+              task.dueDate!.startsWith(todayString),
+        )
+        .toList();
+    final incomplete = todayTasks.where((task) => !task.completed).toList();
+    final completed = todayTasks.where((task) => task.completed).toList();
+    return [...incomplete, ...completed];
+  }
+
+  @override
   Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async {
     return _tasks
         .where((task) => task.dueDate != null && !task.completed)
@@ -290,6 +307,9 @@ class MockDatabaseService implements DatabaseServiceInterface {
       [];
 
   @override
+  Future<List<Task>> getTodayTasksIncludingCompleted({int limit = 50, int offset = 0}) async => [];
+
+  @override
   Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async =>
       [];
 
@@ -379,6 +399,9 @@ class FailingLoadTaskRepository implements TaskRepositoryInterface {
   @override
   Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0}) async =>
       [];
+
+  @override
+  Future<List<Task>> getTodayTasksIncludingCompleted({int limit = 50, int offset = 0}) async => [];
 
   @override
   Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async =>
@@ -471,6 +494,9 @@ class FailingAddTaskRepository implements TaskRepositoryInterface {
       [];
 
   @override
+  Future<List<Task>> getTodayTasksIncludingCompleted({int limit = 50, int offset = 0}) async => [];
+
+  @override
   Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async =>
       [];
 
@@ -559,6 +585,9 @@ class FailingUpdateTaskRepository implements TaskRepositoryInterface {
   @override
   Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0}) async =>
       [];
+
+  @override
+  Future<List<Task>> getTodayTasksIncludingCompleted({int limit = 50, int offset = 0}) async => [];
 
   @override
   Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async =>
@@ -651,6 +680,9 @@ class FailingToggleTaskRepository implements TaskRepositoryInterface {
       [];
 
   @override
+  Future<List<Task>> getTodayTasksIncludingCompleted({int limit = 50, int offset = 0}) async => [];
+
+  @override
   Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async =>
       [];
 
@@ -739,6 +771,9 @@ class FailingDeleteTaskRepository implements TaskRepositoryInterface {
   @override
   Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0}) async =>
       [];
+
+  @override
+  Future<List<Task>> getTodayTasksIncludingCompleted({int limit = 50, int offset = 0}) async => [];
 
   @override
   Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async =>

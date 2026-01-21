@@ -19,6 +19,9 @@ abstract class TaskRepositoryInterface {
   // Get today's tasks with pagination
   Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0});
 
+  // Get today's tasks including completed
+  Future<List<Task>> getTodayTasksIncludingCompleted({int limit = 50, int offset = 0});
+
   // Get planned tasks (with due date and not completed) with pagination
   Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0});
 

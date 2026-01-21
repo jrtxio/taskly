@@ -253,7 +253,7 @@ class TaskProvider with ChangeNotifier {
   }
 
   Future<void> refreshTasks() async {
-    final shouldApplyShowCompleted = _currentView == 'list' || _currentView == 'all';
+    final shouldApplyShowCompleted = _currentView == 'list' || _currentView == 'all' || _currentView == 'planned';
     await loadTasks(
       viewType: _currentView,
       keyword: _searchKeyword,

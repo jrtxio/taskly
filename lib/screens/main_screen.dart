@@ -312,6 +312,7 @@ class _MainScreenState extends State<MainScreen> {
                             onToggleSidebar: appProvider.toggleSidebar,
                             isSidebarVisible: appProvider.isSidebarVisible,
                             showQuickAddInput: _showQuickAddInput,
+                            completedCount: _completedCount,
                           ),
                         ),
                       ],

@@ -184,6 +184,8 @@ class MockDatabaseService implements DatabaseServiceInterface {
   Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0}) async => [];
 
   @override
+  Future<List<Task>> getTodayTasksIncludingCompleted({int limit = 50, int offset = 0}) async => [];
+  @override
   Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async => [];
 
   @override

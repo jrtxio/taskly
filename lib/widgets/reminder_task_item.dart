@@ -307,7 +307,10 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                           (widget.task.notes != null &&
                               widget.task.notes!.isNotEmpty))
                         _buildNotesField(),
-                      _buildDateTime(),
+                      _buildDateTime(
+                        hasNotes: widget.task.notes != null &&
+                            widget.task.notes!.isNotEmpty,
+                      ),
                     ],
                   ),
                 ),
@@ -440,7 +443,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
     }
   }
 
-  Widget _buildDateTime() {
+  Widget _buildDateTime({bool hasNotes = false}) {
     final hasDate =
         widget.task.dueDate != null && widget.task.dueDate!.isNotEmpty;
 
@@ -451,7 +454,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(top: 4),
+      padding: EdgeInsets.only(top: hasNotes ? 2 : 4),
       child: Row(
         children: [
           if (hasDate || isEditing)

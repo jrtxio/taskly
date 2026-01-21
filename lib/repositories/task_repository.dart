@@ -75,6 +75,12 @@ class TaskRepository implements TaskRepositoryInterface {
     return await _databaseService.getTodayTasks(limit: limit, offset: offset);
   }
 
+  // Get today's tasks including completed
+  @override
+  Future<List<Task>> getTodayTasksIncludingCompleted({int limit = 50, int offset = 0}) async {
+    return await _databaseService.getTodayTasksIncludingCompleted(limit: limit, offset: offset);
+  }
+
   // Get planned tasks (with due date and not completed)
   @override
   Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async {
@@ -191,6 +197,9 @@ class TaskRepository implements TaskRepositoryInterface {
   }) async {
     switch (viewType) {
       case 'today':
+        if (showCompleted) {
+          return await getTodayTasksIncludingCompleted(limit: limit, offset: offset);
+        }
         return await getTodayTasks(limit: limit, offset: offset);
       case 'planned':
         if (showCompleted) {

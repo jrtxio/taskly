@@ -23,6 +23,7 @@ class TaskListView extends StatefulWidget {
   final VoidCallback? onToggleSidebar;
   final bool isSidebarVisible;
   final bool showQuickAddInput;
+  final int? completedCount;
 
   const TaskListView({
     super.key,
@@ -42,6 +43,7 @@ class TaskListView extends StatefulWidget {
     this.onToggleSidebar,
     this.isSidebarVisible = true,
     this.showQuickAddInput = true,
+    this.completedCount,
   });
 
   @override
@@ -219,27 +221,54 @@ class _TaskListViewState extends State<TaskListView> {
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              child: Row(
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
+                  if (title == '完成' && widget.completedCount != null) ...[
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD1D5DB),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        widget.completedCount.toString(),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF424242),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
             Consumer<TaskProvider>(
               builder: (context, taskProvider, child) {
                 final showCompleted = taskProvider.showCompletedTasks;
-                return TextButton(
-                  onPressed: () async {
-                    taskProvider.setShowCompletedTasks(!showCompleted);
-                    await taskProvider.refreshTasks();
-                  },
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.blue,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  child: Text(showCompleted ? '隐藏' : '显示'),
-                );
+                final shouldShowButton = widget.selectedList != null ||
+                    widget.currentViewTitle == '全部' ||
+                    widget.currentViewTitle == '计划';
+                return shouldShowButton
+                    ? TextButton(
+                        onPressed: () async {
+                          taskProvider.setShowCompletedTasks(!showCompleted);
+                          await taskProvider.refreshTasks();
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.blue,
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: Text(showCompleted ? '隐藏' : '显示'),
+                      )
+                    : const SizedBox.shrink();
               },
             ),
           ],
@@ -344,7 +373,7 @@ class _TaskListViewState extends State<TaskListView> {
       );
     }
 
-    final shouldGroup = widget.selectedList == null;
+    final shouldGroup = widget.currentViewTitle == '全部';
     if (shouldGroup) {
       return _buildGroupedTaskList();
     }
