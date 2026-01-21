@@ -129,7 +129,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
             color: (_isHovered || _isSelected) ? Colors.grey[50] : Colors.white,
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -140,17 +140,23 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildTitleField(),
-                      _buildNotesField(),
+                      if (widget.task.notes != null &&
+                          widget.task.notes!.isNotEmpty)
+                        _buildNotesField(),
                       _buildDateTime(),
                     ],
                   ),
                 ),
-                if (_isSelected ||
-                    _textFocusNode.hasFocus ||
-                    _notesFocusNode.hasFocus) ...[
-                  const SizedBox(width: 4),
-                  _buildInfoButton(),
-                ],
+                const SizedBox(width: 4),
+                Opacity(
+                  opacity:
+                      (_isSelected ||
+                          _textFocusNode.hasFocus ||
+                          _notesFocusNode.hasFocus)
+                      ? 1.0
+                      : 0.0,
+                  child: _buildInfoButton(),
+                ),
               ],
             ),
           ),
