@@ -193,8 +193,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
       cursorColor: const Color(0xFF007AFF),
       cursorWidth: 1.5,
       decoration: const InputDecoration(
-        filled: true,
-        fillColor: Colors.transparent,
+        filled: false,
         border: InputBorder.none,
         enabledBorder: InputBorder.none,
         focusedBorder: InputBorder.none,
@@ -222,8 +221,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
       cursorColor: const Color(0xFF007AFF),
       cursorWidth: 1.5,
       decoration: const InputDecoration(
-        filled: true,
-        fillColor: Colors.transparent,
+        filled: false,
         border: InputBorder.none,
         enabledBorder: InputBorder.none,
         focusedBorder: InputBorder.none,
