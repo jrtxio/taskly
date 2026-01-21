@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../models/task.dart';
 import '../utils/date_parser.dart';
 
@@ -105,6 +106,51 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
     _notesFocusNode.unfocus();
   }
 
+  Future<void> _showDatePicker() async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: widget.task.dueDate != null &&
+              widget.task.dueDate!.isNotEmpty
+          ? DateTime.tryParse(widget.task.dueDate!) ?? DateTime.now()
+          : DateTime.now(),
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      lastDate: DateTime.now().add(const Duration(days: 3650)),
+    );
+
+    if (pickedDate == null) return;
+
+    final dateStr = DateFormat('yyyy-MM-dd').format(pickedDate);
+
+    final updatedTask = widget.task.copyWith(
+      dueDate: '$dateStr 00:00:00',
+    );
+    widget.onUpdate(updatedTask);
+  }
+
+  Future<void> _showTimePicker() async {
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: widget.task.dueTime != null &&
+              widget.task.dueTime!.isNotEmpty
+          ? TimeOfDay(
+              hour: int.tryParse(widget.task.dueTime!.split(':')[0]) ?? 9,
+              minute: int.tryParse(widget.task.dueTime!.split(':')[1]) ?? 0,
+            )
+          : const TimeOfDay(hour: 9, minute: 0),
+    );
+
+    if (pickedTime == null) return;
+
+    final timeStr = DateFormat('HH:mm').format(
+      DateTime(2024, 1, 1, pickedTime.hour, pickedTime.minute),
+    );
+
+    final updatedTask = widget.task.copyWith(
+      dueTime: timeStr,
+    );
+    widget.onUpdate(updatedTask);
+  }
+
   void _handleContainerTap() {
     if (!_textFocusNode.hasFocus && !_notesFocusNode.hasFocus) {
       widget.onSelect();
@@ -137,8 +183,10 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildTitleField(),
-                      if (widget.task.notes != null &&
-                          widget.task.notes!.isNotEmpty)
+                      if (_textFocusNode.hasFocus ||
+                          _notesFocusNode.hasFocus ||
+                          (widget.task.notes != null &&
+                              widget.task.notes!.isNotEmpty))
                         _buildNotesField(),
                       _buildDateTime(),
                     ],
@@ -146,12 +194,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                 ),
                 const SizedBox(width: 4),
                 Opacity(
-                  opacity:
-                      (widget.isSelected ||
-                          _textFocusNode.hasFocus ||
-                          _notesFocusNode.hasFocus)
-                      ? 1.0
-                      : 0.0,
+                  opacity: _isHovered ? 1.0 : 0.0,
                   child: _buildInfoButton(),
                 ),
               ],
@@ -218,29 +261,33 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
   }
 
   Widget _buildNotesField() {
-    return TextField(
-      controller: _notesController,
-      focusNode: _notesFocusNode,
-      cursorColor: const Color(0xFF007AFF),
-      cursorWidth: 1.5,
-      decoration: const InputDecoration(
-        filled: false,
-        border: InputBorder.none,
-        enabledBorder: InputBorder.none,
-        focusedBorder: InputBorder.none,
-        contentPadding: EdgeInsets.zero,
-        isDense: true,
+    return GestureDetector(
+      onTap: () => _notesFocusNode.requestFocus(),
+      behavior: HitTestBehavior.opaque,
+      child: TextField(
+        controller: _notesController,
+        focusNode: _notesFocusNode,
+        cursorColor: const Color(0xFF007AFF),
+        cursorWidth: 1.5,
+        decoration: const InputDecoration(
+          filled: false,
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          contentPadding: EdgeInsets.zero,
+          isDense: true,
+        ),
+        style: TextStyle(
+          fontSize: 13,
+          color: Colors.grey[600],
+          height: 1.4,
+          fontWeight: FontWeight.w400,
+        ),
+        onSubmitted: _handleNotesSubmitted,
+        onEditingComplete: () => _notesFocusNode.unfocus(),
+        maxLines: null,
+        textInputAction: TextInputAction.done,
       ),
-      style: TextStyle(
-        fontSize: 13,
-        color: Colors.grey[600],
-        height: 1.4,
-        fontWeight: FontWeight.w400,
-      ),
-      onSubmitted: _handleNotesSubmitted,
-      onEditingComplete: () => _notesFocusNode.unfocus(),
-      maxLines: null,
-      textInputAction: TextInputAction.done,
     );
   }
 
@@ -248,7 +295,9 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
     final hasDate =
         widget.task.dueDate != null && widget.task.dueDate!.isNotEmpty;
 
-    if (!hasDate) {
+    final isEditing = _textFocusNode.hasFocus || _notesFocusNode.hasFocus;
+
+    if (!hasDate && !isEditing) {
       return const SizedBox.shrink();
     }
 
@@ -256,35 +305,74 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
       padding: const EdgeInsets.only(top: 4),
       child: Row(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.calendar_today, size: 14, color: Colors.grey[500]),
-                const SizedBox(width: 4),
-                Text(
-                  DateParser.formatDateOnlyForDisplay(widget.task.dueDate!),
-                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+          if (hasDate || isEditing)
+            GestureDetector(
+              onTap: isEditing ? _showDatePicker : null,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.calendar_today,
+                      size: 14,
+                      color: hasDate ? Colors.grey[500] : Colors.grey[300],
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      hasDate
+                          ? DateParser.formatDateOnlyForDisplay(widget.task.dueDate!)
+                          : '添加日期',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: hasDate ? Colors.grey[600] : Colors.grey[400],
+                        fontStyle: isEditing && !hasDate ? FontStyle.italic : FontStyle.normal,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-          if (widget.task.dueTime != null &&
-              widget.task.dueTime!.isNotEmpty) ...[
-            const SizedBox(width: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.access_time, size: 14, color: Colors.grey[500]),
-                  const SizedBox(width: 4),
-                  Text(
-                    DateParser.formatTimeForDisplay(widget.task.dueTime),
-                    style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                  ),
-                ],
+          if ((widget.task.dueTime != null &&
+                  widget.task.dueTime!.isNotEmpty) ||
+              isEditing) ...[
+            if (hasDate) const SizedBox(width: 8),
+            GestureDetector(
+              onTap: isEditing ? _showTimePicker : null,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.access_time,
+                      size: 14,
+                      color: widget.task.dueTime != null &&
+                              widget.task.dueTime!.isNotEmpty
+                          ? Colors.grey[500]
+                          : Colors.grey[300],
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      widget.task.dueTime != null &&
+                              widget.task.dueTime!.isNotEmpty
+                          ? DateParser.formatTimeForDisplay(widget.task.dueTime)
+                          : '添加时间',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: widget.task.dueTime != null &&
+                                widget.task.dueTime!.isNotEmpty
+                            ? Colors.grey[600]
+                            : Colors.grey[400],
+                        fontStyle: isEditing &&
+                                (widget.task.dueTime == null ||
+                                    widget.task.dueTime!.isEmpty)
+                            ? FontStyle.italic
+                            : FontStyle.normal,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
