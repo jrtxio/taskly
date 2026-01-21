@@ -147,7 +147,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                 const SizedBox(width: 4),
                 Opacity(
                   opacity:
-                      (_isSelected ||
+                      (widget.isSelected ||
                           _textFocusNode.hasFocus ||
                           _notesFocusNode.hasFocus)
                       ? 1.0
