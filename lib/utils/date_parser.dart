@@ -340,7 +340,7 @@ class DateParser {
 
     final patterns = [
       r'(?:^|\s)([+]\d+[mhdwM])(?:\s|$)',
-      r'(?:^|\s)([@](?:now|\d{1,2}(?::\d{2})?(?:am|pm)?(?:\s+(?:tomorrow|tmw|mon|tue|wed|thu|fri|sat|sun)?)(?:\s|$))',
+      r'(?:^|\s)([@](?:now|\d{1,2}(?::\d{2})?(?:am|pm)?)(?:\s+(?:tomorrow|tmw|mon|tue|wed|thu|fri|sat|sun))?)\s*$',
     ];
 
     for (final pattern in patterns) {
