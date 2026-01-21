@@ -12,6 +12,7 @@ class TaskListView extends StatefulWidget {
   final Function(int) onToggleTask;
   final Function(Task) onEditTask;
   final Function(int) onDeleteTask;
+  final Function(int, int) onMoveTaskToList;
   final Function(int)? onTaskUpdated;
   final Function(int)? onTaskAdded;
   final String? currentViewTitle;
@@ -30,6 +31,7 @@ class TaskListView extends StatefulWidget {
     required this.onToggleTask,
     required this.onEditTask,
     required this.onDeleteTask,
+    required this.onMoveTaskToList,
     this.onTaskUpdated,
     this.onTaskAdded,
     this.currentViewTitle,
@@ -130,6 +132,14 @@ class _TaskListViewState extends State<TaskListView> {
         _selectedTaskId = taskId;
       }
     });
+  }
+
+  Future<void> _handleTaskMove(int taskId, int newListId) async {
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+    final task = widget.tasks.firstWhere((t) => t.id == taskId);
+    final updatedTask = task.copyWith(listId: newListId);
+    await taskProvider.updateTask(updatedTask);
+    widget.onTaskUpdated?.call(updatedTask.listId);
   }
 
   @override
@@ -332,6 +342,7 @@ class _TaskListViewState extends State<TaskListView> {
           onDelete: () => widget.onDeleteTask(task.id),
           onShowDetail: () => widget.onEditTask(task),
           onSelect: () => _handleTaskSelection(task.id),
+          onMoveToList: (newListId) => _handleTaskMove(task.id, newListId!),
         );
       },
     );
@@ -379,6 +390,7 @@ class _TaskListViewState extends State<TaskListView> {
                   onDelete: () => widget.onDeleteTask(task.id),
                   onShowDetail: () => widget.onEditTask(task),
                   onSelect: () => _handleTaskSelection(task.id),
+                  onMoveToList: (newListId) => _handleTaskMove(task.id, newListId!),
                 ),
               ),
             ),

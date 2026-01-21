@@ -296,6 +296,9 @@ class _MainScreenState extends State<MainScreen> {
                             onDeleteTask: (id) {
                               _showDeleteConfirmDialog(id);
                             },
+                            onMoveTaskToList: (taskId, newListId) {
+                              _handleTaskMoved(taskId, newListId);
+                            },
                             onTaskAdded: (listId) {
                               _handleTaskAdded(listId);
                             },
@@ -372,6 +375,23 @@ class _MainScreenState extends State<MainScreen> {
     _updateViewTitle(addedList.name);
     _updateTaskCounts();
     _updateStatus('任务已添加');
+  }
+
+  Future<void> _handleTaskMoved(int taskId, int newListId) async {
+    final listProvider = Provider.of<ListProvider>(context, listen: false);
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+    final appProvider = Provider.of<AppProvider>(context, listen: false);
+
+    final movedList = listProvider.lists.firstWhere(
+      (list) => list.id == newListId,
+      orElse: () => listProvider.lists.first,
+    );
+
+    await taskProvider.loadTasksByList(newListId);
+    listProvider.selectList(movedList);
+    _updateViewTitle(movedList.name);
+    _updateTaskCounts();
+    _updateStatus('任务已移动到 ${movedList.name}');
   }
 
   void _showDeleteConfirmDialog(int taskId) {

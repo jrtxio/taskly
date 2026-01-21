@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../models/task.dart';
+import '../models/todo_list.dart';
 import '../utils/date_parser.dart';
 
 class ReminderTaskItem extends StatefulWidget {
@@ -11,6 +13,7 @@ class ReminderTaskItem extends StatefulWidget {
   final VoidCallback onDelete;
   final VoidCallback onShowDetail;
   final VoidCallback onSelect;
+  final Function(int?) onMoveToList;
 
   const ReminderTaskItem({
     super.key,
@@ -21,6 +24,7 @@ class ReminderTaskItem extends StatefulWidget {
     required this.onDelete,
     required this.onShowDetail,
     required this.onSelect,
+    required this.onMoveToList,
   });
 
   @override
@@ -157,6 +161,101 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
     }
   }
 
+  void _showContextMenu(Offset offset) {
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        offset.dx,
+        offset.dy,
+        overlay.size.width - offset.dx,
+        overlay.size.height - offset.dy,
+      ),
+      items: [
+        if (!widget.task.completed)
+          PopupMenuItem(
+            value: 'complete',
+            child: const ListTile(
+              leading: Icon(Icons.check_circle_outline),
+              title: Text('标记完成'),
+            ),
+          )
+        else
+          PopupMenuItem(
+            value: 'uncomplete',
+            child: const ListTile(
+              leading: Icon(Icons.circle_outlined),
+              title: Text('标记未完成'),
+            ),
+          ),
+        const PopupMenuDivider(),
+        PopupMenuItem(
+          value: 'move',
+          child: const ListTile(
+            leading: Icon(Icons.drive_file_move),
+            title: Text('移动到列表'),
+            trailing: Icon(Icons.chevron_right),
+          ),
+        ),
+        const PopupMenuDivider(),
+        PopupMenuItem(
+          value: 'delete',
+          child: const ListTile(
+            leading: Icon(Icons.delete, color: Colors.red),
+            title: Text('删除任务', style: TextStyle(color: Colors.red)),
+          ),
+        ),
+      ],
+    ).then((value) async {
+      if (value == null) return;
+
+      if (value == 'delete') {
+        widget.onDelete();
+      } else if (value == 'complete') {
+        widget.onToggle();
+      } else if (value == 'uncomplete') {
+        widget.onToggle();
+      } else if (value == 'move') {
+        _showMoveMenu(offset);
+      }
+    });
+  }
+
+  void _showMoveMenu(Offset offset) {
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    final allLists = Provider.of<List<TodoList>>(context, listen: false);
+
+    showMenu<int>(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        offset.dx,
+        offset.dy,
+        overlay.size.width - offset.dx,
+        overlay.size.height - offset.dy,
+      ),
+      items: allLists.map((list) {
+        return PopupMenuItem(
+          value: list.id,
+          child: ListTile(
+            leading: list.icon != null
+                ? Text(list.icon!, style: const TextStyle(fontSize: 20))
+                : const Icon(Icons.list),
+            title: Text(list.name),
+            trailing: list.id == widget.task.listId
+                ? const Icon(Icons.check, size: 20)
+                : null,
+          ),
+        );
+      }).toList(),
+    ).then((listId) {
+      if (listId != null && listId != widget.task.listId) {
+        widget.onMoveToList(listId);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
@@ -164,6 +263,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
       onExit: (_) => setState(() => _isHovered = false),
       child: GestureDetector(
         onTap: _handleContainerTap,
+        onSecondaryTapDown: (details) => _showContextMenu(details.globalPosition),
         behavior: HitTestBehavior.translucent,
         child: Container(
           decoration: BoxDecoration(
@@ -333,7 +433,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                         style: TextStyle(
                           fontSize: 13,
                           color: isEditing ? Colors.blue[700] : (hasDate ? Colors.grey[600] : Colors.grey[400]),
-                          fontStyle: isEditing && !hasDate ? FontStyle.italic : FontStyle.normal,
+                          fontStyle: FontStyle.normal,
                         ),
                       ),
                     ],
@@ -383,11 +483,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                                       widget.task.dueTime!.isNotEmpty
                                   ? Colors.grey[600]
                                   : Colors.grey[400]),
-                          fontStyle: isEditing &&
-                                  (widget.task.dueTime == null ||
-                                      widget.task.dueTime!.isEmpty)
-                              ? FontStyle.italic
-                              : FontStyle.normal,
+                          fontStyle: FontStyle.normal,
                         ),
                       ),
                     ],

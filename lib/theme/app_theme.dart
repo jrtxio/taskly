@@ -93,6 +93,55 @@ class AppTheme {
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
+      datePickerTheme: DatePickerThemeData(
+        backgroundColor: Colors.white,
+        headerBackgroundColor: Colors.white,
+        headerForegroundColor: Colors.black87,
+        weekdayStyle: const TextStyle(color: Colors.black87, fontSize: 12),
+        dayStyle: const TextStyle(color: Colors.black87),
+        todayForegroundColor: WidgetStateProperty.all(const Color(0xFF007AFF)),
+        todayBackgroundColor: WidgetStateProperty.all(Colors.blue[50]),
+        dayForegroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return Colors.white;
+          }
+          return Colors.black87;
+        }),
+        dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const Color(0xFF007AFF);
+          }
+          return Colors.transparent;
+        }),
+        dayOverlayColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const Color(0xFF007AFF).withOpacity(0.12);
+          }
+          if (states.contains(WidgetState.pressed)) {
+            return Colors.black.withOpacity(0.08);
+          }
+          if (states.contains(WidgetState.hovered)) {
+            return Colors.black.withOpacity(0.04);
+          }
+          return null;
+        }),
+        rangeSelectionBackgroundColor: const Color(0xFF007AFF).withOpacity(0.12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        dividerColor: Colors.grey[300],
+        todayBorder: BorderSide(color: const Color(0xFF007AFF), width: 1),
+      ),
+      timePickerTheme: TimePickerThemeData(
+        backgroundColor: Colors.white,
+        hourMinuteColor: Colors.blue[50],
+        hourMinuteTextColor: const Color(0xFF007AFF),
+        dialHandColor: const Color(0xFF007AFF),
+        dialBackgroundColor: Colors.transparent,
+        dialTextColor: Colors.black87,
+        entryModeIconColor: const Color(0xFF007AFF),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        dayPeriodColor: Colors.blue[50],
+        dayPeriodTextColor: const Color(0xFF007AFF),
+      ),
       textTheme: const TextTheme(
         displayLarge: TextStyle(
           fontSize: 32,
@@ -230,6 +279,55 @@ class AppTheme {
         contentTextStyle: const TextStyle(color: Colors.white),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      datePickerTheme: DatePickerThemeData(
+        backgroundColor: const Color(0xFF2C2C2E),
+        headerBackgroundColor: const Color(0xFF2C2C2E),
+        headerForegroundColor: Colors.white,
+        weekdayStyle: const TextStyle(color: Colors.white, fontSize: 12),
+        dayStyle: const TextStyle(color: Colors.white),
+        todayForegroundColor: WidgetStateProperty.all(const Color(0xFF0A84FF)),
+        todayBackgroundColor: WidgetStateProperty.all(const Color(0xFF0A84FF).withOpacity(0.1)),
+        dayForegroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return Colors.white;
+          }
+          return Colors.white;
+        }),
+        dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const Color(0xFF0A84FF);
+          }
+          return Colors.transparent;
+        }),
+        dayOverlayColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const Color(0xFF0A84FF).withOpacity(0.12);
+          }
+          if (states.contains(WidgetState.pressed)) {
+            return Colors.white.withOpacity(0.08);
+          }
+          if (states.contains(WidgetState.hovered)) {
+            return Colors.white.withOpacity(0.04);
+          }
+          return null;
+        }),
+        rangeSelectionBackgroundColor: const Color(0xFF0A84FF).withOpacity(0.12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        dividerColor: const Color(0xFF38383A),
+        todayBorder: BorderSide(color: const Color(0xFF0A84FF), width: 1),
+      ),
+      timePickerTheme: TimePickerThemeData(
+        backgroundColor: const Color(0xFF2C2C2E),
+        hourMinuteColor: const Color(0xFF0A84FF).withOpacity(0.1),
+        hourMinuteTextColor: const Color(0xFF0A84FF),
+        dialHandColor: const Color(0xFF0A84FF),
+        dialBackgroundColor: Colors.transparent,
+        dialTextColor: Colors.white,
+        entryModeIconColor: const Color(0xFF0A84FF),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        dayPeriodColor: const Color(0xFF0A84FF).withOpacity(0.1),
+        dayPeriodTextColor: const Color(0xFF0A84FF),
       ),
       textTheme: const TextTheme(
         displayLarge: TextStyle(
