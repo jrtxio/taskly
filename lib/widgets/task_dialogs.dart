@@ -133,7 +133,7 @@ class _TaskInputDialogState extends State<TaskInputDialog> {
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Color(0xFF007AFF)),
                 ),
-                hintText: '输入任务内容...',
+                hintText: '+ 添加任务',
               ),
             ),
             const SizedBox(height: 16),

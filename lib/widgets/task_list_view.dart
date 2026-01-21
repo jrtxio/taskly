@@ -260,9 +260,7 @@ class _TaskListViewState extends State<TaskListView> {
               controller: _quickAddController,
               enabled: widget.isDatabaseConnected,
               decoration: InputDecoration(
-                hintText: widget.isDatabaseConnected
-                    ? '添加新任务... (支持 +1d, @10am 等快捷日期)'
-                    : '请先创建或打开数据库',
+                hintText: widget.isDatabaseConnected ? '+ 添加任务' : '请先创建或打开数据库',
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(vertical: 8),
                 hintStyle: TextStyle(
