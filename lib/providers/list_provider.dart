@@ -87,6 +87,12 @@ class ListProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // Clear selected list
+  void clearSelection() {
+    _selectedList = null;
+    notifyListeners();
+  }
+
   // Add a new list
   Future<void> addList(String name, {String? icon, Color? color}) async {
     if (!_databaseService.isConnected()) {

@@ -195,6 +195,7 @@ class _MainScreenState extends State<MainScreen> {
                                   _updateStatus('请先打开数据库');
                                   return;
                                 }
+                                listProvider.clearSelection();
                                 taskProvider.loadTodayTasks();
                                 _updateViewTitle('今天');
                                 _updateStatus('显示今天的任务');
@@ -204,6 +205,7 @@ class _MainScreenState extends State<MainScreen> {
                                   _updateStatus('请先打开数据库');
                                   return;
                                 }
+                                listProvider.clearSelection();
                                 taskProvider.loadPlannedTasks();
                                 _updateViewTitle('计划');
                                 _updateStatus('显示计划中的任务');
@@ -213,6 +215,7 @@ class _MainScreenState extends State<MainScreen> {
                                   _updateStatus('请先打开数据库');
                                   return;
                                 }
+                                listProvider.clearSelection();
                                 taskProvider.loadAllTasks();
                                 _updateViewTitle('全部');
                                 _updateStatus('显示全部任务');
@@ -222,6 +225,7 @@ class _MainScreenState extends State<MainScreen> {
                                   _updateStatus('请先打开数据库');
                                   return;
                                 }
+                                listProvider.clearSelection();
                                 taskProvider.loadCompletedTasks();
                                 _updateViewTitle('完成');
                                 _updateStatus('显示完成的任务');

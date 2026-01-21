@@ -311,6 +311,11 @@ class _TaskListViewState extends State<TaskListView> {
       );
     }
 
+    final shouldGroup = widget.selectedList == null;
+    if (shouldGroup) {
+      return _buildGroupedTaskList();
+    }
+
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: widget.tasks.length,
@@ -324,6 +329,102 @@ class _TaskListViewState extends State<TaskListView> {
           onShowDetail: () => widget.onEditTask(task),
         );
       },
+    );
+  }
+
+  Widget _buildGroupedTaskList() {
+    final Map<int, List<Task>> groupedTasks = {};
+    for (final task in widget.tasks) {
+      if (!groupedTasks.containsKey(task.listId)) {
+        groupedTasks[task.listId] = [];
+      }
+      groupedTasks[task.listId]!.add(task);
+    }
+
+    final sortedListIds = groupedTasks.keys.toList()..sort();
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: groupedTasks.length,
+      itemBuilder: (context, index) {
+        final listId = sortedListIds[index];
+        final tasks = groupedTasks[listId]!;
+        final list = widget.lists.firstWhere(
+          (l) => l.id == listId,
+          orElse: () => TodoList(
+            id: listId,
+            name: '列表 $listId',
+            icon: null,
+            color: Colors.blue,
+          ),
+        );
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildListHeader(list, tasks.length),
+            ...tasks.map(
+              (task) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: ReminderTaskItem(
+                  task: task,
+                  onToggle: () => widget.onToggleTask(task.id),
+                  onUpdate: _handleTaskUpdate,
+                  onDelete: () => widget.onDeleteTask(task.id),
+                  onShowDetail: () => widget.onEditTask(task),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildListHeader(TodoList list, int taskCount) {
+    final color = list.color ?? Colors.blue;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Row(
+        children: [
+          Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            child: Center(
+              child: list.icon != null
+                  ? Text(list.icon!, style: const TextStyle(fontSize: 14))
+                  : const Icon(Icons.folder, color: Colors.white, size: 14),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            list.name,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF424242),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: Color(0xFFD1D5DB),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              taskCount.toString(),
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF424242),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

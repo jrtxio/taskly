@@ -280,4 +280,15 @@ class TaskProvider with ChangeNotifier {
   void _clearError() {
     _error = null;
   }
+
+  Future<Map<int, List<Task>>> groupTasksByListId() async {
+    final Map<int, List<Task>> grouped = {};
+    for (final task in _tasks) {
+      if (!grouped.containsKey(task.listId)) {
+        grouped[task.listId] = [];
+      }
+      grouped[task.listId]!.add(task);
+    }
+    return grouped;
+  }
 }
