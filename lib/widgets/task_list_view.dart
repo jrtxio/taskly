@@ -167,10 +167,7 @@ class _TaskListViewState extends State<TaskListView> {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: Colors.grey[300]!)),
-      ),
+      decoration: const BoxDecoration(color: Colors.white),
       child: Row(
         children: [
           IconButton(
@@ -179,7 +176,7 @@ class _TaskListViewState extends State<TaskListView> {
               color: Colors.grey[600],
             ),
             onPressed: widget.onToggleSidebar,
-            padding: EdgeInsets.zero,
+            padding: const EdgeInsets.only(left: -4),
             constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
             tooltip: widget.isSidebarVisible ? '隐藏侧边栏' : '显示侧边栏',
           ),
@@ -251,7 +248,6 @@ class _TaskListViewState extends State<TaskListView> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: widget.isDatabaseConnected ? Colors.grey[50] : Colors.grey[200],
-        border: Border(bottom: BorderSide(color: Colors.grey[300]!)),
       ),
       child: Row(
         children: [

@@ -116,10 +116,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
       onExit: (_) => setState(() => _isHovered = false),
       child: Container(
         decoration: BoxDecoration(
-          color: _isHovered ? Colors.grey[100] : Colors.white,
-          border: Border(
-            bottom: BorderSide(color: Colors.grey[200]!, width: 1),
-          ),
+          color: _isHovered ? Colors.grey[50] : Colors.white,
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
