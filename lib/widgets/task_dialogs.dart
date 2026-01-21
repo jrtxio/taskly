@@ -153,12 +153,12 @@ class _TaskInputDialogState extends State<TaskInputDialog> {
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Color(0xFF007AFF)),
                 ),
-                hintText: '例如: +1d, @10am, 2025-08-07',
+                hintText: '例如: +10m, @10am, 2025-08-07',
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              '支持智能日期格式: +1d (明天), @10am (上午10点), +1w (下周)',
+              '支持: +10m(10分钟), +2h(2小时), +1d(明天), @10am(上午10点), @10:30pm(晚上10:30)',
               style: Theme.of(
                 context,
               ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
@@ -637,12 +637,12 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Color(0xFF007AFF)),
                 ),
-                hintText: '例如: +1d, @10am, 2025-08-07',
+                hintText: '例如: +10m, @10am, 2025-08-07',
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              '支持智能日期格式: +1d (明天), @10am (上午10点), +1w (下周)',
+              '支持: +10m(10分钟), +2h(2小时), +1d(明天), @10am(上午10点), @10:30pm(晚上10:30)',
               style: Theme.of(
                 context,
               ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),

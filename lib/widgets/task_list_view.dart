@@ -49,6 +49,7 @@ class TaskListView extends StatefulWidget {
 class _TaskListViewState extends State<TaskListView> {
   final _quickAddController = TextEditingController();
   bool _isSubmitting = false;
+  int? _selectedTaskId;
 
   @override
   void dispose() {
@@ -62,18 +63,8 @@ class _TaskListViewState extends State<TaskListView> {
     final input = _quickAddController.text.trim();
     if (input.isEmpty) return;
 
-    final parts = input.split(RegExp(r'\s+(?=[+@]|$)'));
-    String taskText = input;
-    String? dueDate;
-
-    if (parts.length >= 2) {
-      taskText = parts.sublist(0, parts.length - 1).join(' ').trim();
-      final datePart = parts.last.trim();
-      final parsedDate = DateParser.parse(datePart);
-      if (parsedDate != null) {
-        dueDate = parsedDate;
-      }
-    }
+    final (taskText, timeCommand) = DateParser.extractTimeCommand(input);
+    final dueDate = timeCommand != null ? DateParser.parse(timeCommand) : null;
 
     if (taskText.isEmpty) {
       ScaffoldMessenger.of(
@@ -129,6 +120,16 @@ class _TaskListViewState extends State<TaskListView> {
     final taskProvider = Provider.of<TaskProvider>(context, listen: false);
     await taskProvider.updateTask(updatedTask);
     widget.onTaskUpdated?.call(updatedTask.listId);
+  }
+
+  void _handleTaskSelection(int taskId) {
+    setState(() {
+      if (_selectedTaskId == taskId) {
+        _selectedTaskId = null;
+      } else {
+        _selectedTaskId = taskId;
+      }
+    });
   }
 
   @override
@@ -325,10 +326,12 @@ class _TaskListViewState extends State<TaskListView> {
         final task = widget.tasks[index];
         return ReminderTaskItem(
           task: task,
+          isSelected: _selectedTaskId == task.id,
           onToggle: () => widget.onToggleTask(task.id),
           onUpdate: _handleTaskUpdate,
           onDelete: () => widget.onDeleteTask(task.id),
           onShowDetail: () => widget.onEditTask(task),
+          onSelect: () => _handleTaskSelection(task.id),
         );
       },
     );
@@ -370,10 +373,12 @@ class _TaskListViewState extends State<TaskListView> {
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: ReminderTaskItem(
                   task: task,
+                  isSelected: _selectedTaskId == task.id,
                   onToggle: () => widget.onToggleTask(task.id),
                   onUpdate: _handleTaskUpdate,
                   onDelete: () => widget.onDeleteTask(task.id),
                   onShowDetail: () => widget.onEditTask(task),
+                  onSelect: () => _handleTaskSelection(task.id),
                 ),
               ),
             ),

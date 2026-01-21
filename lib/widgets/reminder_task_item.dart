@@ -4,18 +4,22 @@ import '../utils/date_parser.dart';
 
 class ReminderTaskItem extends StatefulWidget {
   final Task task;
+  final bool isSelected;
   final VoidCallback onToggle;
   final Function(Task) onUpdate;
   final VoidCallback onDelete;
   final VoidCallback onShowDetail;
+  final VoidCallback onSelect;
 
   const ReminderTaskItem({
     super.key,
     required this.task,
+    required this.isSelected,
     required this.onToggle,
     required this.onUpdate,
     required this.onDelete,
     required this.onShowDetail,
+    required this.onSelect,
   });
 
   @override
@@ -28,7 +32,6 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
   late FocusNode _textFocusNode;
   late FocusNode _notesFocusNode;
   bool _isHovered = false;
-  bool _isSelected = false;
 
   @override
   void initState() {
@@ -38,19 +41,17 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
     _textFocusNode = FocusNode()
       ..addListener(() {
         if (_textFocusNode.hasFocus) {
-          setState(() => _isSelected = true);
+          widget.onSelect();
         } else {
           _saveTextChanges();
-          _checkAndUpdateSelection();
         }
       });
     _notesFocusNode = FocusNode()
       ..addListener(() {
         if (_notesFocusNode.hasFocus) {
-          setState(() => _isSelected = true);
+          widget.onSelect();
         } else {
           _saveNotesChanges();
-          _checkAndUpdateSelection();
         }
       });
   }
@@ -96,12 +97,6 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
     }
   }
 
-  void _checkAndUpdateSelection() {
-    if (!_textFocusNode.hasFocus && !_notesFocusNode.hasFocus) {
-      setState(() => _isSelected = false);
-    }
-  }
-
   void _handleTextSubmitted(String value) {
     _textFocusNode.unfocus();
   }
@@ -112,7 +107,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
 
   void _handleContainerTap() {
     if (!_textFocusNode.hasFocus && !_notesFocusNode.hasFocus) {
-      setState(() => _isSelected = true);
+      widget.onSelect();
     }
   }
 
@@ -126,7 +121,9 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
         behavior: HitTestBehavior.translucent,
         child: Container(
           decoration: BoxDecoration(
-            color: (_isHovered || _isSelected) ? Colors.grey[50] : Colors.white,
+            color: (_isHovered || widget.isSelected)
+                ? Colors.grey[50]
+                : Colors.white,
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),

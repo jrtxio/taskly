@@ -37,27 +37,39 @@ class DateParser {
   /// - +7d: 7 days from now
   /// - +1w: next week
   /// - +2w: 2 weeks from now
-  /// - +1m: next month (30 days)
+  /// - +1M: next month (30 days)
+  /// - +10m: 10 minutes from now
+  /// - +2h: 2 hours from now
   static String? _parseRelativeDate(String input) {
     final now = DateTime.now();
-    final suffix = input.substring(1).toLowerCase();
+    final suffix = input.substring(1);
 
-    if (suffix == 'd') {
+    final match = RegExp(r'^(\d+)([mhdwM])$').firstMatch(suffix);
+    if (match != null) {
+      final amount = int.parse(match.group(1)!);
+      final unit = match.group(2)!;
+
+      switch (unit) {
+        case 'm':
+          return _formatDateTime(now.add(Duration(minutes: amount)));
+        case 'h':
+          return _formatDateTime(now.add(Duration(hours: amount)));
+        case 'd':
+          return _formatDateTime(now.add(Duration(days: amount)));
+        case 'w':
+          return _formatDateTime(now.add(Duration(days: amount * 7)));
+        case 'M':
+          return _formatDateTime(now.add(Duration(days: amount * 30)));
+      }
+    }
+
+    final lowerSuffix = suffix.toLowerCase();
+    if (lowerSuffix == 'd') {
       return _formatDate(now.add(const Duration(days: 1)));
-    } else if (suffix == 'w') {
+    } else if (lowerSuffix == 'w') {
       return _formatDate(now.add(const Duration(days: 7)));
-    } else if (suffix == 'm') {
+    } else if (lowerSuffix == 'M') {
       return _formatDate(now.add(const Duration(days: 30)));
-    } else if (suffix.startsWith('d') && suffix.length > 1) {
-      final days = int.tryParse(suffix.substring(1));
-      if (days != null) {
-        return _formatDate(now.add(Duration(days: days)));
-      }
-    } else if (suffix.startsWith('w') && suffix.length > 1) {
-      final weeks = int.tryParse(suffix.substring(1));
-      if (weeks != null) {
-        return _formatDate(now.add(Duration(days: weeks * 7)));
-      }
     }
 
     return null;
@@ -67,9 +79,14 @@ class DateParser {
   /// - @now: current time
   /// - @10am: 10 AM today
   /// - @2pm: 2 PM today
-  /// - @11pm: 11 PM today
+  /// - @10:30am: 10:30 AM today
+  /// - @22:30: 22:30 (24-hour format)
+  /// - @10am tomorrow: 10 AM tomorrow
+  /// - @10am tmw: 10 AM tomorrow (shorthand)
+  /// - @8pm mon: 8 PM next Monday
   ///
   /// Converts 12-hour format to 24-hour format.
+  /// If time has passed today, automatically moves to next day/week.
   static String? _parseTime(String input) {
     final now = DateTime.now();
     final timeStr = input.substring(1).toLowerCase();
@@ -78,23 +95,83 @@ class DateParser {
       return _formatDateTime(now);
     }
 
-    final timeFormat = RegExp(r'^(\d{1,2})(am|pm)?$');
-    final match = timeFormat.firstMatch(timeStr);
-    if (match != null) {
-      final hour = int.parse(match.group(1)!);
-      final period = match.group(2);
-      int hour24 = hour;
-      if (period == 'pm' && hour < 12) {
-        hour24 = hour + 12;
-      } else if (period == 'am' && hour == 12) {
-        hour24 = 0;
-      }
-      return _formatDateTime(
-        DateTime(now.year, now.month, now.day, hour24, 0, 0),
-      );
+    final parts = timeStr.split(RegExp(r'\s+'));
+    if (parts.isEmpty) return null;
+
+    final timePart = parts[0];
+    final dayModifier = parts.length > 1 ? parts.sublist(1).join(' ') : null;
+
+    int hour = 0;
+    int minute = 0;
+
+    final timeMatch = RegExp(
+      r'^(\d{1,2})(?::(\d{2}))?(am|pm)?$',
+    ).firstMatch(timePart);
+    if (timeMatch == null) return null;
+
+    hour = int.parse(timeMatch.group(1)!);
+    final minuteStr = timeMatch.group(2);
+    final period = timeMatch.group(3);
+
+    if (minuteStr != null) {
+      minute = int.parse(minuteStr);
     }
 
-    return null;
+    int hour24 = hour;
+    if (period == 'pm' && hour < 12) {
+      hour24 = hour + 12;
+    } else if (period == 'am' && hour == 12) {
+      hour24 = 0;
+    }
+
+    DateTime targetDate = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      hour24,
+      minute,
+      0,
+    );
+
+    if (dayModifier != null) {
+      targetDate = _applyDayModifier(targetDate, dayModifier);
+    } else if (timeStr != 'now' && targetDate.isBefore(now)) {
+      targetDate = targetDate.add(const Duration(days: 1));
+    }
+
+    return _formatDateTime(targetDate);
+  }
+
+  /// Apply day modifier to a date.
+  /// Supports: tomorrow, tmw, mon, tue, wed, thu, fri, sat, sun
+  static DateTime _applyDayModifier(DateTime date, String modifier) {
+    final lowerModifier = modifier.toLowerCase().trim();
+
+    if (lowerModifier == 'tomorrow' || lowerModifier == 'tmw') {
+      return date.add(const Duration(days: 1));
+    }
+
+    final daysMap = {
+      'mon': 1,
+      'tue': 2,
+      'wed': 3,
+      'thu': 4,
+      'fri': 5,
+      'sat': 6,
+      'sun': 7,
+    };
+
+    final targetDay = daysMap[lowerModifier];
+    if (targetDay != null) {
+      final currentDay = date.weekday;
+      int daysToAdd = targetDay - currentDay;
+      if (daysToAdd <= 0) {
+        daysToAdd += 7;
+      }
+      return date.add(Duration(days: daysToAdd));
+    }
+
+    return date;
   }
 
   /// Parse absolute date strings in various formats:
@@ -239,5 +316,43 @@ class DateParser {
     } catch (e) {
       return '$dateStr 00:00:00';
     }
+  }
+
+  /// Extract time command from task text.
+  ///
+  /// Returns a tuple of (taskText, timeCommand) where:
+  /// - taskText: task text without time command
+  /// - timeCommand: extracted time command (e.g., '+1d', '@10am', etc.)
+  ///
+  /// Examples:
+  /// - "买牛奶 @10am" → ("买牛奶", "@10am")
+  /// - "会议 +2h" → ("会议", "+2h")
+  /// - "去健身房 @8pm mon" → ("去健身房", "@8pm mon")
+  /// - "写报告" → ("写报告", null)
+  ///
+  /// Time commands can be:
+  /// - Relative: +10m, +2h, +1d, +1w, +6M
+  /// - Exact: @now, @10am, @10:30pm, @22:30
+  /// - With day modifier: @10am tomorrow, @8pm mon
+  static (String, String?) extractTimeCommand(String input) {
+    final trimmed = input.trim();
+    if (trimmed.isEmpty) return ('', null);
+
+    final patterns = [
+      r'(?:^|\s)([+]\d+[mhdwM])(?:\s|$)',
+      r'(?:^|\s)([@](?:now|\d{1,2}(?::\d{2})?(?:am|pm)?(?:\s+(?:tomorrow|tmw|mon|tue|wed|thu|fri|sat|sun)?)(?:\s|$))',
+    ];
+
+    for (final pattern in patterns) {
+      final timePattern = RegExp(pattern, caseSensitive: false);
+      final match = timePattern.firstMatch(trimmed);
+      if (match != null) {
+        final timeCommand = match.group(1)!.trim();
+        final taskText = trimmed.substring(0, match.start).trim();
+        return (taskText, timeCommand);
+      }
+    }
+
+    return (trimmed, null);
   }
 }
