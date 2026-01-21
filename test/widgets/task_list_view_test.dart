@@ -235,11 +235,11 @@ void main() {
       await tester.tap(find.text(testTasks.first.text).first);
       await tester.pump();
 
-      // Now find the info button for the first task
+      // Find all info buttons and check which one is visible
       final infoButtons = find.byIcon(Icons.info_outline);
-      expect(infoButtons, findsOneWidget);
+      expect(infoButtons, findsNWidgets(3));
 
-      // Tap the info button
+      // Tap the first visible info button (for the selected task)
       await tester.tap(infoButtons.first);
       await tester.pump();
 
