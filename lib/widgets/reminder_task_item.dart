@@ -306,30 +306,38 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
       child: Row(
         children: [
           if (hasDate || isEditing)
-            GestureDetector(
-              onTap: isEditing ? _showDatePicker : null,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.calendar_today,
-                      size: 14,
-                      color: hasDate ? Colors.grey[500] : Colors.grey[300],
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      hasDate
-                          ? DateParser.formatDateOnlyForDisplay(widget.task.dueDate!)
-                          : '添加日期',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: hasDate ? Colors.grey[600] : Colors.grey[400],
-                        fontStyle: isEditing && !hasDate ? FontStyle.italic : FontStyle.normal,
+            MouseRegion(
+              cursor: isEditing ? SystemMouseCursors.click : SystemMouseCursors.basic,
+              child: GestureDetector(
+                onTap: isEditing ? _showDatePicker : null,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: isEditing ? Colors.blue[50] : Colors.transparent,
+                    borderRadius: BorderRadius.circular(6),
+                    border: isEditing ? Border.all(color: Colors.blue[200]!) : null,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.calendar_today,
+                        size: 14,
+                        color: isEditing ? const Color(0xFF007AFF) : (hasDate ? Colors.grey[500] : Colors.grey[300]),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 4),
+                      Text(
+                        hasDate
+                            ? DateParser.formatDateOnlyForDisplay(widget.task.dueDate!)
+                            : '添加日期',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: isEditing ? Colors.blue[700] : (hasDate ? Colors.grey[600] : Colors.grey[400]),
+                          fontStyle: isEditing && !hasDate ? FontStyle.italic : FontStyle.normal,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -337,41 +345,53 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                   widget.task.dueTime!.isNotEmpty) ||
               isEditing) ...[
             if (hasDate) const SizedBox(width: 8),
-            GestureDetector(
-              onTap: isEditing ? _showTimePicker : null,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.access_time,
-                      size: 14,
-                      color: widget.task.dueTime != null &&
-                              widget.task.dueTime!.isNotEmpty
-                          ? Colors.grey[500]
-                          : Colors.grey[300],
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      widget.task.dueTime != null &&
-                              widget.task.dueTime!.isNotEmpty
-                          ? DateParser.formatTimeForDisplay(widget.task.dueTime)
-                          : '添加时间',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: widget.task.dueTime != null &&
-                                widget.task.dueTime!.isNotEmpty
-                            ? Colors.grey[600]
-                            : Colors.grey[400],
-                        fontStyle: isEditing &&
-                                (widget.task.dueTime == null ||
-                                    widget.task.dueTime!.isEmpty)
-                            ? FontStyle.italic
-                            : FontStyle.normal,
+            MouseRegion(
+              cursor: isEditing ? SystemMouseCursors.click : SystemMouseCursors.basic,
+              child: GestureDetector(
+                onTap: isEditing ? _showTimePicker : null,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: isEditing ? Colors.blue[50] : Colors.transparent,
+                    borderRadius: BorderRadius.circular(6),
+                    border: isEditing ? Border.all(color: Colors.blue[200]!) : null,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.access_time,
+                        size: 14,
+                        color: isEditing
+                            ? const Color(0xFF007AFF)
+                            : (widget.task.dueTime != null &&
+                                    widget.task.dueTime!.isNotEmpty
+                                ? Colors.grey[500]
+                                : Colors.grey[300]),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 4),
+                      Text(
+                        widget.task.dueTime != null &&
+                                widget.task.dueTime!.isNotEmpty
+                            ? DateParser.formatTimeForDisplay(widget.task.dueTime)
+                            : '添加时间',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: isEditing
+                              ? Colors.blue[700]
+                              : (widget.task.dueTime != null &&
+                                      widget.task.dueTime!.isNotEmpty
+                                  ? Colors.grey[600]
+                                  : Colors.grey[400]),
+                          fontStyle: isEditing &&
+                                  (widget.task.dueTime == null ||
+                                      widget.task.dueTime!.isEmpty)
+                              ? FontStyle.italic
+                              : FontStyle.normal,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
