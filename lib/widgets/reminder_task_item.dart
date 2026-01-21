@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../models/task.dart';
 import '../utils/date_parser.dart';
 
@@ -115,22 +114,6 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
     if (!_textFocusNode.hasFocus && !_notesFocusNode.hasFocus) {
       setState(() => _isSelected = true);
     }
-  }
-
-  String _formatDateTimeDisplay() {
-    if (widget.task.dueDate == null || widget.task.dueDate!.isEmpty) {
-      return '';
-    }
-
-    final dateDisplay = DateParser.formatDateOnlyForDisplay(
-      widget.task.dueDate,
-    );
-    final timeDisplay = DateParser.formatTimeForDisplay(widget.task.dueTime);
-
-    if (timeDisplay.isNotEmpty) {
-      return '$dateDisplay $timeDisplay';
-    }
-    return dateDisplay;
   }
 
   @override
@@ -261,166 +244,52 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
   }
 
   Widget _buildDateTime() {
-    final dateTimeDisplay = _formatDateTimeDisplay();
     final hasDate =
         widget.task.dueDate != null && widget.task.dueDate!.isNotEmpty;
 
     if (!hasDate) {
-      return Padding(
-        padding: const EdgeInsets.only(top: 4),
-        child: InkWell(
-          onTap: _selectDate,
-          borderRadius: BorderRadius.circular(4),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.add_circle_outline,
-                  size: 14,
-                  color: Colors.grey[500],
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '添加日期',
-                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
+      return const SizedBox.shrink();
     }
 
     return Padding(
       padding: const EdgeInsets.only(top: 4),
       child: Row(
         children: [
-          InkWell(
-            onTap: _selectDate,
-            borderRadius: BorderRadius.circular(4),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.calendar_today, size: 14, color: Colors.grey[500]),
-                  const SizedBox(width: 4),
-                  Text(
-                    DateParser.formatDateOnlyForDisplay(widget.task.dueDate!),
-                    style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                  ),
-                ],
-              ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.calendar_today, size: 14, color: Colors.grey[500]),
+                const SizedBox(width: 4),
+                Text(
+                  DateParser.formatDateOnlyForDisplay(widget.task.dueDate!),
+                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                ),
+              ],
             ),
           ),
           if (widget.task.dueTime != null &&
               widget.task.dueTime!.isNotEmpty) ...[
             const SizedBox(width: 8),
-            InkWell(
-              onTap: _selectTime,
-              borderRadius: BorderRadius.circular(4),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.access_time, size: 14, color: Colors.grey[500]),
-                    const SizedBox(width: 4),
-                    Text(
-                      DateParser.formatTimeForDisplay(widget.task.dueTime),
-                      style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ] else ...[
-            const SizedBox(width: 8),
-            InkWell(
-              onTap: _selectTime,
-              borderRadius: BorderRadius.circular(4),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.add_circle_outline,
-                      size: 14,
-                      color: Colors.grey[500],
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '添加时间',
-                      style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.access_time, size: 14, color: Colors.grey[500]),
+                  const SizedBox(width: 4),
+                  Text(
+                    DateParser.formatTimeForDisplay(widget.task.dueTime),
+                    style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                  ),
+                ],
               ),
             ),
           ],
         ],
       ),
     );
-  }
-
-  Future<void> _selectDate() async {
-    final now = DateTime.now();
-    DateTime initialDate;
-
-    try {
-      initialDate =
-          widget.task.dueDate != null && widget.task.dueDate!.isNotEmpty
-          ? DateTime.parse(widget.task.dueDate!)
-          : now;
-    } catch (e) {
-      initialDate = now;
-    }
-
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-    );
-
-    if (picked != null) {
-      final updatedTask = widget.task.copyWith(
-        dueDate: DateFormat('yyyy-MM-dd').format(picked),
-      );
-      widget.onUpdate(updatedTask);
-    }
-  }
-
-  Future<void> _selectTime() async {
-    TimeOfDay initialTime = TimeOfDay.now();
-
-    if (widget.task.dueTime != null && widget.task.dueTime!.isNotEmpty) {
-      try {
-        final parts = widget.task.dueTime!.split(':');
-        initialTime = TimeOfDay(
-          hour: int.parse(parts[0]),
-          minute: int.parse(parts[1]),
-        );
-      } catch (e) {
-        initialTime = TimeOfDay.now();
-      }
-    }
-
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: initialTime,
-    );
-
-    if (picked != null) {
-      final updatedTask = widget.task.copyWith(
-        dueTime:
-            '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}',
-      );
-      widget.onUpdate(updatedTask);
-    }
   }
 
   Widget _buildInfoButton() {
