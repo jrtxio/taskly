@@ -13,27 +13,45 @@ jobs:
   build:
     runs-on: ${{ matrix.runner }}
     strategy:
+      fail-fast: false
       matrix:
         include:
-          # Linux builds
+          # Linux x64
           - os: linux
             arch: x64
             runner: ubuntu-latest
-            flutter-version: '3.19.0'
-          # macOS builds
+            flutter-version: '3.27.5'
+          # Linux arm64
+          - os: linux
+            arch: arm64
+            runner: ubuntu-latest
+            flutter-version: '3.27.5'
+            qemu: true
+          # macOS x64
           - os: macos
             arch: x64
-            runner: macos-latest
-            flutter-version: '3.19.0'
-          # Windows builds
+            runner: macos-13
+            flutter-version: '3.27.5'
+          # macOS arm64 (Apple Silicon)
+          - os: macos
+            arch: arm64
+            runner: macos-14
+            flutter-version: '3.27.5'
+          # Windows x64
           - os: windows
             arch: x64
             runner: windows-latest
-            flutter-version: '3.19.0'
+            flutter-version: '3.27.5'
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      
+      - name: Set up QEMU (for Linux arm64)
+        if: matrix.qemu == true
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
       
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -47,6 +65,7 @@ jobs:
           echo "Runner OS: ${{ runner.os }}"
           echo "Runner Architecture: ${{ runner.arch }}"
           echo "Matrix OS: ${{ matrix.os }}"
+          echo "Matrix Arch: ${{ matrix.arch }}"
           flutter --version
       
       - name: Install dependencies
@@ -60,27 +79,44 @@ jobs:
       
       - name: Get version from tag
         id: get_version
+        shell: bash
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-        shell: bash
       
-      - name: Build Linux app
-        if: matrix.os == 'linux'
+      - name: Build Linux x64 app
+        if: matrix.os == 'linux' && matrix.arch == 'x64'
         run: |
           flutter build linux --release
           cd build/linux/x64/release/bundle
           zip -r ../../../taskly-${{ env.VERSION }}-linux-x64.zip .
       
-      - name: Build macOS app
-        if: matrix.os == 'macos'
+      - name: Build Linux arm64 app
+        if: matrix.os == 'linux' && matrix.arch == 'arm64'
+        run: |
+          docker run --rm -v "$PWD":/app -w /app \
+            --platform linux/arm64 \
+            ghcr.io/flutter/flutter:${{ matrix.flutter-version }}-stable \
+            bash -c "flutter pub get && flutter build linux --release"
+          cd build/linux/arm64/release/bundle
+          zip -r ../../../taskly-${{ env.VERSION }}-linux-arm64.zip .
+      
+      - name: Build macOS x64 app
+        if: matrix.os == 'macos' && matrix.arch == 'x64'
         run: |
           flutter build macos --release
           cd build/macos/Build/Products/Release
           zip -r ../../../taskly-${{ env.VERSION }}-macos-x64.zip Taskly.app
       
-      - name: Build Windows app
-        if: matrix.os == 'windows'
+      - name: Build macOS arm64 app
+        if: matrix.os == 'macos' && matrix.arch == 'arm64'
+        run: |
+          flutter build macos --release
+          cd build/macos/Build/Products/Release
+          zip -r ../../../taskly-${{ env.VERSION }}-macos-arm64.zip Taskly.app
+      
+      - name: Build Windows x64 app
+        if: matrix.os == 'windows' && matrix.arch == 'x64'
         shell: powershell
         run: |
           flutter build windows --release
@@ -92,32 +128,32 @@ jobs:
       - name: List build artifacts
         shell: bash
         run: |
-          ls -la build/
-      
-      - name: Get CHANGELOG content
-        id: get_changelog
-        run: |
-          # Extract CHANGELOG.md content for the current version
-          if grep -q "## \[${{ env.VERSION }}\]" CHANGELOG.md; then
-            CHANGELOG_CONTENT=$(sed -n "/## \[${{ env.VERSION }}\]/,/## \[/p" CHANGELOG.md | awk 'NR>1 {print prev} {prev=$0}')
-          else
-            CHANGELOG_CONTENT="## Release v${{ env.VERSION }}\n\nNo changes listed in CHANGELOG.md."
-          fi
-          echo "CHANGELOG_CONTENT<<EOF" >> $GITHUB_ENV
-          echo "$CHANGELOG_CONTENT" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-        shell: bash
+          ls -la build/ || echo "Build directory not found"
+          ls -la build/*.zip 2>/dev/null || echo "No zip files found in build/"
       
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             build/taskly-*.zip
           name: Release v${{ env.VERSION }}
           generate_release_notes: true
           body: |
-            ${{ env.CHANGELOG_CONTENT }}
+            ## Downloads
+            
+            ### Windows
+            - [taskly-${{ env.VERSION }}-windows-x64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-windows-x64.zip)
+            
+            ### macOS
+            - [taskly-${{ env.VERSION }}-macos-x64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-macos-x64.zip) (Intel)
+            - [taskly-${{ env.VERSION }}-macos-arm64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-macos-arm64.zip) (Apple Silicon)
+            
+            ### Linux
+            - [taskly-${{ env.VERSION }}-linux-x64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-linux-x64.zip)
+            - [taskly-${{ env.VERSION }}-linux-arm64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-linux-arm64.zip)
             
             ---
+            
+            *Release notes are automatically generated.*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

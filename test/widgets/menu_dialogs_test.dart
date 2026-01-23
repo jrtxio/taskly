@@ -124,7 +124,7 @@ void main() {
 
       expect(find.text('关于 Taskly'), findsOneWidget);
       expect(find.text('Taskly'), findsOneWidget);
-      expect(find.textContaining('1.0.0'), findsOneWidget);
+      expect(find.textContaining('0.0.1'), findsOneWidget);
     });
 
     testWidgets('should have correct height and styling', (WidgetTester tester) async {
