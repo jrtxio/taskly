@@ -278,13 +278,13 @@ class NativeMenuBar extends StatelessWidget {
     showAboutDialog(
       context: context,
       applicationName: 'Taskly',
-      applicationVersion: '1.0.0',
+      applicationVersion: '0.0.1',
       applicationLegalese: '© 2025 Taskly Team',
       children: [
         const Padding(
           padding: EdgeInsets.only(top: 16.0),
           child: Text(
-            '一个简单优雅的任务管理应用，\n灵感来源于 macOS Reminders。',
+            '一款专注高效的个人任务管理工具\n帮助您轻松规划、组织和完成各项任务',
             textAlign: TextAlign.center,
           ),
         ),
