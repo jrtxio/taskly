@@ -3,6 +3,7 @@ import 'package:taskly/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../models/task.dart';
 import '../models/todo_list.dart';
+import '../utils/date_parser.dart';
 
 class TaskInputDialog extends StatefulWidget {
   final List<TodoList> lists;
@@ -627,19 +628,19 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
             const SizedBox(height: 8),
             TextField(
               controller: _dateController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.white,
-                border: OutlineInputBorder(
+                border: const OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
                 ),
-                enabledBorder: OutlineInputBorder(
+                enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
                 ),
-                focusedBorder: OutlineInputBorder(
+                focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: Color(0xFF007AFF)),
                 ),
-                hintText: '例如: +10m, @10am, 2025-08-07',
+                hintText: l10n.hintDateExample,
               ),
             ),
             const SizedBox(height: 8),

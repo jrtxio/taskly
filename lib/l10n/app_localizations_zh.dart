@@ -275,6 +275,9 @@ class AppLocalizationsZh extends AppLocalizations {
       '支持: +10m(10分钟), +2h(2小时), +1d(明天), @10am(上午10点), @10:30pm(晚上10:30)';
 
   @override
+  String get hintDateExample => '例如: +10m, @10am, 2025-08-07';
+
+  @override
   String get dialogTaskDetail => '任务详情';
 
   @override
@@ -296,4 +299,64 @@ class AppLocalizationsZh extends AppLocalizations {
   String taskUpdateFailed(String error) {
     return '更新任务失败: $error';
   }
+
+  @override
+  String get dialogSaveDbTitle => '保存数据库文件';
+
+  @override
+  String get dialogNoDbOpened => '当前没有打开的数据库';
+
+  @override
+  String get menuLangEn => 'English';
+
+  @override
+  String get menuLangZh => '简体中文';
+
+  @override
+  String get dateTomorrow => '明天';
+
+  @override
+  String get dateYesterday => '昨天';
+
+  @override
+  String get dialogSelectIcon => '选择图标';
+
+  @override
+  String get dialogSelectColor => '选择颜色';
+
+  @override
+  String get dialogClear => '清除';
+
+  @override
+  String get errorEnterTaskDesc => '请输入任务描述';
+
+  @override
+  String errorTaskDescTooLong(int length) {
+    return '任务描述不能超过 $length 个字符';
+  }
+
+  @override
+  String get errorEnterListName => '请输入列表名称';
+
+  @override
+  String errorListNameTooLong(int length) {
+    return '列表名称不能超过 $length 个字符';
+  }
+
+  @override
+  String errorSearchKeywordTooLong(int length) {
+    return '搜索关键词不能超过 $length 个字符';
+  }
+
+  @override
+  String get errorDateTooEarly => '日期不能早于 1900 年';
+
+  @override
+  String get errorDateTooLate => '日期不能晚于 2100 年';
+
+  @override
+  String get errorInvalidDateFormat => '无效的日期格式';
+
+  @override
+  String get dialogValidationFailed => '输入验证失败';
 }

@@ -44,11 +44,26 @@ abstract class DatabaseServiceInterface {
   // Get tasks by list with pagination
   Future<List<Task>> getTasksByList(int listId, {int limit = 50, int offset = 0});
 
+  // Get completed tasks by list with pagination
+  Future<List<Task>> getCompletedTasksByList(int listId, {int limit = 50, int offset = 0});
+
+  // Get tasks by list including completed tasks
+  Future<List<Task>> getTasksByListIncludingCompleted(int listId, {int limit = 50, int offset = 0});
+
+  // Get all tasks including completed
+  Future<List<Task>> getAllTasksIncludingCompleted({int limit = 50, int offset = 0});
+
   // Get today's tasks with pagination
   Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0});
 
+  // Get today's tasks including completed
+  Future<List<Task>> getTodayTasksIncludingCompleted({int limit = 50, int offset = 0});
+
   // Get planned tasks (with due date and not completed) with pagination
   Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0});
+
+  // Get planned tasks including completed
+  Future<List<Task>> getPlannedTasksIncludingCompleted({int limit = 50, int offset = 0});
 
   // Get all incomplete tasks with pagination
   Future<List<Task>> getIncompleteTasks({int limit = 50, int offset = 0});

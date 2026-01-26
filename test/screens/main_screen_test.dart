@@ -279,12 +279,27 @@ class MockTaskRepository implements TaskRepositoryInterface {
   }) async => [];
 
   @override
+  Future<List<Task>> getCompletedTasksByList(int listId, {int limit = 50, int offset = 0}) async => [];
+
+  @override
+  Future<List<Task>> getTasksByListIncludingCompleted(int listId, {int limit = 50, int offset = 0}) async => [];
+
+  @override
+  Future<List<Task>> getAllTasksIncludingCompleted({int limit = 50, int offset = 0}) async => [];
+
+  @override
   Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0}) async =>
       [];
 
   @override
+  Future<List<Task>> getTodayTasksIncludingCompleted({int limit = 50, int offset = 0}) async => [];
+
+  @override
   Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async =>
       [];
+
+  @override
+  Future<List<Task>> getPlannedTasksIncludingCompleted({int limit = 50, int offset = 0}) async => [];
 
   @override
   Future<List<Task>> getIncompleteTasks({
@@ -338,6 +353,7 @@ class MockTaskRepository implements TaskRepositoryInterface {
     String? keyword,
     int limit = 50,
     int offset = 0,
+    bool showCompleted = false,
   }) async => [];
 
   @override
@@ -395,12 +411,28 @@ class MockDatabaseService implements DatabaseServiceInterface {
   }) async => [];
 
   @override
+  Future<List<Task>> getCompletedTasksByList(int listId, {int limit = 50, int offset = 0}) async => [];
+
+  @override
+  Future<List<Task>> getTasksByListIncludingCompleted(int listId, {int limit = 50, int offset = 0}) async => [];
+
+  @override
+  Future<List<Task>> getAllTasksIncludingCompleted({int limit = 50, int offset = 0}) async => [];
+
+  @override
   Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0}) async =>
+      [];
+
+  @override
+  Future<List<Task>> getTodayTasksIncludingCompleted({int limit = 50, int offset = 0}) async =>
       [];
 
   @override
   Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async =>
       [];
+
+  @override
+  Future<List<Task>> getPlannedTasksIncludingCompleted({int limit = 50, int offset = 0}) async => [];
 
   @override
   Future<List<Task>> getIncompleteTasks({

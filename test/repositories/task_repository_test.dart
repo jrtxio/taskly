@@ -47,7 +47,27 @@ class MockDatabaseService implements DatabaseServiceInterface {
     int limit = 50,
     int offset = 0,
   }) async {
-    return _tasks.where((task) => task.listId == listId).toList();
+    return _tasks.where((task) => task.listId == listId && !task.completed).toList();
+  }
+
+  @override
+  Future<List<Task>> getCompletedTasksByList(int listId, {int limit = 50, int offset = 0}) async {
+    return _tasks.where((task) => task.listId == listId && task.completed).toList();
+  }
+
+  @override
+  Future<List<Task>> getTasksByListIncludingCompleted(int listId, {int limit = 50, int offset = 0}) async {
+    final filtered = _tasks.where((task) => task.listId == listId).toList();
+    final incomplete = filtered.where((task) => !task.completed).toList();
+    final completed = filtered.where((task) => task.completed).toList();
+    return [...incomplete, ...completed];
+  }
+
+  @override
+  Future<List<Task>> getAllTasksIncludingCompleted({int limit = 50, int offset = 0}) async {
+    final incomplete = _tasks.where((task) => !task.completed).toList();
+    final completed = _tasks.where((task) => task.completed).toList();
+    return [...incomplete, ...completed];
   }
 
   @override
@@ -66,10 +86,35 @@ class MockDatabaseService implements DatabaseServiceInterface {
   }
 
   @override
+  Future<List<Task>> getTodayTasksIncludingCompleted({int limit = 50, int offset = 0}) async {
+    final now = DateTime.now();
+    final todayString =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    final todayTasks = _tasks
+        .where(
+          (task) =>
+              task.dueDate != null &&
+              task.dueDate!.startsWith(todayString),
+        )
+        .toList();
+    final incomplete = todayTasks.where((task) => !task.completed).toList();
+    final completed = todayTasks.where((task) => task.completed).toList();
+    return [...incomplete, ...completed];
+  }
+
+  @override
   Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async {
     return _tasks
         .where((task) => task.dueDate != null && !task.completed)
         .toList();
+  }
+
+  @override
+  Future<List<Task>> getPlannedTasksIncludingCompleted({int limit = 50, int offset = 0}) async {
+    final withDueDate = _tasks.where((task) => task.dueDate != null).toList();
+    final incomplete = withDueDate.where((task) => !task.completed).toList();
+    final completed = withDueDate.where((task) => task.completed).toList();
+    return [...incomplete, ...completed];
   }
 
   @override

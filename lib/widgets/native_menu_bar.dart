@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:taskly/l10n/app_localizations.dart';
 import '../providers/app_provider.dart';
 import '../utils/path_utils.dart';
 
@@ -275,16 +276,17 @@ class NativeMenuBar extends StatelessWidget {
   }
 
   void _showAboutDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showAboutDialog(
       context: context,
-      applicationName: 'Taskly',
+      applicationName: l10n.appTitle,
       applicationVersion: '0.0.1',
       applicationLegalese: '© 2025 Taskly Team',
       children: [
-        const Padding(
-          padding: EdgeInsets.only(top: 16.0),
+        Padding(
+          padding: const EdgeInsets.only(top: 16.0),
           child: Text(
-            '一款专注高效的个人任务管理工具\n帮助您轻松规划、组织和完成各项任务',
+            l10n.aboutContent,
             textAlign: TextAlign.center,
           ),
         ),

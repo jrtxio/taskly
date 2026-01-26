@@ -35,9 +35,10 @@ void main() {
     ];
 
     // Mock callbacks
-    void mockOnToggleTask(int id) {}
-    void mockOnEditTask(Task task) {}
-    void mockOnDeleteTask(int id) {}
+  void mockOnToggleTask(int id) {}
+  void mockOnEditTask(Task task) {}
+  void mockOnDeleteTask(int id) {}
+  void mockOnMoveTaskToList(int taskId, int listId) {}
 
     testWidgets('should show loading indicator when isLoading is true', (
       WidgetTester tester,
@@ -52,6 +53,7 @@ void main() {
               onToggleTask: mockOnToggleTask,
               onEditTask: mockOnEditTask,
               onDeleteTask: mockOnDeleteTask,
+              onMoveTaskToList: mockOnMoveTaskToList,
             ),
           ),
         ),
@@ -71,12 +73,13 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: TaskListView(
-                tasks: [],
-                isLoading: false,
-                onToggleTask: mockOnToggleTask,
-                onEditTask: mockOnEditTask,
-                onDeleteTask: mockOnDeleteTask,
-              ),
+              tasks: [],
+              isLoading: false,
+              onToggleTask: mockOnToggleTask,
+              onEditTask: mockOnEditTask,
+              onDeleteTask: mockOnDeleteTask,
+              onMoveTaskToList: mockOnMoveTaskToList,
+            ),
             ),
           ),
         );
@@ -101,6 +104,7 @@ void main() {
               onToggleTask: mockOnToggleTask,
               onEditTask: mockOnEditTask,
               onDeleteTask: mockOnDeleteTask,
+              onMoveTaskToList: mockOnMoveTaskToList,
             ),
           ),
         ),
@@ -130,6 +134,7 @@ void main() {
               onToggleTask: mockOnToggleTask,
               onEditTask: mockOnEditTask,
               onDeleteTask: mockOnDeleteTask,
+              onMoveTaskToList: mockOnMoveTaskToList,
             ),
           ),
         ),
@@ -162,6 +167,7 @@ void main() {
               onToggleTask: mockOnToggleTask,
               onEditTask: mockOnEditTask,
               onDeleteTask: mockOnDeleteTask,
+              onMoveTaskToList: mockOnMoveTaskToList,
             ),
           ),
         ),
@@ -190,6 +196,7 @@ void main() {
               onToggleTask: onToggleTask,
               onEditTask: mockOnEditTask,
               onDeleteTask: mockOnDeleteTask,
+              onMoveTaskToList: mockOnMoveTaskToList,
             ),
           ),
         ),
@@ -225,6 +232,7 @@ void main() {
               onToggleTask: mockOnToggleTask,
               onEditTask: onEditTask,
               onDeleteTask: mockOnDeleteTask,
+              onMoveTaskToList: mockOnMoveTaskToList,
             ),
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:taskly/l10n/app_localizations.dart';
 
 class EmojiPicker extends StatelessWidget {
   final String? selectedEmoji;
@@ -77,6 +78,7 @@ class EmojiPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -90,9 +92,9 @@ class EmojiPicker extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  '选择图标',
-                  style: TextStyle(
+                Text(
+                  l10n.dialogSelectIcon,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -101,7 +103,7 @@ class EmojiPicker extends StatelessWidget {
                   TextButton.icon(
                     onPressed: onClear,
                     icon: const Icon(Icons.clear, size: 16),
-                    label: const Text('清除'),
+                    label: Text(l10n.dialogClear),
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.red,
                     ),
@@ -155,7 +157,7 @@ class EmojiPicker extends StatelessWidget {
             const SizedBox(height: 16),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('取消'),
+              child: Text(l10n.dialogCancel),
             ),
           ],
         ),

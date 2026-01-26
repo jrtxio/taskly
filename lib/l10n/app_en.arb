@@ -119,6 +119,7 @@
   "labelTaskList": "Task List:",
   "dialogSave": "Save",
   "hintDateSupport": "Supports: +10m(10 mins), +2h(2 hours), +1d(tomorrow), @10am, @10:30pm",
+  "hintDateExample": "e.g., +10m, @10am, 2025-08-07",
   "dialogTaskDetail": "Task Detail",
   "labelTask": "Task:",
   "labelNotes": "Notes:",
@@ -132,5 +133,44 @@
         "type": "String"
       }
     }
-  }
+  },
+  "dialogSaveDbTitle": "Save Database File",
+  "dialogNoDbOpened": "No database opened",
+  "menuLangEn": "English",
+  "menuLangZh": "Simplified Chinese",
+  "dateTomorrow": "Tomorrow",
+  "dateYesterday": "Yesterday",
+  "dialogSelectIcon": "Select Icon",
+  "dialogSelectColor": "Select Color",
+  "dialogClear": "Clear",
+  "errorEnterTaskDesc": "Please enter task description",
+  "errorTaskDescTooLong": "Task description cannot exceed {length} characters",
+  "@errorTaskDescTooLong": {
+    "placeholders": {
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  "errorEnterListName": "Please enter list name",
+  "errorListNameTooLong": "List name cannot exceed {length} characters",
+  "@errorListNameTooLong": {
+    "placeholders": {
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  "errorSearchKeywordTooLong": "Search keyword cannot exceed {length} characters",
+  "@errorSearchKeywordTooLong": {
+    "placeholders": {
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  "errorDateTooEarly": "Date cannot be earlier than 1900",
+  "errorDateTooLate": "Date cannot be later than 2100",
+  "errorInvalidDateFormat": "Invalid date format",
+  "dialogValidationFailed": "Validation Failed"
 }

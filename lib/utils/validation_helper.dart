@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:taskly/l10n/app_localizations.dart';
 
 class ValidationError {
-  final String message;
+  final String Function(AppLocalizations) getMessage;
+  final String fallbackMessage;
   final int? offset;
   final int? length;
 
-  ValidationError(this.message, {this.offset, this.length});
+  ValidationError(
+    this.getMessage, {
+    required this.fallbackMessage,
+    this.offset,
+    this.length,
+  });
+
+  String get message => fallbackMessage;
 }
 
 class ValidationHelper {
@@ -16,18 +25,25 @@ class ValidationHelper {
 
   static ValidationError? validateTaskText(String text) {
     if (text.trim().isEmpty) {
-      return ValidationError('请输入任务描述');
+      return ValidationError(
+        (l10n) => l10n.errorEnterTaskDesc,
+        fallbackMessage: 'Please enter task description',
+      );
     }
 
     if (text.length > maxTaskLength) {
       return ValidationError(
-        '任务描述不能超过 $maxTaskLength 个字符',
+        (l10n) => l10n.errorTaskDescTooLong(maxTaskLength),
+        fallbackMessage: 'Task description cannot exceed $maxTaskLength characters',
         length: text.length,
       );
     }
 
     if (text.trim().length < 1) {
-      return ValidationError('任务描述不能为空');
+      return ValidationError(
+        (l10n) => l10n.errorEnterTaskDesc,
+        fallbackMessage: 'Please enter task description',
+      );
     }
 
     return null;
@@ -35,18 +51,25 @@ class ValidationHelper {
 
   static ValidationError? validateListName(String name) {
     if (name.trim().isEmpty) {
-      return ValidationError('请输入列表名称');
+      return ValidationError(
+        (l10n) => l10n.errorEnterListName,
+        fallbackMessage: 'Please enter list name',
+      );
     }
 
     if (name.length > maxListNameLength) {
       return ValidationError(
-        '列表名称不能超过 $maxListNameLength 个字符',
+        (l10n) => l10n.errorListNameTooLong(maxListNameLength),
+        fallbackMessage: 'List name cannot exceed $maxListNameLength characters',
         length: name.length,
       );
     }
 
     if (name.trim().length < minListNameLength) {
-      return ValidationError('列表名称不能为空');
+      return ValidationError(
+        (l10n) => l10n.errorEnterListName,
+        fallbackMessage: 'Please enter list name',
+      );
     }
 
     return null;
@@ -55,7 +78,8 @@ class ValidationHelper {
   static ValidationError? validateSearchKeyword(String keyword) {
     if (keyword.length > maxSearchLength) {
       return ValidationError(
-        '搜索关键词不能超过 $maxSearchLength 个字符',
+        (l10n) => l10n.errorSearchKeywordTooLong(maxSearchLength),
+        fallbackMessage: 'Search keyword cannot exceed $maxSearchLength characters',
         length: keyword.length,
       );
     }
@@ -71,14 +95,23 @@ class ValidationHelper {
     try {
       final date = DateTime.parse(dueDate!);
       if (date.isBefore(DateTime(1900))) {
-        return ValidationError('日期不能早于 1900 年');
+        return ValidationError(
+          (l10n) => l10n.errorDateTooEarly,
+          fallbackMessage: 'Date cannot be earlier than 1900',
+        );
       }
 
       if (date.isAfter(DateTime(2100))) {
-        return ValidationError('日期不能晚于 2100 年');
+        return ValidationError(
+          (l10n) => l10n.errorDateTooLate,
+          fallbackMessage: 'Date cannot be later than 2100',
+        );
       }
     } catch (e) {
-      return ValidationError('无效的日期格式');
+      return ValidationError(
+        (l10n) => l10n.errorInvalidDateFormat,
+        fallbackMessage: 'Invalid date format',
+      );
     }
 
     return null;
@@ -117,11 +150,12 @@ class ValidationHelper {
 
   static void showValidationErrors(BuildContext context, List<ValidationError> errors) {
     if (errors.isEmpty) return;
+    final l10n = AppLocalizations.of(context)!;
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('输入验证失败'),
+        title: Text(l10n.dialogValidationFailed),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -134,7 +168,7 @@ class ValidationHelper {
                         children: [
                           const Icon(Icons.error, color: Colors.red, size: 20),
                           const SizedBox(width: 8),
-                          Expanded(child: Text(error.message)),
+                          Expanded(child: Text(error.getMessage(l10n))),
                         ],
                       ),
                     ))
@@ -144,14 +178,14 @@ class ValidationHelper {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('确定'),
+            child: Text(l10n.dialogConfirm),
           ),
         ],
       ),
     );
   }
 
-  static String? getValidationMessage(ValidationError? error) {
-    return error?.message;
+  static String? getValidationMessage(ValidationError? error, AppLocalizations l10n) {
+    return error?.getMessage(l10n);
   }
 }

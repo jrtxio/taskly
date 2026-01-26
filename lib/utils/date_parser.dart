@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:taskly/l10n/app_localizations.dart';
 
 /// DateParser provides intelligent date parsing with support for:
 /// - Relative dates: +1d (tomorrow), +1w (next week), +1m (next month)
@@ -209,13 +210,13 @@ class DateParser {
   /// Format date string for user-friendly display.
   ///
   /// Returns:
-  /// - '今天 HH:mm' for today
-  /// - '明天 HH:mm' for tomorrow
-  /// - '昨天 HH:mm' for yesterday
+  /// - 'Today HH:mm' for today
+  /// - 'Tomorrow HH:mm' for tomorrow
+  /// - 'Yesterday HH:mm' for yesterday
   /// - 'yyyy-MM-dd HH:mm' for other dates
   ///
   /// Returns original string if parsing fails.
-  static String formatDateForDisplay(String? dateStr) {
+  static String formatDateForDisplay(String? dateStr, AppLocalizations l10n) {
     if (dateStr == null || dateStr.isEmpty) return '';
     try {
       final date = DateTime.parse(dateStr);
@@ -224,11 +225,11 @@ class DateParser {
       final taskDate = DateTime(date.year, date.month, date.day);
 
       if (taskDate == today) {
-        return '今天 ${DateFormat('HH:mm').format(date)}';
+        return '${l10n.navToday} ${DateFormat('HH:mm').format(date)}';
       } else if (taskDate == today.add(const Duration(days: 1))) {
-        return '明天 ${DateFormat('HH:mm').format(date)}';
+        return '${l10n.dateTomorrow} ${DateFormat('HH:mm').format(date)}';
       } else if (taskDate == today.subtract(const Duration(days: 1))) {
-        return '昨天 ${DateFormat('HH:mm').format(date)}';
+        return '${l10n.dateYesterday} ${DateFormat('HH:mm').format(date)}';
       } else {
         return DateFormat('yyyy-MM-dd HH:mm').format(date);
       }
@@ -240,13 +241,13 @@ class DateParser {
   /// Format date part only for user-friendly display.
   ///
   /// Returns:
-  /// - '今天' for today
-  /// - '明天' for tomorrow
-  /// - '昨天' for yesterday
+  /// - 'Today' for today
+  /// - 'Tomorrow' for tomorrow
+  /// - 'Yesterday' for yesterday
   /// - 'yyyy-MM-dd' for other dates
   ///
   /// Returns original string if parsing fails.
-  static String formatDateOnlyForDisplay(String? dateStr) {
+  static String formatDateOnlyForDisplay(String? dateStr, AppLocalizations l10n) {
     if (dateStr == null || dateStr.isEmpty) return '';
     try {
       final date = DateTime.parse(dateStr);
@@ -255,11 +256,11 @@ class DateParser {
       final taskDate = DateTime(date.year, date.month, date.day);
 
       if (taskDate == today) {
-        return '今天';
+        return l10n.navToday;
       } else if (taskDate == today.add(const Duration(days: 1))) {
-        return '明天';
+        return l10n.dateTomorrow;
       } else if (taskDate == today.subtract(const Duration(days: 1))) {
-        return '昨天';
+        return l10n.dateYesterday;
       } else {
         return DateFormat('yyyy-MM-dd').format(date);
       }

@@ -281,6 +281,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Supports: +10m(10 mins), +2h(2 hours), +1d(tomorrow), @10am, @10:30pm';
 
   @override
+  String get hintDateExample => 'e.g., +10m, @10am, 2025-08-07';
+
+  @override
   String get dialogTaskDetail => 'Task Detail';
 
   @override
@@ -302,4 +305,64 @@ class AppLocalizationsEn extends AppLocalizations {
   String taskUpdateFailed(String error) {
     return 'Failed to update task: $error';
   }
+
+  @override
+  String get dialogSaveDbTitle => 'Save Database File';
+
+  @override
+  String get dialogNoDbOpened => 'No database opened';
+
+  @override
+  String get menuLangEn => 'English';
+
+  @override
+  String get menuLangZh => 'Simplified Chinese';
+
+  @override
+  String get dateTomorrow => 'Tomorrow';
+
+  @override
+  String get dateYesterday => 'Yesterday';
+
+  @override
+  String get dialogSelectIcon => 'Select Icon';
+
+  @override
+  String get dialogSelectColor => 'Select Color';
+
+  @override
+  String get dialogClear => 'Clear';
+
+  @override
+  String get errorEnterTaskDesc => 'Please enter task description';
+
+  @override
+  String errorTaskDescTooLong(int length) {
+    return 'Task description cannot exceed $length characters';
+  }
+
+  @override
+  String get errorEnterListName => 'Please enter list name';
+
+  @override
+  String errorListNameTooLong(int length) {
+    return 'List name cannot exceed $length characters';
+  }
+
+  @override
+  String errorSearchKeywordTooLong(int length) {
+    return 'Search keyword cannot exceed $length characters';
+  }
+
+  @override
+  String get errorDateTooEarly => 'Date cannot be earlier than 1900';
+
+  @override
+  String get errorDateTooLate => 'Date cannot be later than 2100';
+
+  @override
+  String get errorInvalidDateFormat => 'Invalid date format';
+
+  @override
+  String get dialogValidationFailed => 'Validation Failed';
 }

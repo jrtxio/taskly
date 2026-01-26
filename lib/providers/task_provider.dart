@@ -29,6 +29,7 @@ class TaskProvider with ChangeNotifier {
   static const int _pageSize = 50;
   bool _hasMoreData = true;
   int? _currentListId;
+  bool _showCompletedTasks = false;
 
   List<Task> get tasks => _tasks;
   String get currentView => _currentView;
@@ -40,12 +41,14 @@ class TaskProvider with ChangeNotifier {
   bool get hasError => _error != null;
   bool get hasMoreData => _hasMoreData;
   int? get currentListId => _currentListId;
+  bool get showCompletedTasks => _showCompletedTasks;
 
   Future<void> loadTasks({
     String viewType = 'all',
     int? listId,
     String? keyword,
     bool loadMore = false,
+    bool? showCompleted,
   }) async {
     if (loadMore) {
       if (!_hasMoreData || _isLoading) return;
@@ -68,6 +71,7 @@ class TaskProvider with ChangeNotifier {
         keyword: keyword,
         limit: _pageSize,
         offset: offset,
+        showCompleted: showCompleted ?? _showCompletedTasks,
       );
 
       if (loadMore) {
@@ -249,7 +253,17 @@ class TaskProvider with ChangeNotifier {
   }
 
   Future<void> refreshTasks() async {
-    await loadTasks(viewType: _currentView, keyword: _searchKeyword);
+    final shouldApplyShowCompleted = _currentView == 'list' || _currentView == 'all' || _currentView == 'planned';
+    await loadTasks(
+      viewType: _currentView,
+      keyword: _searchKeyword,
+      showCompleted: shouldApplyShowCompleted ? _showCompletedTasks : null,
+    );
+  }
+
+  void setShowCompletedTasks(bool value) {
+    _showCompletedTasks = value;
+    notifyListeners();
   }
 
   Future<void> loadMoreTasks() async {

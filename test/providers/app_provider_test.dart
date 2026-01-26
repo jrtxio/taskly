@@ -152,7 +152,15 @@ class MockDatabaseService implements DatabaseServiceInterface {
   Future<int> addList(String name, {String? icon, int? color}) async => 0;
 
   @override
-  Future<int> updateList(int id, String name, {String? icon, int? color}) async => 0;
+  Future<int> updateList(
+    int id,
+    String name, {
+    String? icon,
+    int? color,
+    bool clearIcon = false,
+    bool clearColor = false,
+  }) async =>
+      0;
 
   @override
   Future<int> deleteList(int id) async => 0;
@@ -164,10 +172,24 @@ class MockDatabaseService implements DatabaseServiceInterface {
   Future<List<Task>> getTasksByList(int listId, {int limit = 50, int offset = 0}) async => [];
 
   @override
+  Future<List<Task>> getCompletedTasksByList(int listId, {int limit = 50, int offset = 0}) async => [];
+
+  @override
+  Future<List<Task>> getTasksByListIncludingCompleted(int listId, {int limit = 50, int offset = 0}) async => [];
+
+  @override
+  Future<List<Task>> getAllTasksIncludingCompleted({int limit = 50, int offset = 0}) async => [];
+
+  @override
   Future<List<Task>> getTodayTasks({int limit = 50, int offset = 0}) async => [];
 
   @override
+  Future<List<Task>> getTodayTasksIncludingCompleted({int limit = 50, int offset = 0}) async => [];
+  @override
   Future<List<Task>> getPlannedTasks({int limit = 50, int offset = 0}) async => [];
+
+  @override
+  Future<List<Task>> getPlannedTasksIncludingCompleted({int limit = 50, int offset = 0}) async => [];
 
   @override
   Future<List<Task>> getIncompleteTasks({int limit = 50, int offset = 0}) async => [];
@@ -183,6 +205,12 @@ class MockDatabaseService implements DatabaseServiceInterface {
 
   @override
   Future<int> getCompletedTaskCount() async => 0;
+
+  @override
+  Future<int> getTodayTaskCount() async => 0;
+
+  @override
+  Future<int> getPlannedTaskCount() async => 0;
 
   @override
   Future<int> addTask(Task task) async => 0;

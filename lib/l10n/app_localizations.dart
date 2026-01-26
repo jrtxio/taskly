@@ -608,6 +608,12 @@ abstract class AppLocalizations {
   /// **'Supports: +10m(10 mins), +2h(2 hours), +1d(tomorrow), @10am, @10:30pm'**
   String get hintDateSupport;
 
+  /// No description provided for @hintDateExample.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., +10m, @10am, 2025-08-07'**
+  String get hintDateExample;
+
   /// No description provided for @dialogTaskDetail.
   ///
   /// In en, this message translates to:
@@ -649,6 +655,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to update task: {error}'**
   String taskUpdateFailed(String error);
+
+  /// No description provided for @dialogSaveDbTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Database File'**
+  String get dialogSaveDbTitle;
+
+  /// No description provided for @dialogNoDbOpened.
+  ///
+  /// In en, this message translates to:
+  /// **'No database opened'**
+  String get dialogNoDbOpened;
+
+  /// No description provided for @menuLangEn.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get menuLangEn;
+
+  /// No description provided for @menuLangZh.
+  ///
+  /// In en, this message translates to:
+  /// **'Simplified Chinese'**
+  String get menuLangZh;
+
+  /// No description provided for @dateTomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get dateTomorrow;
+
+  /// No description provided for @dateYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get dateYesterday;
+
+  /// No description provided for @dialogSelectIcon.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Icon'**
+  String get dialogSelectIcon;
+
+  /// No description provided for @dialogSelectColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Color'**
+  String get dialogSelectColor;
+
+  /// No description provided for @dialogClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get dialogClear;
+
+  /// No description provided for @errorEnterTaskDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter task description'**
+  String get errorEnterTaskDesc;
+
+  /// No description provided for @errorTaskDescTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Task description cannot exceed {length} characters'**
+  String errorTaskDescTooLong(int length);
+
+  /// No description provided for @errorEnterListName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter list name'**
+  String get errorEnterListName;
+
+  /// No description provided for @errorListNameTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'List name cannot exceed {length} characters'**
+  String errorListNameTooLong(int length);
+
+  /// No description provided for @errorSearchKeywordTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Search keyword cannot exceed {length} characters'**
+  String errorSearchKeywordTooLong(int length);
+
+  /// No description provided for @errorDateTooEarly.
+  ///
+  /// In en, this message translates to:
+  /// **'Date cannot be earlier than 1900'**
+  String get errorDateTooEarly;
+
+  /// No description provided for @errorDateTooLate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date cannot be later than 2100'**
+  String get errorDateTooLate;
+
+  /// No description provided for @errorInvalidDateFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid date format'**
+  String get errorInvalidDateFormat;
+
+  /// No description provided for @dialogValidationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Validation Failed'**
+  String get dialogValidationFailed;
 }
 
 class _AppLocalizationsDelegate

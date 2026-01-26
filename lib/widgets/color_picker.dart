@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:taskly/l10n/app_localizations.dart';
 
 class ColorPicker extends StatelessWidget {
   final Color? selectedColor;
@@ -27,6 +28,7 @@ class ColorPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -40,9 +42,9 @@ class ColorPicker extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  '选择颜色',
-                  style: TextStyle(
+                Text(
+                  l10n.dialogSelectColor,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -51,7 +53,7 @@ class ColorPicker extends StatelessWidget {
                   TextButton.icon(
                     onPressed: onClear,
                     icon: const Icon(Icons.clear, size: 16),
-                    label: const Text('清除'),
+                    label: Text(l10n.dialogClear),
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.red,
                     ),
@@ -106,7 +108,7 @@ class ColorPicker extends StatelessWidget {
             const SizedBox(height: 20),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('取消'),
+              child: Text(l10n.dialogCancel),
             ),
           ],
         ),
