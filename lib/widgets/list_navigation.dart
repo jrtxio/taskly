@@ -322,6 +322,7 @@ class _ListNavigationState extends State<ListNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       color: Colors.grey[50],
       child: Column(
@@ -340,28 +341,28 @@ class _ListNavigationState extends State<ListNavigation> {
                     physics: const NeverScrollableScrollPhysics(),
                     children: [
                       _buildSmartViewButton(
-                        '今天',
+                        l10n.navToday,
                         Icons.today,
                         const Color(0xFF007AFF),
                         widget.todayCount ?? 0,
                         widget.onTodayTap,
                       ),
                       _buildSmartViewButton(
-                        '计划',
+                        l10n.navPlanned,
                         Icons.calendar_month,
                         const Color(0xFFFF3B30),
                         widget.plannedCount ?? 0,
                         widget.onPlannedTap,
                       ),
                       _buildSmartViewButton(
-                        '全部',
+                        l10n.navAll,
                         Icons.list,
                         const Color(0xFF8E8E93),
                         widget.allCount ?? 0,
                         widget.onAllTap,
                       ),
                       _buildSmartViewButton(
-                        '完成',
+                        l10n.navCompleted,
                         Icons.check_circle,
                         const Color(0xFFFF9500),
                         widget.completedCount ?? 0,
@@ -376,9 +377,9 @@ class _ListNavigationState extends State<ListNavigation> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        '我的列表',
-                        style: TextStyle(
+                      Text(
+                        l10n.sectionMyLists,
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
