@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:taskly/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'locator/service_locator.dart';
@@ -93,6 +95,17 @@ class _MyAppState extends State<MyApp> {
             themeMode: appProvider.isDarkMode
                 ? ThemeMode.dark
                 : ThemeMode.light,
+            locale: Locale(appProvider.language),
+            localizationsDelegates: [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en'), // English
+              Locale('zh'), // Chinese
+            ],
             home: const MainScreen(),
           );
         },

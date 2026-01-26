@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:taskly/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../models/task.dart';
@@ -429,7 +430,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                       Text(
                         hasDate
                             ? DateParser.formatDateOnlyForDisplay(widget.task.dueDate!)
-                            : '添加日期',
+                            : AppLocalizations.of(context)!.labelAddDate,
                         style: TextStyle(
                           fontSize: 13,
                           color: isEditing ? Colors.blue[700] : (hasDate ? Colors.grey[600] : Colors.grey[400]),
@@ -474,7 +475,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                         widget.task.dueTime != null &&
                                 widget.task.dueTime!.isNotEmpty
                             ? DateParser.formatTimeForDisplay(widget.task.dueTime)
-                            : '添加时间',
+                            : AppLocalizations.of(context)!.labelAddTime,
                         style: TextStyle(
                           fontSize: 13,
                           color: isEditing

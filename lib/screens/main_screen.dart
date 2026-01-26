@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:taskly/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:desktop_window/desktop_window.dart';
 import '../providers/app_provider.dart';
@@ -11,6 +12,8 @@ import '../widgets/task_dialogs.dart';
 import '../widgets/menu_dialogs.dart';
 import '../widgets/native_menu_bar.dart';
 
+enum TaskViewType { all, today, planned, completed, list }
+
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -19,8 +22,8 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  String _currentViewTitle = '';
-  String _statusMessage = '未连接数据库';
+  TaskViewType _currentViewType = TaskViewType.all;
+  String _statusMessage = '';
   int? _todayCount;
   int? _plannedCount;
   int? _allCount;
@@ -53,7 +56,7 @@ class _MainScreenState extends State<MainScreen> {
 
       if (listProvider.selectedList != null) {
         await taskProvider.loadTasksByList(listProvider.selectedList!.id);
-        _updateViewTitle(listProvider.selectedList!.name);
+        _setViewType(TaskViewType.list);
         if (mounted) {
           setState(() {
             _showQuickAddInput = true;
@@ -61,7 +64,7 @@ class _MainScreenState extends State<MainScreen> {
         }
       } else {
         await taskProvider.loadAllTasks();
-        _updateViewTitle('全部');
+        _setViewType(TaskViewType.all);
         if (mounted) {
           setState(() {
             _showQuickAddInput = false;
@@ -70,15 +73,34 @@ class _MainScreenState extends State<MainScreen> {
       }
 
       await _updateTaskCounts();
-      _updateStatus('数据已加载');
+      if (mounted) {
+        _updateStatus(AppLocalizations.of(context)!.statusDataLoaded);
+      }
     }
   }
 
-  void _updateViewTitle(String title) {
+  void _setViewType(TaskViewType type) {
     if (mounted) {
       setState(() {
-        _currentViewTitle = title;
+        _currentViewType = type;
       });
+    }
+  }
+
+  String _getViewTitle(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (_currentViewType) {
+      case TaskViewType.today:
+        return l10n.navToday;
+      case TaskViewType.planned:
+        return l10n.navPlanned;
+      case TaskViewType.all:
+        return l10n.navAll;
+      case TaskViewType.completed:
+        return l10n.navCompleted;
+      case TaskViewType.list:
+        final listProvider = Provider.of<ListProvider>(context, listen: false);
+        return listProvider.selectedList?.name ?? '';
     }
   }
 
@@ -148,9 +170,9 @@ class _MainScreenState extends State<MainScreen> {
                     if (_wasConnected != isConnected) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         if (isConnected) {
-                          _updateStatus('数据库已连接');
+                          _updateStatus(AppLocalizations.of(context)!.statusDatabaseConnected);
                         } else {
-                          _updateStatus('数据库已关闭');
+                          _updateStatus(AppLocalizations.of(context)!.statusDatabaseClosed);
                         }
                       });
                       _wasConnected = isConnected;
@@ -187,8 +209,8 @@ class _MainScreenState extends State<MainScreen> {
                               onSelectList: (list) {
                                 listProvider.selectList(list);
                                 taskProvider.loadTasksByList(list.id);
-                                _updateViewTitle(list.name);
-                                _updateStatus('切换到列表: ${list.name}');
+                                _setViewType(TaskViewType.list);
+                                _updateStatus(AppLocalizations.of(context)!.statusSwitchList(list.name));
                                 if (mounted) {
                                   setState(() {
                                     _showQuickAddInput = true;
@@ -209,13 +231,13 @@ class _MainScreenState extends State<MainScreen> {
                               },
                               onTodayTap: () {
                                 if (!appProvider.isDatabaseConnected) {
-                                  _updateStatus('请先打开数据库');
+                                  _updateStatus(AppLocalizations.of(context)!.statusPleaseOpenDb);
                                   return;
                                 }
                                 listProvider.clearSelection();
                                 taskProvider.loadTodayTasks();
-                                _updateViewTitle('今天');
-                                _updateStatus('显示今天的任务');
+                                _setViewType(TaskViewType.today);
+                                _updateStatus(AppLocalizations.of(context)!.statusShowToday);
                                 if (mounted) {
                                   setState(() {
                                     _showQuickAddInput = false;
@@ -224,13 +246,13 @@ class _MainScreenState extends State<MainScreen> {
                               },
                               onPlannedTap: () {
                                 if (!appProvider.isDatabaseConnected) {
-                                  _updateStatus('请先打开数据库');
+                                  _updateStatus(AppLocalizations.of(context)!.statusPleaseOpenDb);
                                   return;
                                 }
                                 listProvider.clearSelection();
                                 taskProvider.loadPlannedTasks();
-                                _updateViewTitle('计划');
-                                _updateStatus('显示计划中的任务');
+                                _setViewType(TaskViewType.planned);
+                                _updateStatus(AppLocalizations.of(context)!.statusShowPlanned);
                                 if (mounted) {
                                   setState(() {
                                     _showQuickAddInput = false;
@@ -239,13 +261,13 @@ class _MainScreenState extends State<MainScreen> {
                               },
                               onAllTap: () {
                                 if (!appProvider.isDatabaseConnected) {
-                                  _updateStatus('请先打开数据库');
+                                  _updateStatus(AppLocalizations.of(context)!.statusPleaseOpenDb);
                                   return;
                                 }
                                 listProvider.clearSelection();
                                 taskProvider.loadAllTasks();
-                                _updateViewTitle('全部');
-                                _updateStatus('显示全部任务');
+                                _setViewType(TaskViewType.all);
+                                _updateStatus(AppLocalizations.of(context)!.statusShowAll);
                                 if (mounted) {
                                   setState(() {
                                     _showQuickAddInput = false;
@@ -254,13 +276,13 @@ class _MainScreenState extends State<MainScreen> {
                               },
                               onCompletedTap: () {
                                 if (!appProvider.isDatabaseConnected) {
-                                  _updateStatus('请先打开数据库');
+                                  _updateStatus(AppLocalizations.of(context)!.statusPleaseOpenDb);
                                   return;
                                 }
                                 listProvider.clearSelection();
                                 taskProvider.loadCompletedTasks();
-                                _updateViewTitle('完成');
-                                _updateStatus('显示完成的任务');
+                                _setViewType(TaskViewType.completed);
+                                _updateStatus(AppLocalizations.of(context)!.statusShowCompleted);
                                 if (mounted) {
                                   setState(() {
                                     _showQuickAddInput = false;
@@ -288,7 +310,7 @@ class _MainScreenState extends State<MainScreen> {
                             onToggleTask: (id) {
                               taskProvider.toggleTaskCompleted(id);
                               _updateTaskCounts();
-                              _updateStatus('更新任务状态');
+                              _updateStatus(AppLocalizations.of(context)!.statusUpdateTaskState);
                             },
                             onEditTask: (task) {
                               _showEditTaskDialog(task);
@@ -305,7 +327,7 @@ class _MainScreenState extends State<MainScreen> {
                             onTaskUpdated: (listId) {
                               _updateTaskCounts();
                             },
-                            currentViewTitle: _currentViewTitle,
+                            currentViewTitle: _getViewTitle(context),
                             currentListId: listProvider.selectedList?.id,
                             lists: listProvider.lists,
                             selectedList: listProvider.selectedList,
@@ -320,13 +342,13 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ),
 
-          _buildStatusBar(),
+          _buildStatusBar(context),
         ],
       ),
     );
   }
 
-  Widget _buildStatusBar() {
+  Widget _buildStatusBar(BuildContext context) {
     return Container(
       height: 28,
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -337,7 +359,7 @@ class _MainScreenState extends State<MainScreen> {
       child: Row(
         children: [
           Text(
-            _statusMessage,
+            _statusMessage.isEmpty ? AppLocalizations.of(context)!.statusDatabaseNotConnected : _statusMessage,
             style: TextStyle(fontSize: 12, color: Colors.grey[600]),
           ),
         ],
@@ -355,7 +377,9 @@ class _MainScreenState extends State<MainScreen> {
         onUpdate: (updatedTask) async {
           await taskProvider.updateTask(updatedTask);
           _updateTaskCounts();
-          _updateStatus('任务已更新');
+          if (mounted) {
+            _updateStatus(AppLocalizations.of(context)!.statusTaskUpdated);
+          }
         },
       ),
     );
@@ -372,15 +396,17 @@ class _MainScreenState extends State<MainScreen> {
 
     await taskProvider.loadTasksByList(listId);
     listProvider.selectList(addedList);
-    _updateViewTitle(addedList.name);
+    _setViewType(TaskViewType.list);
     _updateTaskCounts();
-    _updateStatus('任务已添加');
+    if (mounted) {
+      _updateStatus(AppLocalizations.of(context)!.statusTaskAdded);
+    }
   }
 
   Future<void> _handleTaskMoved(int taskId, int newListId) async {
     final listProvider = Provider.of<ListProvider>(context, listen: false);
     final taskProvider = Provider.of<TaskProvider>(context, listen: false);
-    final appProvider = Provider.of<AppProvider>(context, listen: false);
+    // appProvider is unused
 
     final movedList = listProvider.lists.firstWhere(
       (list) => list.id == newListId,
@@ -389,21 +415,24 @@ class _MainScreenState extends State<MainScreen> {
 
     await taskProvider.loadTasksByList(newListId);
     listProvider.selectList(movedList);
-    _updateViewTitle(movedList.name);
+    _setViewType(TaskViewType.list);
     _updateTaskCounts();
-    _updateStatus('任务已移动到 ${movedList.name}');
+    if (mounted) {
+      _updateStatus(AppLocalizations.of(context)!.statusTaskMoved(movedList.name));
+    }
   }
 
   void _showDeleteConfirmDialog(int taskId) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('确认删除'),
-        content: const Text('确定要删除这个任务吗？此操作无法撤销。'),
+        title: Text(l10n.taskDeleteConfirm),
+        content: Text(l10n.taskDeleteConfirmContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('取消'),
+            child: Text(l10n.dialogCancel),
           ),
           TextButton(
             onPressed: () {
@@ -414,11 +443,13 @@ class _MainScreenState extends State<MainScreen> {
               );
               taskProvider.deleteTask(taskId).then((_) {
                 _updateTaskCounts();
-                _updateStatus('任务已删除');
+                if (mounted) {
+                  _updateStatus(l10n.statusTaskDeleted);
+                }
               });
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('删除'),
+            child: Text(l10n.taskDelete),
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:taskly/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../models/task.dart';
 import '../models/todo_list.dart';
@@ -50,14 +51,14 @@ class _TaskInputDialogState extends State<TaskInputDialog> {
     if (text.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('请输入任务描述')));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.taskEnterDesc)));
       return;
     }
 
     if (_selectedList == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('请选择任务列表')));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.taskSelectTask)));
       return;
     }
 
@@ -551,7 +552,7 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
     if (text.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('请输入任务描述')));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.taskEnterDesc)));
       return;
     }
 
@@ -562,7 +563,7 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
     if (_selectedList == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('请选择任务列表')));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.taskSelectTask)));
       return;
     }
 
@@ -587,21 +588,22 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
           });
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('更新任务失败: $error')));
+          ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.taskUpdateFailed(error.toString()))));
         });
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Text('编辑任务'),
+      title: Text(l10n.dialogEditTask),
       content: SizedBox(
         width: 400,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('任务描述:'),
+            Text(l10n.labelTaskDesc),
             const SizedBox(height: 8),
             TextField(
               controller: _textController,
@@ -621,7 +623,7 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
               ),
             ),
             const SizedBox(height: 16),
-            const Text('截止日期 (可选):'),
+            Text(l10n.labelDueDateOptional),
             const SizedBox(height: 8),
             TextField(
               controller: _dateController,
@@ -642,13 +644,13 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
             ),
             const SizedBox(height: 8),
             Text(
-              '支持: +10m(10分钟), +2h(2小时), +1d(明天), @10am(上午10点), @10:30pm(晚上10:30)',
+              l10n.hintDateSupport,
               style: Theme.of(
                 context,
               ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
             ),
             const SizedBox(height: 16),
-            const Text('任务列表:'),
+            Text(l10n.labelTaskList),
             const SizedBox(height: 8),
             DropdownButtonFormField<TodoList>(
               initialValue: _selectedList,
@@ -671,7 +673,7 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
       actions: [
         TextButton(
           onPressed: _isSubmitting ? null : () => Navigator.of(context).pop(),
-          child: const Text('取消'),
+          child: Text(l10n.dialogCancel),
         ),
         ElevatedButton(
           onPressed: _isSubmitting ? null : _submit,
@@ -681,7 +683,7 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('确定'),
+              : Text(l10n.dialogConfirm),
         ),
       ],
     );

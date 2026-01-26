@@ -1,0 +1,136 @@
+{
+  "appTitle": "Taskly",
+  "menuFile": "File",
+  "menuSettings": "Settings",
+  "menuHelp": "Help",
+  "menuNewDatabase": "New Database",
+  "menuOpenDatabase": "Open Database",
+  "menuCloseDatabase": "Close Database",
+  "menuExit": "Exit",
+  "menuLanguage": "Language",
+  "menuAbout": "About Taskly",
+  "dialogSelectLanguage": "Select Language",
+  "dialogCancel": "Cancel",
+  "dialogConfirm": "OK",
+  "dialogNewDatabase": "New Database",
+  "dialogEnterDbPath": "Please enter database file path and name",
+  "dialogDbPathHint": "Database file path",
+  "dialogBrowse": "Browse...",
+  "dialogInputDbPath": "Please enter database file path",
+  "dialogSelectDbFile": "Select Database File",
+  "dialogConfirmCloseDb": "Confirm Close Database",
+  "dialogConfirmCloseDbContent": "Are you sure you want to close the current database?",
+  "statusDatabaseNotConnected": "Database Not Connected",
+  "statusDatabaseConnected": "Database Connected",
+  "statusDatabaseClosed": "Database Closed",
+  "statusDataLoaded": "Data Loaded",
+  "statusSwitchList": "Switched to list: {name}",
+  "@statusSwitchList": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "statusCreateList": "Created list: {name}",
+  "@statusCreateList": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "statusDeleteList": "Deleted list successfully",
+  "statusPleaseOpenDb": "Please open database first",
+  "statusShowToday": "Showing today's tasks",
+  "statusShowPlanned": "Showing planned tasks",
+  "statusShowAll": "Showing all tasks",
+  "statusShowCompleted": "Showing completed tasks",
+  "statusUpdateTaskState": "Task status updated",
+  "statusTaskUpdated": "Task updated",
+  "statusTaskAdded": "Task added",
+  "statusTaskMoved": "Task moved to {name}",
+  "@statusTaskMoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "statusTaskDeleted": "Task deleted",
+  "navToday": "Today",
+  "navPlanned": "Planned",
+  "navAll": "All",
+  "navCompleted": "Completed",
+  "taskListInputHint": "+ Add Task",
+  "taskListInputHintNoDb": "Please create or open database first",
+  "taskListEmpty": "No tasks",
+  "taskListEmptyHint": "Click \"File\" menu to create or open database",
+  "taskEnterDesc": "Please enter task description",
+  "taskCreateListFirst": "Please create a task list first",
+  "taskAddFailed": "Failed to add task: {error}",
+  "@taskAddFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "taskDeleteConfirm": "Confirm Delete",
+  "taskDeleteConfirmContent": "Are you sure you want to delete this task? This action cannot be undone.",
+  "taskDelete": "Delete",
+  "sidebarHide": "Hide Sidebar",
+  "sidebarShow": "Show Sidebar",
+  "aboutContent": "A focused and efficient personal task management tool\nHelping you plan, organize and complete tasks easily",
+  "dialogEditTask": "Edit Task",
+  "dialogCreateList": "Create List",
+  "dialogEditList": "Edit List",
+  "dialogListName": "List Name",
+  "dialogListColor": "List Color",
+  "dialogListIcon": "List Icon",
+  "dialogDeleteList": "Delete List",
+  "dialogDeleteListContent": "Are you sure you want to delete this list and all its tasks? This action cannot be undone.",
+  "dialogConfirmDeleteList": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+  "@dialogConfirmDeleteList": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "dialogClearIcon": "Clear Icon",
+  "dialogClearColor": "Clear Color",
+  "dialogInputListName": "Please enter list name",
+  "menuShowListInfo": "Show List Info",
+  "menuRename": "Rename",
+  "sectionMyLists": "My Lists",
+  "menuMarkCompleted": "Mark Completed",
+  "menuMarkUncompleted": "Mark Uncompleted",
+  "menuMoveToList": "Move to List",
+  "menuDeleteTask": "Delete Task",
+  "labelAddDate": "Add Date",
+  "labelAddTime": "Add Time",
+  "taskSelectTask": "Please select a task list",
+  "dialogCannotAddTask": "Cannot Add Task",
+  "dialogDbNotConnectedContent": "Database not connected, please create or open a database file first",
+  "dialogAddTask": "Add New Task",
+  "labelTaskDesc": "Task Description:",
+  "labelDueDateOptional": "Due Date (Optional):",
+  "labelTaskList": "Task List:",
+  "dialogSave": "Save",
+  "hintDateSupport": "Supports: +10m(10 mins), +2h(2 hours), +1d(tomorrow), @10am, @10:30pm",
+  "dialogTaskDetail": "Task Detail",
+  "labelTask": "Task:",
+  "labelNotes": "Notes:",
+  "labelDate": "Date:",
+  "labelTime": "Time:",
+  "hintAddNotes": "Add notes...",
+  "taskUpdateFailed": "Failed to update task: {error}",
+  "@taskUpdateFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
+}

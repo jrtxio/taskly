@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:taskly/l10n/app_localizations.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
@@ -19,9 +20,9 @@ class AppMenuBar extends StatelessWidget {
       child: Row(
         children: [
           const SizedBox(width: 16),
-          _buildMenuButton(context, '文件', _buildFileMenu(context)),
-          _buildMenuButton(context, '设置', _buildSettingsMenu(context)),
-          _buildMenuButton(context, '帮助', _buildHelpMenu(context)),
+          _buildMenuButton(context, AppLocalizations.of(context)!.menuFile, _buildFileMenu(context)),
+          _buildMenuButton(context, AppLocalizations.of(context)!.menuSettings, _buildSettingsMenu(context)),
+          _buildMenuButton(context, AppLocalizations.of(context)!.menuHelp, _buildHelpMenu(context)),
           const Spacer(),
         ],
       ),
@@ -44,6 +45,7 @@ class AppMenuBar extends StatelessWidget {
   }
 
   List<PopupMenuEntry<dynamic>> _buildFileMenu(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return [
       PopupMenuItem(
         value: 'new_database',
@@ -53,7 +55,7 @@ class AppMenuBar extends StatelessWidget {
             () => _showNewDatabaseDialog(context),
           );
         },
-        child: const Text('新建数据库'),
+        child: Text(l10n.menuNewDatabase),
       ),
       PopupMenuItem(
         value: 'open_database',
@@ -63,7 +65,7 @@ class AppMenuBar extends StatelessWidget {
             () => _showOpenDatabaseDialog(context),
           );
         },
-        child: const Text('打开数据库'),
+        child: Text(l10n.menuOpenDatabase),
       ),
       PopupMenuItem(
         value: 'close_database',
@@ -73,15 +75,16 @@ class AppMenuBar extends StatelessWidget {
             () => _showCloseDatabaseDialog(context),
           );
         },
-        child: const Text('关闭数据库'),
+        child: Text(l10n.menuCloseDatabase),
       ),
       const PopupMenuDivider(),
-      const PopupMenuItem(value: 'close', child: Text('退出')),
+      PopupMenuItem(value: 'close', child: Text(l10n.menuExit)),
     ];
   }
 
   List<PopupMenuEntry<dynamic>> _buildSettingsMenu(BuildContext context) {
     final appProvider = Provider.of<AppProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return [
       PopupMenuItem(
@@ -96,7 +99,7 @@ class AppMenuBar extends StatelessWidget {
           children: [
             const Icon(Icons.translate, size: 18),
             const SizedBox(width: 8),
-            const Text('语言'),
+            Text(l10n.menuLanguage),
             const Spacer(),
             Text(
               appProvider.language == 'en' ? 'English' : '简体中文',
@@ -264,9 +267,10 @@ class AppMenuBar extends StatelessWidget {
 
   void _showOpenDatabaseDialog(BuildContext context) async {
     final appProvider = Provider.of<AppProvider>(context, listen: false);
+    final l10n = AppLocalizations.of(context)!;
 
     final result = await FilePicker.platform.pickFiles(
-      dialogTitle: '选择数据库文件',
+      dialogTitle: l10n.dialogSelectDbFile,
       type: FileType.custom,
       allowedExtensions: ['db'],
     );
@@ -290,23 +294,24 @@ class AppMenuBar extends StatelessWidget {
 
   void _showCloseDatabaseDialog(BuildContext context) {
     final appProvider = Provider.of<AppProvider>(context, listen: false);
+    final l10n = AppLocalizations.of(context)!;
 
     if (!appProvider.isDatabaseConnected) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('当前没有打开的数据库')));
+      ).showSnackBar(SnackBar(content: Text(l10n.statusDatabaseNotConnected)));
       return;
     }
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('确认关闭数据库'),
-        content: const Text('确定要关闭当前数据库吗？'),
+        title: Text(l10n.dialogConfirmCloseDb),
+        content: Text(l10n.dialogConfirmCloseDbContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('取消'),
+            child: Text(l10n.dialogCancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -324,7 +329,7 @@ class AppMenuBar extends StatelessWidget {
                 }
               }
             },
-            child: const Text('确定'),
+            child: Text(l10n.dialogConfirm),
           ),
         ],
       ),

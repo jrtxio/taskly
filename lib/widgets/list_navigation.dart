@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:taskly/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../models/todo_list.dart';
 import '../providers/list_provider.dart';
@@ -52,18 +53,19 @@ class _ListNavigationState extends State<ListNavigation> {
   }
 
   void _showDeleteConfirmDialog(TodoList list) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('删除'),
-          content: Text('确定要删除"${list.name}"吗？此操作无法撤销。'),
+          title: Text(l10n.taskDelete),
+          content: Text(l10n.dialogConfirmDeleteList(list.name)),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('取消'),
+              child: Text(l10n.dialogCancel),
             ),
             TextButton(
               onPressed: () {
@@ -71,7 +73,7 @@ class _ListNavigationState extends State<ListNavigation> {
                 widget.onDeleteList(list.id);
               },
               style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('删除'),
+              child: Text(l10n.taskDelete),
             ),
           ],
         );
@@ -80,6 +82,7 @@ class _ListNavigationState extends State<ListNavigation> {
   }
 
   void _showListEditDialog({TodoList? list, bool renameOnly = false}) {
+    final l10n = AppLocalizations.of(context)!;
     final isEditing = list != null;
     final nameController = TextEditingController(text: isEditing ? list.name : '');
     String? selectedEmoji = isEditing ? list.icon : null;
@@ -92,7 +95,7 @@ class _ListNavigationState extends State<ListNavigation> {
       builder: (context) => StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
-            title: Text(isEditing ? '编辑列表' : '新建列表'),
+            title: Text(isEditing ? l10n.dialogEditList : l10n.dialogCreateList),
             content: SizedBox(
               width: 400,
               child: Column(
@@ -101,16 +104,16 @@ class _ListNavigationState extends State<ListNavigation> {
                   TextField(
                     controller: nameController,
                     autofocus: true,
-                    decoration: const InputDecoration(
-                      labelText: '列表名称',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.dialogListName,
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                   const SizedBox(height: 16),
                   if (!renameOnly) ...[
                     Row(
                       children: [
-                        const Text('图标: '),
+                        Text('${l10n.dialogListIcon}: '),
                         const SizedBox(width: 12),
                         GestureDetector(
                           onTap: () async {
@@ -156,14 +159,14 @@ class _ListNavigationState extends State<ListNavigation> {
                                 clearIcon = true;
                               });
                             },
-                            tooltip: '清除图标',
+                            tooltip: l10n.dialogClearIcon,
                           ),
                       ],
                     ),
                     const SizedBox(height: 16),
                     Row(
                       children: [
-                        const Text('颜色: '),
+                        Text('${l10n.dialogListColor}: '),
                         const SizedBox(width: 12),
                         GestureDetector(
                           onTap: () async {
@@ -252,7 +255,7 @@ class _ListNavigationState extends State<ListNavigation> {
 
                   Navigator.of(context).pop();
                 },
-                child: const Text('确定'),
+                child: Text(l10n.dialogConfirm),
               ),
             ],
           );
@@ -262,6 +265,7 @@ class _ListNavigationState extends State<ListNavigation> {
   }
 
   void _showEditMenu(TodoList list, Offset offset) {
+    final l10n = AppLocalizations.of(context)!;
     final RenderBox overlay =
         Overlay.of(context).context.findRenderObject() as RenderBox;
 
@@ -276,24 +280,24 @@ class _ListNavigationState extends State<ListNavigation> {
       items: [
         PopupMenuItem(
           value: 'info',
-          child: const ListTile(
-            leading: Icon(Icons.info_outline),
-            title: Text('显示列表信息'),
+          child: ListTile(
+            leading: const Icon(Icons.info_outline),
+            title: Text(l10n.menuShowListInfo),
           ),
         ),
         PopupMenuItem(
           value: 'rename',
-          child: const ListTile(
-            leading: Icon(Icons.edit),
-            title: Text('重命名'),
+          child: ListTile(
+            leading: const Icon(Icons.edit),
+            title: Text(l10n.menuRename),
           ),
         ),
         const PopupMenuDivider(),
         PopupMenuItem(
           value: 'delete',
-          child: const ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text('删除列表', style: TextStyle(color: Colors.red)),
+          child: ListTile(
+            leading: const Icon(Icons.delete, color: Colors.red),
+            title: Text(l10n.dialogDeleteList, style: const TextStyle(color: Colors.red)),
           ),
         ),
       ],

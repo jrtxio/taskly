@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:taskly/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../models/task.dart';
 import '../models/todo_list.dart';
@@ -71,7 +72,7 @@ class _TaskListViewState extends State<TaskListView> {
     if (taskText.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('请输入任务描述')));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.taskEnterDesc)));
       return;
     }
 
@@ -81,7 +82,7 @@ class _TaskListViewState extends State<TaskListView> {
     if (listId == 0) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('请先创建一个任务列表')));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.taskCreateListFirst)));
       return;
     }
 
@@ -114,7 +115,7 @@ class _TaskListViewState extends State<TaskListView> {
           });
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('添加任务失败: $error')));
+          ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.taskAddFailed(error.toString()))));
         });
   }
 
@@ -296,10 +297,10 @@ class _TaskListViewState extends State<TaskListView> {
 
   Widget _buildTaskList() {
     if (!widget.isDatabaseConnected) {
-      return const Center(
+      return Center(
         child: Text(
-          '请点击"文件"菜单创建或打开数据库',
-          style: TextStyle(fontSize: 16, color: Colors.grey),
+          AppLocalizations.of(context)!.taskListEmptyHint,
+          style: const TextStyle(fontSize: 16, color: Colors.grey),
         ),
       );
     }
@@ -316,7 +317,7 @@ class _TaskListViewState extends State<TaskListView> {
             Icon(Icons.check_circle_outline, size: 64, color: Colors.grey[300]),
             const SizedBox(height: 16),
             Text(
-              '暂无任务',
+              AppLocalizations.of(context)!.taskListEmpty,
               style: TextStyle(color: Colors.grey[500], fontSize: 16),
             ),
           ],
