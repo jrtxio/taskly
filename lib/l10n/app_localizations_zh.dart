@@ -36,7 +36,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get menuLanguage => '语言';
 
   @override
-  String get menuAbout => '关于 Taskly';
+  String get menuAbout => '关于';
 
   @override
   String get dialogSelectLanguage => '选择语言';

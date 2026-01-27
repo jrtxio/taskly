@@ -105,11 +105,12 @@ class NativeMenuBar extends StatelessWidget {
   }
 
   PlatformMenu _buildHelpMenu(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return PlatformMenu(
       label: '帮助',
       menus: [
         PlatformMenuItem(
-          label: '关于 Taskly',
+          label: l10n.menuAbout,
           onSelected: () => _showAboutDialog(context),
         ),
       ],

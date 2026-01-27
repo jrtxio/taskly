@@ -155,7 +155,7 @@ abstract class AppLocalizations {
   /// No description provided for @menuAbout.
   ///
   /// In en, this message translates to:
-  /// **'About Taskly'**
+  /// **'About'**
   String get menuAbout;
 
   /// No description provided for @dialogSelectLanguage.

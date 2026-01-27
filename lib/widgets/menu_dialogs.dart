@@ -121,7 +121,7 @@ class AppMenuBar extends StatelessWidget {
             () => _showAboutDialog(context),
           );
         },
-        child: const Text('关于 Taskly'),
+        child: Text(AppLocalizations.of(context)!.menuAbout),
       ),
     ];
   }

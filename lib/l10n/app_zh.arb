@@ -8,7 +8,7 @@
   "menuCloseDatabase": "关闭数据库",
   "menuExit": "退出",
   "menuLanguage": "语言",
-  "menuAbout": "关于 Taskly",
+  "menuAbout": "关于",
   "dialogSelectLanguage": "选择语言",
   "dialogCancel": "取消",
   "dialogConfirm": "确定",

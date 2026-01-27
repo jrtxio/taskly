@@ -36,7 +36,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get menuLanguage => 'Language';
 
   @override
-  String get menuAbout => 'About Taskly';
+  String get menuAbout => 'About';
 
   @override
   String get dialogSelectLanguage => 'Select Language';
