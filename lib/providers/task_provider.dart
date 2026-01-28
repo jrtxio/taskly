@@ -256,6 +256,7 @@ class TaskProvider with ChangeNotifier {
     final shouldApplyShowCompleted = _currentView == 'list' || _currentView == 'all' || _currentView == 'planned';
     await loadTasks(
       viewType: _currentView,
+      listId: _currentListId,
       keyword: _searchKeyword,
       showCompleted: shouldApplyShowCompleted ? _showCompletedTasks : null,
     );

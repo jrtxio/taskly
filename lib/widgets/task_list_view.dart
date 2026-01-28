@@ -398,6 +398,7 @@ class _TaskListViewState extends State<TaskListView> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: ReminderTaskItem(
+                  key: ValueKey('task_${task.id}'),
                   task: task,
                   isSelected: _selectedTaskId == task.id,
                   onToggle: () => widget.onToggleTask(task.id),
@@ -416,6 +417,7 @@ class _TaskListViewState extends State<TaskListView> {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: ReminderTaskItem(
+            key: ValueKey('task_${task.id}'),
             task: task,
             isSelected: _selectedTaskId == task.id,
             onToggle: () => widget.onToggleTask(task.id),
@@ -478,6 +480,7 @@ class _TaskListViewState extends State<TaskListView> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: ReminderTaskItem(
+                key: ValueKey('task_${task.id}'),
                 task: task,
                 isSelected: _selectedTaskId == task.id,
                 onToggle: () => widget.onToggleTask(task.id),
