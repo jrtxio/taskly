@@ -24,7 +24,9 @@ class TaskListView extends StatefulWidget {
   final VoidCallback? onToggleSidebar;
   final bool isSidebarVisible;
   final bool showQuickAddInput;
+
   final int? completedCount;
+  final bool isGrouped;
 
   const TaskListView({
     super.key,
@@ -45,6 +47,7 @@ class TaskListView extends StatefulWidget {
     this.isSidebarVisible = true,
     this.showQuickAddInput = true,
     this.completedCount,
+    this.isGrouped = false,
   });
 
   @override
@@ -252,9 +255,11 @@ class _TaskListViewState extends State<TaskListView> {
             Consumer<TaskProvider>(
               builder: (context, taskProvider, child) {
                 final showCompleted = taskProvider.showCompletedTasks;
+                final l10n = AppLocalizations.of(context)!;
                 final shouldShowButton = widget.selectedList != null ||
-                    widget.currentViewTitle == '全部' ||
-                    widget.currentViewTitle == '计划';
+                    widget.isGrouped || // "All" view
+                    widget.currentViewTitle == l10n.navPlanned ||
+                    widget.currentViewTitle == l10n.navAll; // Fallback
                 return shouldShowButton
                     ? TextButton(
                         onPressed: () async {
@@ -358,6 +363,10 @@ class _TaskListViewState extends State<TaskListView> {
       return const Center(child: CircularProgressIndicator());
     }
 
+    if (widget.isGrouped) {
+      return _buildGroupedTaskList();
+    }
+
     if (widget.tasks.isEmpty) {
       return Center(
         child: Column(
@@ -372,11 +381,6 @@ class _TaskListViewState extends State<TaskListView> {
           ],
         ),
       );
-    }
-
-    final shouldGroup = widget.currentViewTitle == '全部';
-    if (shouldGroup) {
-      return _buildGroupedTaskList();
     }
 
     return ListView.builder(
@@ -442,11 +446,38 @@ class _TaskListViewState extends State<TaskListView> {
       groupedTasks[task.listId]!.add(task);
     }
 
-    final sortedListIds = groupedTasks.keys.toList()..sort();
+    // Sort tasks in each group: incomplete first, then completed
+    for (final listId in groupedTasks.keys) {
+      groupedTasks[listId]!.sort((a, b) {
+        if (a.completed == b.completed) {
+          return 0;
+        }
+        return a.completed ? 1 : -1;
+      });
+    }
+
+
+
+    final sortedListIds = <int>[];
+    
+    // First add list IDs in the order they appear in widget.lists
+    for (final list in widget.lists) {
+      if (!groupedTasks.containsKey(list.id)) {
+        groupedTasks[list.id] = [];
+      }
+      sortedListIds.add(list.id);
+    }
+
+    // Then add any remaining list IDs (orphans) sorted by ID
+    final remainingIds = groupedTasks.keys
+        .where((id) => !sortedListIds.contains(id))
+        .toList()
+      ..sort();
+    sortedListIds.addAll(remainingIds);
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: groupedTasks.length,
+      itemCount: sortedListIds.length,
       itemBuilder: (context, index) {
         final listId = sortedListIds[index];
         final tasks = groupedTasks[listId]!;

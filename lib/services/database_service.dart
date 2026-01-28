@@ -324,6 +324,7 @@ class DatabaseService implements DatabaseServiceInterface {
       FROM $_tableTasks t
       LEFT JOIN $_tableLists l ON t.list_id = l.id
       WHERE t.list_id = ? AND t.completed = 0
+      ORDER BY t.id DESC
       LIMIT ? OFFSET ?
     ''',
       [listId, limit, offset],
@@ -408,6 +409,7 @@ class DatabaseService implements DatabaseServiceInterface {
       FROM $_tableTasks t
       LEFT JOIN $_tableLists l ON t.list_id = l.id
       WHERE date(t.due_date) = ? AND t.completed = 0
+      ORDER BY t.id DESC
       LIMIT ? OFFSET ?
     ''',
       [todayString, limit, offset],
@@ -486,6 +488,7 @@ class DatabaseService implements DatabaseServiceInterface {
       FROM $_tableTasks t
       LEFT JOIN $_tableLists l ON t.list_id = l.id
       WHERE t.completed = 0
+      ORDER BY t.id DESC
       LIMIT ? OFFSET ?
     ''',
       [limit, offset],

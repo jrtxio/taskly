@@ -335,6 +335,7 @@ class _MainScreenState extends State<MainScreen> {
                             isSidebarVisible: appProvider.isSidebarVisible,
                             showQuickAddInput: _showQuickAddInput,
                             completedCount: _completedCount,
+                            isGrouped: _currentViewType == TaskViewType.all,
                           ),
                         ),
                       ],

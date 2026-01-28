@@ -26,7 +26,7 @@ class TaskProvider with ChangeNotifier {
   bool _isLoading = false;
   AppError? _error;
   int _currentPage = 0;
-  static const int _pageSize = 50;
+  static const int _pageSize = 1000;
   bool _hasMoreData = true;
   int? _currentListId;
   bool _showCompletedTasks = false;
@@ -102,22 +102,27 @@ class TaskProvider with ChangeNotifier {
   }
 
   Future<void> loadTodayTasks() async {
+    _currentListId = null;
     await loadTasks(viewType: 'today');
   }
 
   Future<void> loadPlannedTasks() async {
+    _currentListId = null;
     await loadTasks(viewType: 'planned');
   }
 
   Future<void> loadAllTasks() async {
+    _currentListId = null;
     await loadTasks(viewType: 'all');
   }
 
   Future<void> loadCompletedTasks() async {
+    _currentListId = null;
     await loadTasks(viewType: 'completed');
   }
 
   Future<void> searchTasks(String keyword) async {
+    _currentListId = null;
     await loadTasks(viewType: 'search', keyword: keyword);
   }
 
