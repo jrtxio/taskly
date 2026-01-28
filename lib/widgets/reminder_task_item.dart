@@ -298,7 +298,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
               children: [
                 _buildCheckbox(),
                 const SizedBox(width: 14),
-                Flexible(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -360,6 +360,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
       return TextField(
         controller: _textController,
         focusNode: _textFocusNode,
+        autofocus: true,
         cursorColor: const Color(0xFF007AFF),
         cursorWidth: 1.5,
         enableInteractiveSelection: true,
