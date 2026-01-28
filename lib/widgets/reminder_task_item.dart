@@ -384,7 +384,14 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
       );
     } else {
       return GestureDetector(
-        onTap: () => _textFocusNode.requestFocus(),
+        onTap: () {
+          setState(() {
+            _isTitleEditing = true;
+          });
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _textFocusNode.requestFocus();
+          });
+        },
         behavior: HitTestBehavior.opaque,
         child: Text(
           widget.task.text,
@@ -429,7 +436,14 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
       );
     } else {
       return GestureDetector(
-        onTap: () => _notesFocusNode.requestFocus(),
+        onTap: () {
+          setState(() {
+            _isNotesEditing = true;
+          });
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _notesFocusNode.requestFocus();
+          });
+        },
         behavior: HitTestBehavior.opaque,
         child: Text(
           widget.task.notes ?? '',

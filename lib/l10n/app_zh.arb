@@ -68,6 +68,7 @@
   "dialogInputListName": "请输入列表名称",
   "menuShowListInfo": "显示列表信息",
   "menuRename": "重命名",
+  "sectionSmartLists": "智能列表",
   "sectionMyLists": "我的列表",
   "menuMarkCompleted": "标记完成",
   "menuMarkUncompleted": "标记未完成",

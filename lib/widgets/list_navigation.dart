@@ -47,7 +47,45 @@ class ListNavigation extends StatefulWidget {
 }
 
 class _ListNavigationState extends State<ListNavigation> {
-  @override
+  bool _isSmartListsExpanded = true;
+  bool _isMyListsExpanded = true;
+
+  Widget _buildSectionHeader({
+    required String title,
+    required bool isExpanded,
+    required VoidCallback onToggle,
+    Widget? trailing,
+  }) {
+    return InkWell(
+      onTap: onToggle,
+      hoverColor: Colors.transparent,
+      splashColor: Colors.transparent,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+        child: Row(
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                color: Colors.grey,
+              ),
+            ),
+            const Spacer(),
+            if (trailing != null) trailing,
+            const SizedBox(width: 4),
+            Icon(
+              isExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
+              size: 16,
+              color: Colors.grey,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void dispose() {
     super.dispose();
   }
@@ -330,187 +368,186 @@ class _ListNavigationState extends State<ListNavigation> {
           Expanded(
             child: ListView(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GridView.count(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 2.0,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: [
-                      _buildSmartViewButton(
-                        l10n.navToday,
-                        Icons.today,
-                        const Color(0xFF007AFF),
-                        widget.todayCount ?? 0,
-                        widget.onTodayTap,
-                      ),
-                      _buildSmartViewButton(
-                        l10n.navPlanned,
-                        Icons.calendar_month,
-                        const Color(0xFFFF3B30),
-                        widget.plannedCount ?? 0,
-                        widget.onPlannedTap,
-                      ),
-                      _buildSmartViewButton(
-                        l10n.navAll,
-                        Icons.list,
-                        const Color(0xFF8E8E93),
-                        widget.allCount ?? 0,
-                        widget.onAllTap,
-                      ),
-                      _buildSmartViewButton(
-                        l10n.navCompleted,
-                        Icons.check_circle,
-                        const Color(0xFFFF9500),
-                        widget.completedCount ?? 0,
-                        widget.onCompletedTap,
-                      ),
-                    ],
-                  ),
+                _buildSectionHeader(
+                  title: l10n.sectionSmartLists,
+                  isExpanded: _isSmartListsExpanded,
+                  onToggle: () => setState(() => _isSmartListsExpanded = !_isSmartListsExpanded),
                 ),
-
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        l10n.sectionMyLists,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                if (_isSmartListsExpanded)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 2.0,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: [
+                        _buildSmartViewButton(
+                          l10n.navToday,
+                          Icons.today,
+                          const Color(0xFF007AFF),
+                          widget.todayCount ?? 0,
+                          widget.onTodayTap,
                         ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.add),
-                        iconSize: 18,
-                        onPressed: widget.isDatabaseConnected
-                            ? () {
-                                _showListEditDialog();
-                              }
-                            : null,
-                      ),
-                    ],
+                        _buildSmartViewButton(
+                          l10n.navPlanned,
+                          Icons.calendar_month,
+                          const Color(0xFFFF3B30),
+                          widget.plannedCount ?? 0,
+                          widget.onPlannedTap,
+                        ),
+                        _buildSmartViewButton(
+                          l10n.navAll,
+                          Icons.list,
+                          const Color(0xFF8E8E93),
+                          widget.allCount ?? 0,
+                          widget.onAllTap,
+                        ),
+                        _buildSmartViewButton(
+                          l10n.navCompleted,
+                          Icons.check_circle,
+                          const Color(0xFFFF9500),
+                          widget.completedCount ?? 0,
+                          widget.onCompletedTap,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                _buildSectionHeader(
+                  title: l10n.sectionMyLists,
+                  isExpanded: _isMyListsExpanded,
+                  onToggle: () => setState(() => _isMyListsExpanded = !_isMyListsExpanded),
+                  trailing: IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: BoxConstraints(),
+                    icon: const Icon(Icons.add),
+                    iconSize: 18,
+                    onPressed: widget.isDatabaseConnected
+                        ? () {
+                            _showListEditDialog();
+                          }
+                        : null,
                   ),
                 ),
 
-                ...widget.lists.map((list) {
-                  final isSelected = widget.selectedList?.id == list.id;
-                  final tileColor = list.color ?? Colors.blue;
-                  final taskCount = widget.taskCounts?[list.id] ?? 0;
+                if (_isMyListsExpanded)
+                  ...widget.lists.map((list) {
+                    final isSelected = widget.selectedList?.id == list.id;
+                    final tileColor = list.color ?? Colors.blue;
+                    final taskCount = widget.taskCounts?[list.id] ?? 0;
 
-                  return AnimatedOpacity(
-                    opacity: 1.0,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeIn,
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected ? const Color(0xFF007AFF) : Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 2,
-                            offset: const Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                      child: GestureDetector(
-                        onTap: () => widget.onSelectList(list),
-                        onDoubleTap: () => _showListEditDialog(list: list),
-                        onSecondaryTapDown: (details) => _showEditMenu(list, details.globalPosition),
-                        onLongPress: () => _showEditMenu(list, Offset.zero),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(10),
-                            splashColor: tileColor.withOpacity(0.2),
-                            highlightColor: Colors.grey[200],
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 10,
-                                horizontal: 12,
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 32,
-                                    height: 32,
-                                    decoration: BoxDecoration(
-                                      color: tileColor,
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: tileColor.withOpacity(0.3),
-                                          blurRadius: 3,
-                                          offset: const Offset(0, 1),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Center(
-                                      child: list.icon != null
-                                          ? Text(
-                                              list.icon!,
-                                              style: const TextStyle(fontSize: 18),
-                                            )
-                                          : const Icon(
-                                              Icons.folder,
-                                              color: Colors.white,
-                                              size: 18,
-                                            ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      list.name,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w500,
-                                        color: isSelected ? Colors.white : Colors.black87,
-                                      ),
-                                    ),
-                                  ),
-                                  if (taskCount > 0)
+                    return AnimatedOpacity(
+                      opacity: 1.0,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeIn,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected ? const Color(0xFF007AFF) : Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 2,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
+                        ),
+                        child: GestureDetector(
+                          onTap: () => widget.onSelectList(list),
+                          onDoubleTap: () => _showListEditDialog(list: list),
+                          onSecondaryTapDown: (details) => _showEditMenu(list, details.globalPosition),
+                          onLongPress: () => _showEditMenu(list, Offset.zero),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(10),
+                              splashColor: tileColor.withOpacity(0.2),
+                              highlightColor: Colors.grey[200],
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 10,
+                                  horizontal: 12,
+                                ),
+                                child: Row(
+                                  children: [
                                     Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 2,
-                                      ),
+                                      width: 32,
+                                      height: 32,
                                       decoration: BoxDecoration(
-                                        color: isSelected
-                                            ? Colors.white.withOpacity(0.3)
-                                            : Colors.grey[300],
-                                        borderRadius: BorderRadius.circular(10),
+                                        color: tileColor,
+                                        shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: tileColor.withOpacity(0.3),
+                                            blurRadius: 3,
+                                            offset: const Offset(0, 1),
+                                          ),
+                                        ],
                                       ),
+                                      child: Center(
+                                        child: list.icon != null
+                                            ? Text(
+                                                list.icon!,
+                                                style: const TextStyle(fontSize: 18),
+                                              )
+                                            : const Icon(
+                                                Icons.folder,
+                                                color: Colors.white,
+                                                size: 18,
+                                              ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
                                       child: Text(
-                                        taskCount.toString(),
+                                        list.name,
                                         style: TextStyle(
-                                          fontSize: 12,
+                                          fontSize: 13,
                                           fontWeight: FontWeight.w500,
                                           color: isSelected ? Colors.white : Colors.black87,
                                         ),
                                       ),
                                     ),
-                                ],
+                                    if (taskCount > 0)
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 2,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: isSelected
+                                              ? Colors.white.withOpacity(0.3)
+                                              : Colors.grey[300],
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: Text(
+                                          taskCount.toString(),
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
+                                            color: isSelected ? Colors.white : Colors.black87,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  }),
 
                 const SizedBox(height: 16),
               ],

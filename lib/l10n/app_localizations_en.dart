@@ -231,6 +231,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get menuRename => 'Rename';
 
   @override
+  String get sectionSmartLists => 'Smart Lists';
+
+  @override
   String get sectionMyLists => 'My Lists';
 
   @override

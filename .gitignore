@@ -48,6 +48,7 @@ ios/Flutter/flutter_export_environment.sh
 # macOS
 macos/Pods/
 macos/.symlinks/
+macos/Flutter/ephemeral/
 macos/Flutter/flutter_export_environment.sh
 macos/Flutter/GeneratedPluginRegistrant.swift
 

@@ -512,6 +512,12 @@ abstract class AppLocalizations {
   /// **'Rename'**
   String get menuRename;
 
+  /// No description provided for @sectionSmartLists.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Lists'**
+  String get sectionSmartLists;
+
   /// No description provided for @sectionMyLists.
   ///
   /// In en, this message translates to:

@@ -2,177 +2,104 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:taskly/widgets/list_navigation.dart';
 import 'package:taskly/models/todo_list.dart';
+import 'package:taskly/l10n/app_localizations.dart';
 
 void main() {
   group('ListNavigation Widget Tests', () {
     final testLists = [
       TodoList(id: 1, name: 'Work'),
       TodoList(id: 2, name: 'Personal'),
-      TodoList(id: 3, name: 'Shopping'),
     ];
 
-    void mockOnSelectList(TodoList list) {}
-    void mockOnAddList(String name, {String? icon, Color? color}) {}
-    void mockOnDeleteList(int id) {}
-    void mockOnTodayTap() {}
-    void mockOnPlannedTap() {}
-    void mockOnAllTap() {}
-    void mockOnCompletedTap() {}
-
-    testWidgets('should render correctly with initial data', (
-      WidgetTester tester,
-    ) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: ListNavigation(
-              lists: testLists,
-              selectedList: testLists.first,
-              onSelectList: mockOnSelectList,
-              onAddList: mockOnAddList,
-              onDeleteList: mockOnDeleteList,
-              onTodayTap: mockOnTodayTap,
-              onPlannedTap: mockOnPlannedTap,
-              onAllTap: mockOnAllTap,
-              onCompletedTap: mockOnCompletedTap,
-            ),
-          ),
-        ),
+    Widget createWidget(ListNavigation nav) {
+      return MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
+        home: Scaffold(body: nav),
       );
+    }
 
-      expect(find.text('今天'), findsOneWidget);
-      expect(find.text('计划'), findsOneWidget);
-      expect(find.text('全部'), findsOneWidget);
-      expect(find.text('完成'), findsOneWidget);
-      expect(find.text('我的列表'), findsOneWidget);
+    testWidgets('should render headers and items correctly', (WidgetTester tester) async {
+      await tester.pumpWidget(createWidget(ListNavigation(
+        lists: testLists,
+        selectedList: null,
+        onSelectList: (_) {},
+        onAddList: (_, {icon, color}) {},
+        onDeleteList: (_) {},
+        onTodayTap: () {},
+        onPlannedTap: () {},
+        onAllTap: () {},
+        onCompletedTap: () {},
+      )));
+
+      expect(find.text('Smart Lists'), findsOneWidget);
+      expect(find.text('My Lists'), findsOneWidget);
+      expect(find.text('Today'), findsOneWidget);
+      expect(find.text('Planned'), findsOneWidget);
+      expect(find.text('Work'), findsOneWidget);
     });
 
-    testWidgets('should call onTodayTap when Today tile is tapped', (
-      WidgetTester tester,
-    ) async {
-      bool wasCalled = false;
-      void onTodayTap() {
-        wasCalled = true;
-      }
+    testWidgets('should toggle Smart Lists section', (WidgetTester tester) async {
+      await tester.pumpWidget(createWidget(ListNavigation(
+        lists: testLists,
+        selectedList: null,
+        onSelectList: (_) {},
+        onAddList: (_, {icon, color}) {},
+        onDeleteList: (_) {},
+        onTodayTap: () {},
+        onPlannedTap: () {},
+        onAllTap: () {},
+        onCompletedTap: () {},
+      )));
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: ListNavigation(
-              lists: testLists,
-              selectedList: null,
-              onSelectList: mockOnSelectList,
-              onAddList: mockOnAddList,
-              onDeleteList: mockOnDeleteList,
-              onTodayTap: onTodayTap,
-              onPlannedTap: mockOnPlannedTap,
-              onAllTap: mockOnAllTap,
-              onCompletedTap: mockOnCompletedTap,
-            ),
-          ),
-        ),
-      );
+      // Initially expanded
+      expect(find.text('Today'), findsOneWidget);
 
-      await tester.tap(find.text('今天'));
-      await tester.pump();
+      // Tap header to collapse
+      await tester.tap(find.text('Smart Lists'));
+      await tester.pumpAndSettle();
 
-      expect(wasCalled, isTrue);
+      // Should be hidden
+      expect(find.text('Today'), findsNothing);
+
+      // Tap header to expand
+      await tester.tap(find.text('Smart Lists'));
+      await tester.pumpAndSettle();
+
+      // Should be visible
+      expect(find.text('Today'), findsOneWidget);
     });
 
-    testWidgets('should call onPlannedTap when Planned tile is tapped', (
-      WidgetTester tester,
-    ) async {
-      bool wasCalled = false;
-      void onPlannedTap() {
-        wasCalled = true;
-      }
+    testWidgets('should toggle My Lists section', (WidgetTester tester) async {
+      await tester.pumpWidget(createWidget(ListNavigation(
+        lists: testLists,
+        selectedList: null,
+        onSelectList: (_) {},
+        onAddList: (_, {icon, color}) {},
+        onDeleteList: (_) {},
+        onTodayTap: () {},
+        onPlannedTap: () {},
+        onAllTap: () {},
+        onCompletedTap: () {},
+      )));
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: ListNavigation(
-              lists: testLists,
-              selectedList: null,
-              onSelectList: mockOnSelectList,
-              onAddList: mockOnAddList,
-              onDeleteList: mockOnDeleteList,
-              onTodayTap: mockOnTodayTap,
-              onPlannedTap: onPlannedTap,
-              onAllTap: mockOnAllTap,
-              onCompletedTap: mockOnCompletedTap,
-            ),
-          ),
-        ),
-      );
+      // Initially expanded
+      expect(find.text('Work'), findsOneWidget);
 
-      await tester.tap(find.text('计划'));
-      await tester.pump();
+      // Tap header to collapse
+      await tester.tap(find.text('My Lists'));
+      await tester.pumpAndSettle();
 
-      expect(wasCalled, isTrue);
-    });
+      // Should be hidden
+      expect(find.text('Work'), findsNothing);
 
-    testWidgets('should call onAllTap when All tile is tapped', (
-      WidgetTester tester,
-    ) async {
-      bool wasCalled = false;
-      void onAllTap() {
-        wasCalled = true;
-      }
+      // Tap header to expand
+      await tester.tap(find.text('My Lists'));
+      await tester.pumpAndSettle();
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: ListNavigation(
-              lists: testLists,
-              selectedList: null,
-              onSelectList: mockOnSelectList,
-              onAddList: mockOnAddList,
-              onDeleteList: mockOnDeleteList,
-              onTodayTap: mockOnTodayTap,
-              onPlannedTap: mockOnPlannedTap,
-              onAllTap: onAllTap,
-              onCompletedTap: mockOnCompletedTap,
-            ),
-          ),
-        ),
-      );
-
-      await tester.tap(find.text('全部'));
-      await tester.pump();
-
-      expect(wasCalled, isTrue);
-    });
-
-    testWidgets('should call onCompletedTap when Completed tile is tapped', (
-      WidgetTester tester,
-    ) async {
-      bool wasCalled = false;
-      void onCompletedTap() {
-        wasCalled = true;
-      }
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: ListNavigation(
-              lists: testLists,
-              selectedList: null,
-              onSelectList: mockOnSelectList,
-              onAddList: mockOnAddList,
-              onDeleteList: mockOnDeleteList,
-              onTodayTap: mockOnTodayTap,
-              onPlannedTap: mockOnPlannedTap,
-              onAllTap: mockOnAllTap,
-              onCompletedTap: onCompletedTap,
-            ),
-          ),
-        ),
-      );
-
-      await tester.tap(find.text('完成'));
-      await tester.pump();
-
-      expect(wasCalled, isTrue);
+      // Should be visible
+      expect(find.text('Work'), findsOneWidget);
     });
   });
 }

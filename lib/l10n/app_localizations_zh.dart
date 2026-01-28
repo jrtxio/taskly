@@ -226,6 +226,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get menuRename => '重命名';
 
   @override
+  String get sectionSmartLists => '智能列表';
+
+  @override
   String get sectionMyLists => '我的列表';
 
   @override

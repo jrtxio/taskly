@@ -103,6 +103,7 @@
   "dialogInputListName": "Please enter list name",
   "menuShowListInfo": "Show List Info",
   "menuRename": "Rename",
+  "sectionSmartLists": "Smart Lists",
   "sectionMyLists": "My Lists",
   "menuMarkCompleted": "Mark Completed",
   "menuMarkUncompleted": "Mark Uncompleted",
