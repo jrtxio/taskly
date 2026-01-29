@@ -2,11 +2,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:taskly/utils/date_parser.dart';
 import 'package:taskly/l10n/app_localizations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:mockito/annotations.dart';
 import 'package:intl/intl.dart';
 
-@GenerateMocks([AppLocalizations])
-import 'date_parser_test.mocks.dart';
+// Manual Mock instead of generated one
+class MockAppLocalizations extends Mock implements AppLocalizations {
+  @override
+  String get navToday => super.noSuchMethod(Invocation.getter(#navToday), returnValue: '今天');
+  @override
+  String get dateTomorrow => super.noSuchMethod(Invocation.getter(#dateTomorrow), returnValue: '明天');
+  @override
+  String get dateYesterday => super.noSuchMethod(Invocation.getter(#dateYesterday), returnValue: '昨天');
+}
 
 void main() {
   group('DateParser Tests', () {
