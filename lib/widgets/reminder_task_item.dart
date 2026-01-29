@@ -421,7 +421,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildCheckbox(),
-                const SizedBox(width: 14),
+                const SizedBox(width: 14 - AppDesign.paddingS),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -505,7 +505,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
-          contentPadding: EdgeInsets.zero,
+          contentPadding: const EdgeInsets.symmetric(horizontal: AppDesign.paddingS),
           isDense: true,
         ),
         style: TextStyle(
@@ -530,14 +530,17 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
           });
         },
         behavior: HitTestBehavior.opaque,
-        child: Text(
-          widget.task.text,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            decoration: widget.task.completed ? TextDecoration.lineThrough : null,
-            color: widget.task.completed ? AppTheme.onSurfaceSecondary(context) : Theme.of(context).colorScheme.onSurface,
-            height: 1.5,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppDesign.paddingS),
+          child: Text(
+            widget.task.text,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              decoration: widget.task.completed ? TextDecoration.lineThrough : null,
+              color: widget.task.completed ? AppTheme.onSurfaceSecondary(context) : Theme.of(context).colorScheme.onSurface,
+              height: 1.5,
+            ),
           ),
         ),
       );
@@ -558,7 +561,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
-          contentPadding: EdgeInsets.zero,
+          contentPadding: const EdgeInsets.symmetric(horizontal: AppDesign.paddingS),
           isDense: true,
         ),
         style: TextStyle(
@@ -603,7 +606,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
         behavior: HitTestBehavior.opaque,
         child: Container(
           width: double.infinity, // 扩展到整个宽度，增大可点击区域
-          padding: const EdgeInsets.symmetric(vertical: 2), // 稍微减小垂直 padding，使布局更紧凑
+          padding: const EdgeInsets.symmetric(vertical: 2, horizontal: AppDesign.paddingS), // 稍微减小垂直 padding，使布局更紧凑
           child: Text(
             hasNotes 
                 ? widget.task.notes! 
@@ -639,7 +642,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
             child: GestureDetector(
               onTap: isEditing ? _showDatePicker : null,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: AppDesign.paddingS, vertical: 4),
                 decoration: BoxDecoration(
                   color: isEditing ? AppTheme.chipBackground(context) : Colors.transparent,
                   borderRadius: AppDesign.borderRadiusSmall,
@@ -681,7 +684,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
             child: GestureDetector(
               onTap: isEditing ? _showTimePicker : null,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: AppDesign.paddingS, vertical: 4),
                 decoration: BoxDecoration(
                   color: isEditing ? AppTheme.chipBackground(context) : Colors.transparent,
                   borderRadius: AppDesign.borderRadiusSmall,

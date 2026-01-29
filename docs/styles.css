@@ -733,13 +733,17 @@ footer {
 
 .task-tags {
     display: flex;
-    gap: 6px;
+    gap: 8px;
+    margin-top: 4px;
 }
 
 .task-tag {
-    font-size: 12px;
+    font-size: 13px;
     padding: 0;
     color: #8e8e93;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .task-tag.red {
