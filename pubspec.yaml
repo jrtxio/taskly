@@ -1,5 +1,5 @@
 name: taskly
-description: "A new Flutter project."
+description: "A simple and intuitive task manager built with Flutter."
 publish_to: 'none'
 version: 0.0.1
 

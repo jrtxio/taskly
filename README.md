@@ -58,7 +58,7 @@ Taskly is a simple and intuitive task management tool built with Flutter. It pro
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/jrtxio/taskly-flutter.git
+   git clone https://github.com/jrtxio/taskly.git
    cd taskly-flutter
    ```
 

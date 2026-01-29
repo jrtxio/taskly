@@ -1,5 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:taskly/utils/date_parser.dart';
+import 'package:taskly/l10n/app_localizations.dart';
+import 'package:mockito/mockito.dart';
+import 'package:mockito/annotations.dart';
+import 'package:intl/intl.dart';
+
+@GenerateMocks([AppLocalizations])
+import 'date_parser_test.mocks.dart';
 
 void main() {
   group('DateParser Tests', () {
@@ -169,7 +176,10 @@ void main() {
         final todayString =
             '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} 10:30:00';
 
-        final result = DateParser.formatDateForDisplay(todayString);
+        final mockL10n = MockAppLocalizations();
+        when(mockL10n.navToday).thenReturn('今天');
+
+        final result = DateParser.formatDateForDisplay(todayString, mockL10n);
         expect(result, contains('今天'));
         expect(result, contains('10:30'));
       });
@@ -180,7 +190,10 @@ void main() {
         final tomorrowString =
             '${tomorrow.year}-${tomorrow.month.toString().padLeft(2, '0')}-${tomorrow.day.toString().padLeft(2, '0')} 14:00:00';
 
-        final result = DateParser.formatDateForDisplay(tomorrowString);
+        final mockL10n = MockAppLocalizations();
+        when(mockL10n.dateTomorrow).thenReturn('明天');
+
+        final result = DateParser.formatDateForDisplay(tomorrowString, mockL10n);
         expect(result, contains('明天'));
         expect(result, contains('14:00'));
       });
@@ -191,7 +204,10 @@ void main() {
         final yesterdayString =
             '${yesterday.year}-${yesterday.month.toString().padLeft(2, '0')}-${yesterday.day.toString().padLeft(2, '0')} 09:00:00';
 
-        final result = DateParser.formatDateForDisplay(yesterdayString);
+        final mockL10n = MockAppLocalizations();
+        when(mockL10n.dateYesterday).thenReturn('昨天');
+
+        final result = DateParser.formatDateForDisplay(yesterdayString, mockL10n);
         expect(result, contains('昨天'));
         expect(result, contains('09:00'));
       });
@@ -199,23 +215,27 @@ void main() {
       test('should display other dates with full format', () {
         final dateString = '2024-12-25 10:30:00';
 
-        final result = DateParser.formatDateForDisplay(dateString);
+        final mockL10n = MockAppLocalizations();
+        final result = DateParser.formatDateForDisplay(dateString, mockL10n);
         expect(result, equals('2024-12-25 10:30'));
       });
 
       test('should return empty string for null input', () {
-        final result = DateParser.formatDateForDisplay(null);
+        final mockL10n = MockAppLocalizations();
+        final result = DateParser.formatDateForDisplay(null, mockL10n);
         expect(result, equals(''));
       });
 
       test('should return empty string for empty input', () {
-        final result = DateParser.formatDateForDisplay('');
+        final mockL10n = MockAppLocalizations();
+        final result = DateParser.formatDateForDisplay('', mockL10n);
         expect(result, equals(''));
       });
 
       test('should return original string for invalid date', () {
         final invalidString = 'invalid-date';
-        final result = DateParser.formatDateForDisplay(invalidString);
+        final mockL10n = MockAppLocalizations();
+        final result = DateParser.formatDateForDisplay(invalidString, mockL10n);
         expect(result, equals(invalidString));
       });
     });
