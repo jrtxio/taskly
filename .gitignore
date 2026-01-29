@@ -92,3 +92,4 @@ coverage/
 # User specified
 taskly-racket/
 .trae/
+.agent/

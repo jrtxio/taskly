@@ -2,14 +2,9 @@
   <h1>Taskly</h1>
   <p>📝 A Simple and Intuitive Task Manager Built with Flutter</p>
   
-  <!-- GitHub Badges -->
+  <!-- Language Switch -->
   <div style="margin: 1rem 0;">
-    <a href="https://github.com/jrtxio/taskly-flutter/blob/main/LICENSE"><img src="https://img.shields.io/github/license/jrtxio/taskly-flutter.svg" alt="License"></a>
-    <a href="https://github.com/jrtxio/taskly-flutter/stargazers"><img src="https://img.shields.io/github/stars/jrtxio/taskly-flutter.svg?style=social" alt="GitHub Stars"></a>
-    <a href="https://github.com/jrtxio/taskly-flutter/forks"><img src="https://img.shields.io/github/forks/jrtxio/taskly-flutter.svg?style=social" alt="GitHub Forks"></a>
-    <a href="https://github.com/jrtxio/taskly-flutter"><img src="https://img.shields.io/badge/GitHub-Project-blue.svg" alt="GitHub Project"></a>
-    <a href="README.md"><img src="https://img.shields.io/badge/Language-English-blue.svg" alt="English"></a>
-    <a href="README.zh-CN.md"><img src="https://img.shields.io/badge/%E8%AF%AD%E8%A8%80-%E4%B8%AD%E6%96%87-gray.svg" alt="中文"></a>
+    <a href="README.zh-CN.md"><img src="https://img.shields.io/badge/Language-%E4%B8%AD%E6%96%87-blue.svg" alt="Switch to Chinese"></a>
   </div>
 </div>
 
