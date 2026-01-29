@@ -404,33 +404,16 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
         onSecondaryTapDown: (details) => _handleRightClick(details.globalPosition),
         behavior: HitTestBehavior.translucent,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          curve: Curves.easeOutCubic,
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut,
           decoration: BoxDecoration(
+            // macOS Reminders style: subtle blue tint on selection, very subtle gray on hover
             color: widget.isSelected
-                ? primaryColor.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.12 : 0.06)
+                ? AppTheme.selectionBackground(context)
                 : _isHovered
                     ? AppTheme.highlightBackground(context)
-                    : AppTheme.cardBackground(context),
-            border: Border(
-              left: BorderSide(
-                color: widget.isSelected
-                    ? primaryColor
-                    : _isHovered
-                        ? primaryColor.withOpacity(0.3)
-                        : Colors.transparent,
-                width: 3,
-              ),
-            ),
-            boxShadow: widget.isSelected
-                ? [
-                    BoxShadow(
-                      color: primaryColor.withOpacity(0.08),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ]
-                : null,
+                    : Colors.transparent,
+            borderRadius: BorderRadius.circular(6),
           ),
           child: Padding(
             padding: AppDesign.contentPadding,

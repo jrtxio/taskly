@@ -3,28 +3,36 @@ import 'app_design.dart';
 
 // macOS Reminders-inspired color palette
 class RemindersColors {
-  // Light mode - Apple system colors
+  // Light mode - Apple system colors (matched to actual Reminders app)
   static const Color lightBackground = Color(0xFFFFFFFF);
-  static const Color lightSidebar = Color(0xFFF5F5F7); // Apple's signature gray
-  static const Color lightSurface = Color(0xFFFAFAFA);
-  static const Color lightDivider = Color(0xFFE5E5EA);
-  static const Color lightSecondaryText = Color(0xFF8E8E93);
-  static const Color lightTertiaryText = Color(0xFFC7C7CC);
+  static const Color lightSidebar = Color(0xFFF2F2F7); // macOS Ventura sidebar gray
+  static const Color lightSurface = Color(0xFFF9F9F9);
+  static const Color lightDivider = Color(0xFFD1D1D6); // Slightly darker for better visibility
+  static const Color lightSecondaryText = Color(0xFF86868B); // Apple secondary label
+  static const Color lightTertiaryText = Color(0xFFAEAEB2); // Apple tertiary label
+  
+  // Selection colors - macOS Reminders uses system accent color with opacity
+  static const Color lightSelectionBackground = Color(0x1A007AFF); // ~10% opacity blue
+  static const Color lightHoverBackground = Color(0x0D000000); // ~5% black
   
   // Dark mode - Apple system dark colors
   static const Color darkBackground = Color(0xFF1C1C1E);
   static const Color darkSidebar = Color(0xFF2C2C2E);
   static const Color darkSurface = Color(0xFF3A3A3C);
   static const Color darkDivider = Color(0xFF38383A);
-  static const Color darkSecondaryText = Color(0xFF8E8E93);
+  static const Color darkSecondaryText = Color(0xFF98989D); // Brighter for dark mode
   static const Color darkTertiaryText = Color(0xFF636366);
   
-  // macOS Reminders smart list colors
-  static const Color today = Color(0xFF007AFF);      // Blue
-  static const Color scheduled = Color(0xFFFF3B30);  // Red
-  static const Color all = Color(0xFF636366);        // Gray (slightly darker)
-  static const Color completed = Color(0xFFFF9500);  // Orange
-  static const Color flagged = Color(0xFFFF9F0A);    // Amber
+  // Selection colors for dark mode
+  static const Color darkSelectionBackground = Color(0x330A84FF); // ~20% opacity blue
+  static const Color darkHoverBackground = Color(0x14FFFFFF); // ~8% white
+  
+  // macOS Reminders smart list colors (exact Apple colors)
+  static const Color today = Color(0xFF007AFF);      // System Blue
+  static const Color scheduled = Color(0xFFFF3B30);  // System Red
+  static const Color all = Color(0xFF8E8E93);        // System Gray
+  static const Color completed = Color(0xFF34C759);  // System Green (Reminders uses green for completed)
+  static const Color flagged = Color(0xFFFF9500);    // System Orange
 }
 
 class AppTheme {
@@ -462,11 +470,18 @@ class AppTheme {
         : RemindersColors.lightBackground;
   }
 
-  /// Highlight background (hover, selected states)
+  /// Hover background - subtle background on hover
   static Color highlightBackground(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
-        ? RemindersColors.darkSurface
-        : RemindersColors.lightSurface;
+        ? RemindersColors.darkHoverBackground
+        : RemindersColors.lightHoverBackground;
+  }
+
+  /// Selection background - macOS Reminders-style selection with accent color opacity
+  static Color selectionBackground(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? RemindersColors.darkSelectionBackground
+        : RemindersColors.lightSelectionBackground;
   }
 
   /// Badge/tag background color

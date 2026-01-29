@@ -443,9 +443,13 @@ class _ListNavigationState extends State<ListNavigation> {
                       child: Container(
                         margin: AppDesign.tileMargin,
                         decoration: BoxDecoration(
-                          color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.cardBackground(context),
+                          // macOS Reminders style: subtle blue tint on selection
+                          color: isSelected 
+                              ? (Theme.of(context).brightness == Brightness.dark 
+                                  ? RemindersColors.darkSelectionBackground 
+                                  : RemindersColors.lightSelectionBackground)
+                              : Colors.transparent,
                           borderRadius: AppDesign.borderRadiusMedium,
-                          boxShadow: AppDesign.subtleShadow,
                         ),
                         child: GestureDetector(
                           onTap: () => widget.onSelectList(list),
@@ -498,30 +502,18 @@ class _ListNavigationState extends State<ListNavigation> {
                                         list.name,
                                         style: TextStyle(
                                           fontSize: 13,
-                                          fontWeight: FontWeight.w500,
-                                          color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
+                                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                                          color: Theme.of(context).colorScheme.onSurface,
                                         ),
                                       ),
                                     ),
                                     if (taskCount > 0)
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 2,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: isSelected
-                                              ? Colors.white.withOpacity(0.3)
-                                              : AppTheme.badgeBackground(context),
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        child: Text(
-                                          taskCount.toString(),
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
-                                            color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
-                                          ),
+                                      Text(
+                                        taskCount.toString(),
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w400,
+                                          color: AppTheme.onSurfaceSecondary(context),
                                         ),
                                       ),
                                   ],
