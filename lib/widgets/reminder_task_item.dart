@@ -454,35 +454,39 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
       key: Key('checkbox_${widget.task.id}'),
       onTap: widget.onToggle,
       behavior: HitTestBehavior.opaque,
-      child: AnimatedBuilder(
-        animation: _completionAnimationController,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _scaleAnimation.value,
-            child: Container(
-              width: AppDesign.checkboxSize,
-              height: AppDesign.checkboxSize,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
+      child: Container(
+        height: 21, // Match the height of the first line of title text (14 * 1.5)
+        alignment: Alignment.center,
+        child: AnimatedBuilder(
+          animation: _completionAnimationController,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _scaleAnimation.value,
+              child: Container(
+                width: AppDesign.checkboxSize,
+                height: AppDesign.checkboxSize,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: widget.task.completed
+                        ? Colors.transparent
+                        : AppTheme.onSurfaceTertiary(context),
+                    width: 1.5,
+                  ),
                   color: widget.task.completed
-                      ? Colors.transparent
-                      : AppTheme.onSurfaceTertiary(context),
-                  width: 1.5,
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.transparent,
                 ),
-                color: widget.task.completed
-                    ? Theme.of(context).colorScheme.primary
-                    : Colors.transparent,
+                child: widget.task.completed
+                    ? Transform.scale(
+                        scale: _checkScaleAnimation.value,
+                        child: const Icon(Icons.check, color: Colors.white, size: 16),
+                      )
+                    : null,
               ),
-              child: widget.task.completed
-                  ? Transform.scale(
-                      scale: _checkScaleAnimation.value,
-                      child: const Icon(Icons.check, color: Colors.white, size: 16),
-                    )
-                  : null,
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -599,8 +603,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
         behavior: HitTestBehavior.opaque,
         child: Container(
           width: double.infinity, // 扩展到整个宽度，增大可点击区域
-          constraints: const BoxConstraints(minHeight: 32), // 增大最小高度，确保点击区域足够大
-          padding: const EdgeInsets.symmetric(vertical: 4), // 增加垂直 padding
+          padding: const EdgeInsets.symmetric(vertical: 2), // 稍微减小垂直 padding，使布局更紧凑
           child: Text(
             hasNotes 
                 ? widget.task.notes! 
@@ -629,7 +632,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
     }
 
     return Padding(
-      padding: EdgeInsets.only(top: hasNotes ? 2 : 4),
+      padding: EdgeInsets.zero, // Remove extra padding, Column handles it better
       child: Row(
         children: [
           if (hasDate || isEditing)
