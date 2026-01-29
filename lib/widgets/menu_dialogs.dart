@@ -11,119 +11,88 @@ class AppMenuBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Container(
-      height: 48,
+      height: 36,
       decoration: BoxDecoration(
-        color: Colors.grey[50],
-        border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
+        color: Colors.grey[100],
+        border: Border(bottom: BorderSide(color: Colors.grey[300]!)),
       ),
       child: Row(
         children: [
-          const SizedBox(width: 16),
-          _buildMenuButton(context, AppLocalizations.of(context)!.menuFile, _buildFileMenu(context)),
-          _buildMenuButton(context, AppLocalizations.of(context)!.menuSettings, _buildSettingsMenu(context)),
-          _buildMenuButton(context, AppLocalizations.of(context)!.menuHelp, _buildHelpMenu(context)),
+          MenuBar(
+            style: MenuStyle(
+              backgroundColor: WidgetStateProperty.all(Colors.transparent),
+              elevation: WidgetStateProperty.all(0),
+              padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 8)),
+            ),
+            children: [
+              _buildFileMenu(context, l10n),
+              _buildSettingsMenu(context, l10n),
+              _buildHelpMenu(context, l10n),
+            ],
+          ),
           const Spacer(),
         ],
       ),
     );
   }
 
-  Widget _buildMenuButton(
-    BuildContext context,
-    String label,
-    List<PopupMenuEntry<dynamic>> menuItems,
-  ) {
-    return PopupMenuButton<dynamic>(
-      tooltip: label,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        child: Text(label),
-      ),
-      itemBuilder: (context) => menuItems,
+  SubmenuButton _buildFileMenu(BuildContext context, AppLocalizations l10n) {
+    return SubmenuButton(
+      menuChildren: [
+        MenuItemButton(
+          onPressed: () => _showNewDatabaseDialog(context),
+          child: Text(l10n.menuNewDatabase),
+        ),
+        MenuItemButton(
+          onPressed: () => _showOpenDatabaseDialog(context),
+          child: Text(l10n.menuOpenDatabase),
+        ),
+        MenuItemButton(
+          onPressed: () => _showCloseDatabaseDialog(context),
+          child: Text(l10n.menuCloseDatabase),
+        ),
+        const Divider(height: 1),
+        MenuItemButton(
+          onPressed: () => exit(0),
+          child: Text(l10n.menuExit),
+        ),
+      ],
+      child: Text(l10n.menuFile),
     );
   }
 
-  List<PopupMenuEntry<dynamic>> _buildFileMenu(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return [
-      PopupMenuItem(
-        value: 'new_database',
-        onTap: () {
-          Future.delayed(
-            const Duration(milliseconds: 100),
-            () => _showNewDatabaseDialog(context),
-          );
-        },
-        child: Text(l10n.menuNewDatabase),
-      ),
-      PopupMenuItem(
-        value: 'open_database',
-        onTap: () {
-          Future.delayed(
-            const Duration(milliseconds: 100),
-            () => _showOpenDatabaseDialog(context),
-          );
-        },
-        child: Text(l10n.menuOpenDatabase),
-      ),
-      PopupMenuItem(
-        value: 'close_database',
-        onTap: () {
-          Future.delayed(
-            const Duration(milliseconds: 100),
-            () => _showCloseDatabaseDialog(context),
-          );
-        },
-        child: Text(l10n.menuCloseDatabase),
-      ),
-      const PopupMenuDivider(),
-      PopupMenuItem(value: 'close', child: Text(l10n.menuExit)),
-    ];
-  }
-
-  List<PopupMenuEntry<dynamic>> _buildSettingsMenu(BuildContext context) {
+  SubmenuButton _buildSettingsMenu(BuildContext context, AppLocalizations l10n) {
     final appProvider = Provider.of<AppProvider>(context);
-    final l10n = AppLocalizations.of(context)!;
-
-    return [
-      PopupMenuItem(
-        value: 'language',
-        onTap: () {
-          Future.delayed(
-            const Duration(milliseconds: 100),
-            () => _showLanguageDialog(context, appProvider),
-          );
-        },
-        child: Row(
-          children: [
-            const Icon(Icons.translate, size: 18),
-            const SizedBox(width: 8),
-            Text(l10n.menuLanguage),
-            const Spacer(),
-            Text(
-              appProvider.language == 'en' ? 'English' : '简体中文',
-              style: const TextStyle(color: Colors.grey),
-            ),
-          ],
+    
+    return SubmenuButton(
+      menuChildren: [
+        MenuItemButton(
+          onPressed: () => _showLanguageDialog(context, appProvider),
+          leadingIcon: const Icon(Icons.translate, size: 18),
+          trailingIcon: Text(
+            appProvider.language == 'en' ? 'English' : '简体中文',
+            style: TextStyle(color: Colors.grey[600], fontSize: 12),
+          ),
+          child: Text(l10n.menuLanguage),
         ),
-      ),
-    ];
+      ],
+      child: Text(l10n.menuSettings),
+    );
   }
 
-  List<PopupMenuEntry<dynamic>> _buildHelpMenu(BuildContext context) {
-    return [
-      PopupMenuItem(
-        value: 'about',
-        onTap: () {
-          Future.delayed(
-            const Duration(milliseconds: 100),
-            () => _showAboutDialog(context),
-          );
-        },
-        child: Text(AppLocalizations.of(context)!.menuAbout),
-      ),
-    ];
+  SubmenuButton _buildHelpMenu(BuildContext context, AppLocalizations l10n) {
+    return SubmenuButton(
+      menuChildren: [
+        MenuItemButton(
+          onPressed: () => _showAboutDialog(context),
+          child: Text(l10n.menuAbout),
+        ),
+      ],
+      child: Text(l10n.menuHelp),
+    );
   }
 
   void _showLanguageDialog(BuildContext context, AppProvider appProvider) {
