@@ -100,7 +100,7 @@ jobs:
         run: |
           docker run --rm -v "$PWD":/app -w /app \
             --platform linux/arm64 \
-            ghcr.io/flutter/flutter:stable \
+            cirrusci/flutter:stable \
             bash -c "flutter pub get && flutter build linux --release"
           cd build/linux/arm64/release/bundle
           zip -r ../../../taskly-${{ env.VERSION }}-linux-arm64.zip .
