@@ -541,7 +541,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
               child: GestureDetector(
                 onTap: isEditing ? _showDatePicker : null,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.only(right: 8, top: 4, bottom: 4),
                   decoration: BoxDecoration(
                     color: isEditing ? Colors.blue[50] : Colors.transparent,
                     borderRadius: BorderRadius.circular(6),
@@ -580,7 +580,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
               child: GestureDetector(
                 onTap: isEditing ? _showTimePicker : null,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.only(right: 8, top: 4, bottom: 4),
                   decoration: BoxDecoration(
                     color: isEditing ? Colors.blue[50] : Colors.transparent,
                     borderRadius: BorderRadius.circular(6),
