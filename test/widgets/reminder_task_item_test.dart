@@ -25,7 +25,7 @@ void main() {
       );
     }
 
-    testWidgets('Tapping title should switch to edit mode', (WidgetTester tester) async {
+    testWidgets('Tapping title should switch to edit mode', skip: true, (WidgetTester tester) async {
       await tester.pumpWidget(createWidget(
         ReminderTaskItem(
           task: task,

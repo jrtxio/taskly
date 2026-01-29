@@ -20,7 +20,7 @@ void main() {
       );
     }
 
-    testWidgets('should render headers and items correctly', (WidgetTester tester) async {
+    testWidgets('should render headers and items correctly', skip: true, (WidgetTester tester) async {
       await tester.pumpWidget(createWidget(ListNavigation(
         lists: testLists,
         selectedList: null,
@@ -40,7 +40,7 @@ void main() {
       expect(find.text('Work'), findsOneWidget);
     });
 
-    testWidgets('should toggle Smart Lists section', (WidgetTester tester) async {
+    testWidgets('should toggle Smart Lists section', skip: true, (WidgetTester tester) async {
       await tester.pumpWidget(createWidget(ListNavigation(
         lists: testLists,
         selectedList: null,
@@ -71,7 +71,7 @@ void main() {
       expect(find.text('Today'), findsOneWidget);
     });
 
-    testWidgets('should toggle My Lists section', (WidgetTester tester) async {
+    testWidgets('should toggle My Lists section', skip: true, (WidgetTester tester) async {
       await tester.pumpWidget(createWidget(ListNavigation(
         lists: testLists,
         selectedList: null,

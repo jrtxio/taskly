@@ -423,16 +423,21 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
                 _buildCheckbox(),
                 const SizedBox(width: 14 - AppDesign.paddingS),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildTitleField(),
-                      _buildNotesField(),
-                      _buildDateTime(
-                        hasNotes: widget.task.notes != null &&
-                            widget.task.notes!.isNotEmpty,
-                      ),
-                    ],
+                  child: AnimatedSize(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeInOut,
+                    alignment: Alignment.topLeft,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildTitleField(),
+                        _buildNotesField(),
+                        _buildDateTime(
+                          hasNotes: widget.task.notes != null &&
+                              widget.task.notes!.isNotEmpty,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(width: 4),
@@ -492,246 +497,220 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
   }
 
   Widget _buildTitleField() {
-    if (_isTitleEditing) {
-      return TextField(
-        controller: _textController,
-        focusNode: _textFocusNode,
-        autofocus: true,
-        cursorColor: Theme.of(context).colorScheme.primary,
-        cursorWidth: 1.5,
-        enableInteractiveSelection: true,
-        decoration: const InputDecoration(
-          filled: false,
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: AppDesign.paddingS),
-          isDense: true,
-        ),
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-          color: widget.task.completed ? AppTheme.onSurfaceSecondary(context) : Theme.of(context).colorScheme.onSurface,
-          height: 1.5,
-        ),
-        onSubmitted: _handleTextSubmitted,
-        onEditingComplete: () => _textFocusNode.unfocus(),
-        maxLines: null,
-        textInputAction: TextInputAction.done,
-      );
-    } else {
-      return GestureDetector(
-        onTap: () {
+    final textStyle = TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      decoration: widget.task.completed && !_isTitleEditing ? TextDecoration.lineThrough : null,
+      color: widget.task.completed 
+          ? AppTheme.onSurfaceSecondary(context) 
+          : Theme.of(context).colorScheme.onSurface,
+      height: 1.5,
+    );
+    
+    // Always use TextField but control interaction via readOnly
+    // This ensures identical height in both states
+    return GestureDetector(
+      onTap: () {
+        if (!_isTitleEditing) {
           setState(() {
             _isTitleEditing = true;
           });
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _textFocusNode.requestFocus();
           });
-        },
-        behavior: HitTestBehavior.opaque,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppDesign.paddingS),
-          child: Text(
-            widget.task.text,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              decoration: widget.task.completed ? TextDecoration.lineThrough : null,
-              color: widget.task.completed ? AppTheme.onSurfaceSecondary(context) : Theme.of(context).colorScheme.onSurface,
-              height: 1.5,
-            ),
-          ),
-        ),
-      );
-    }
-  }
-
-  Widget _buildNotesField() {
-    if (_isNotesEditing) {
-      return TextField(
-        controller: _notesController,
-        focusNode: _notesFocusNode,
-        autofocus: true,
+        }
+      },
+      child: TextField(
+        controller: _textController,
+        focusNode: _textFocusNode,
+        readOnly: !_isTitleEditing,
+        showCursor: _isTitleEditing,
         cursorColor: Theme.of(context).colorScheme.primary,
         cursorWidth: 1.5,
-        enableInteractiveSelection: true,
+        enableInteractiveSelection: _isTitleEditing,
         decoration: const InputDecoration(
           filled: false,
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: AppDesign.paddingS),
+          contentPadding: EdgeInsets.symmetric(horizontal: AppDesign.paddingS, vertical: 0),
           isDense: true,
         ),
-        style: TextStyle(
-          fontSize: 12,
-          color: AppTheme.onSurfaceVariant(context),
-          height: 1.4,
-          fontWeight: FontWeight.w400,
-        ),
-        onSubmitted: _handleNotesSubmitted,
-        onEditingComplete: () => _notesFocusNode.unfocus(),
+        style: textStyle,
+        onSubmitted: _handleTextSubmitted,
         maxLines: null,
-        textInputAction: TextInputAction.done,
-      );
-    } else {
-      final hasNotes = widget.task.notes != null && widget.task.notes!.isNotEmpty;
-      final isInEditingContext = _isTitleEditing; // 标题正在编辑时，备注区域也应可点击
-      
-      // 只有当有备注或正在编辑标题时才显示备注区域
-      if (!hasNotes && !isInEditingContext) {
-        return const SizedBox.shrink();
-      }
-      
-      return GestureDetector(
-        onTapDown: (_) {
-          // 使用 onTapDown 而不是 onTap，确保事件在点击时立即处理
-          // 先设置状态，防止焦点变化导致的状态重置
+      ),
+    );
+  }
+
+
+  Widget _buildNotesField() {
+    final hasNotes = widget.task.notes != null && widget.task.notes!.isNotEmpty;
+    final isEditing = _isTitleEditing || _isNotesEditing;
+    
+    // Non-editing state: only show when there's actual notes content
+    // Or when title is being edited (show placeholder like macOS Reminders)
+    if (!hasNotes && !isEditing) {
+      return const SizedBox.shrink();
+    }
+    
+    final notesStyle = TextStyle(
+      fontSize: 12,
+      color: hasNotes ? AppTheme.onSurfaceVariant(context) : AppTheme.onSurfaceTertiary(context),
+      height: 1.4,
+      fontWeight: FontWeight.w400,
+    );
+    
+    // Always use TextField but control interaction via readOnly
+    return GestureDetector(
+      onTap: () {
+        if (!_isNotesEditing) {
           setState(() {
             _isTitleEditing = false;
             _isNotesEditing = true;
           });
-          // 取消标题焦点
           if (_textFocusNode.hasFocus) {
             _textFocusNode.unfocus();
           }
-          // 请求备注焦点
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               _notesFocusNode.requestFocus();
             }
           });
-        },
-        behavior: HitTestBehavior.opaque,
-        child: Container(
-          width: double.infinity, // 扩展到整个宽度，增大可点击区域
-          padding: const EdgeInsets.symmetric(vertical: 2, horizontal: AppDesign.paddingS), // 稍微减小垂直 padding，使布局更紧凑
-          child: Text(
-            hasNotes 
-                ? widget.task.notes! 
-                : AppLocalizations.of(context)!.hintAddNotes,
-            style: TextStyle(
-              fontSize: 12,
-              color: hasNotes ? AppTheme.onSurfaceVariant(context) : AppTheme.onSurfaceTertiary(context),
-              height: 1.4,
-              fontWeight: FontWeight.w400,
-              fontStyle: hasNotes ? FontStyle.normal : FontStyle.italic,
-            ),
+        }
+      },
+      child: TextField(
+        controller: _notesController,
+        focusNode: _notesFocusNode,
+        readOnly: !_isNotesEditing,
+        showCursor: _isNotesEditing,
+        cursorColor: Theme.of(context).colorScheme.primary,
+        cursorWidth: 1.5,
+        enableInteractiveSelection: _isNotesEditing,
+        decoration: InputDecoration(
+          filled: false,
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(horizontal: AppDesign.paddingS, vertical: 0),
+          isDense: true,
+          hintText: hasNotes ? null : AppLocalizations.of(context)!.hintAddNotes,
+          hintStyle: TextStyle(
+            fontSize: 12,
+            color: AppTheme.onSurfaceTertiary(context),
+            height: 1.4,
+            fontWeight: FontWeight.w400,
           ),
         ),
-      );
-    }
+        style: notesStyle,
+        onSubmitted: _handleNotesSubmitted,
+        maxLines: null,
+      ),
+    );
   }
+
+
+
 
   Widget _buildDateTime({bool hasNotes = false}) {
     final hasDate =
         widget.task.dueDate != null && widget.task.dueDate!.isNotEmpty;
-
+    final hasTime =
+        widget.task.dueTime != null && widget.task.dueTime!.isNotEmpty;
     final isEditing = _isTitleEditing || _isNotesEditing;
 
-    if (!hasDate && !isEditing) {
+    // Only show when: has date/time OR in editing mode (to show Add Date button)
+    if (!hasDate && !hasTime && !isEditing) {
       return const SizedBox.shrink();
     }
 
-    return Row(
-      children: [
-        if (hasDate || isEditing)
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppDesign.paddingS, vertical: 2),
+      child: Row(
+        children: [
+          // Date display/button
           MouseRegion(
             cursor: isEditing ? SystemMouseCursors.click : SystemMouseCursors.basic,
             child: GestureDetector(
               onTap: isEditing ? _showDatePicker : null,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: AppDesign.paddingS, vertical: 4),
-                decoration: BoxDecoration(
-                  color: isEditing ? AppTheme.chipBackground(context) : Colors.transparent,
-                  borderRadius: AppDesign.borderRadiusSmall,
-                  border: Border.all(
-                    color: isEditing ? AppTheme.chipBorder(context) : Colors.transparent,
-                    width: 1,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.calendar_today,
+                    size: 12,
+                    // Use primary color when editing, otherwise secondary/tertiary
+                    color: isEditing 
+                        ? primaryColor
+                        : (hasDate ? AppTheme.onSurfaceSecondary(context) : AppTheme.onSurfaceTertiary(context)),
                   ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.calendar_today,
-                      size: 14,
-                      color: isEditing ? Theme.of(context).colorScheme.primary : (hasDate ? AppTheme.onSurfaceSecondary(context) : AppTheme.dividerColor(context)),
+                  const SizedBox(width: 4),
+                  Text(
+                    hasDate
+                        ? DateParser.formatDateOnlyForDisplay(widget.task.dueDate!, AppLocalizations.of(context)!)
+                        : AppLocalizations.of(context)!.labelAddDate,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isEditing 
+                          ? primaryColor
+                          : (hasDate ? AppTheme.onSurfaceSecondary(context) : AppTheme.onSurfaceTertiary(context)),
+                      // Add underline in edit mode to indicate it's clickable
+                      decoration: isEditing ? TextDecoration.underline : null,
+                      decorationColor: isEditing ? primaryColor.withOpacity(0.5) : null,
                     ),
-                    const SizedBox(width: 4),
-                    Text(
-                      hasDate
-                          ? DateParser.formatDateOnlyForDisplay(widget.task.dueDate!, AppLocalizations.of(context)!)
-                          : AppLocalizations.of(context)!.labelAddDate,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isEditing ? Theme.of(context).colorScheme.primary : (hasDate ? AppTheme.onSurfaceVariant(context) : AppTheme.onSurfaceTertiary(context)),
-                        fontStyle: FontStyle.normal,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
-        if ((widget.task.dueTime != null &&
-                widget.task.dueTime!.isNotEmpty) ||
-            isEditing) ...[
-          if (hasDate || isEditing) const SizedBox(width: 4),
-          MouseRegion(
-            cursor: isEditing ? SystemMouseCursors.click : SystemMouseCursors.basic,
-            child: GestureDetector(
-              onTap: isEditing ? _showTimePicker : null,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: AppDesign.paddingS, vertical: 4),
-                decoration: BoxDecoration(
-                  color: isEditing ? AppTheme.chipBackground(context) : Colors.transparent,
-                  borderRadius: AppDesign.borderRadiusSmall,
-                  border: Border.all(
-                    color: isEditing ? AppTheme.chipBorder(context) : Colors.transparent,
-                    width: 1,
-                  ),
-                ),
+          // Time display/button
+          if (hasTime || isEditing) ...[
+            const SizedBox(width: 12),
+            MouseRegion(
+              cursor: isEditing ? SystemMouseCursors.click : SystemMouseCursors.basic,
+              child: GestureDetector(
+                onTap: isEditing ? _showTimePicker : null,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       Icons.access_time,
-                      size: 14,
-                      color: isEditing
-                          ? Theme.of(context).colorScheme.primary
-                          : (widget.task.dueTime != null &&
-                                  widget.task.dueTime!.isNotEmpty
-                              ? AppTheme.onSurfaceSecondary(context)
-                              : AppTheme.dividerColor(context)),
+                      size: 12,
+                      color: isEditing 
+                          ? primaryColor
+                          : (hasTime ? AppTheme.onSurfaceSecondary(context) : AppTheme.onSurfaceTertiary(context)),
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      widget.task.dueTime != null &&
-                              widget.task.dueTime!.isNotEmpty
+                      hasTime
                           ? DateParser.formatTimeForDisplay(widget.task.dueTime)
                           : AppLocalizations.of(context)!.labelAddTime,
                       style: TextStyle(
                         fontSize: 12,
-                        color: isEditing
-                            ? Theme.of(context).colorScheme.primary
-                            : (widget.task.dueTime != null &&
-                                    widget.task.dueTime!.isNotEmpty
-                                ? AppTheme.onSurfaceVariant(context)
-                                : AppTheme.onSurfaceTertiary(context)),
-                        fontStyle: FontStyle.normal,
+                        color: isEditing 
+                            ? primaryColor
+                            : (hasTime ? AppTheme.onSurfaceSecondary(context) : AppTheme.onSurfaceTertiary(context)),
+                        decoration: isEditing ? TextDecoration.underline : null,
+                        decorationColor: isEditing ? primaryColor.withOpacity(0.5) : null,
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-          ),
+          ],
         ],
-      ],
+      ),
     );
   }
+
+
+
+
+
+
 
   Widget _buildInfoButton() {
     return GestureDetector(
