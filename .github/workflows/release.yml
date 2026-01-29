@@ -28,7 +28,7 @@ jobs:
           # macOS x64
           - os: macos
             arch: x64
-            runner: macos-13
+            runner: macos-15-intel
           # macOS arm64 (Apple Silicon)
           - os: macos
             arch: arm64
@@ -36,6 +36,10 @@ jobs:
           # Windows x64
           - os: windows
             arch: x64
+            runner: windows-latest
+          # Windows arm64
+          - os: windows
+            arch: arm64
             runner: windows-latest
     
     steps:
@@ -119,6 +123,16 @@ jobs:
           $destination = "build\taskly-$version-windows-x64.zip"
           Compress-Archive -Path $source -DestinationPath $destination -Force
       
+      - name: Build Windows arm64 app
+        if: matrix.os == 'windows' && matrix.arch == 'arm64'
+        shell: powershell
+        run: |
+          flutter build windows --release --target-platform=windows-arm64
+          $version = $env:VERSION
+          $source = "build\windows\arm64\runner\Release"
+          $destination = "build\taskly-$version-windows-arm64.zip"
+          Compress-Archive -Path $source -DestinationPath $destination -Force
+      
       - name: List build artifacts
         shell: bash
         run: |
@@ -137,6 +151,7 @@ jobs:
             
             ### Windows
             - [taskly-${{ env.VERSION }}-windows-x64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-windows-x64.zip)
+            - [taskly-${{ env.VERSION }}-windows-arm64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-windows-arm64.zip) (ARM)
             
             ### macOS
             - [taskly-${{ env.VERSION }}-macos-x64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-macos-x64.zip) (Intel)
