@@ -389,6 +389,9 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
 
   @override
   Widget build(BuildContext context) {
+    final isActive = _isHovered || widget.isSelected;
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
@@ -396,11 +399,34 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
         onTap: _handleContainerTap,
         onSecondaryTapDown: (details) => _handleRightClick(details.globalPosition),
         behavior: HitTestBehavior.translucent,
-        child: Container(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
           decoration: BoxDecoration(
-            color: (_isHovered || widget.isSelected)
-                ? AppTheme.highlightBackground(context)
-                : AppTheme.cardBackground(context),
+            color: widget.isSelected
+                ? primaryColor.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.12 : 0.06)
+                : _isHovered
+                    ? AppTheme.highlightBackground(context)
+                    : AppTheme.cardBackground(context),
+            border: Border(
+              left: BorderSide(
+                color: widget.isSelected
+                    ? primaryColor
+                    : _isHovered
+                        ? primaryColor.withOpacity(0.3)
+                        : Colors.transparent,
+                width: 3,
+              ),
+            ),
+            boxShadow: widget.isSelected
+                ? [
+                    BoxShadow(
+                      color: primaryColor.withOpacity(0.08),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
           ),
           child: Padding(
             padding: AppDesign.contentPadding,
@@ -427,8 +453,9 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
                   ),
                 ),
                 const SizedBox(width: 4),
-                Opacity(
-                  opacity: (_isHovered || widget.isSelected) ? 1.0 : 0.0,
+                AnimatedOpacity(
+                  duration: const Duration(milliseconds: 150),
+                  opacity: isActive ? 1.0 : 0.0,
                   child: _buildInfoButton(),
                 ),
               ],
