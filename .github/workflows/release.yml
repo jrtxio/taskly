@@ -20,11 +20,7 @@ jobs:
           - os: linux
             arch: x64
             runner: ubuntu-latest
-          # Linux arm64
-          - os: linux
-            arch: arm64
-            runner: ubuntu-latest
-            qemu: true
+
           # macOS x64
           - os: macos
             arch: x64
@@ -37,20 +33,11 @@ jobs:
           - os: windows
             arch: x64
             runner: windows-latest
-          # Windows arm64
-          - os: windows
-            arch: arm64
-            runner: windows-latest
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Set up QEMU (for Linux arm64)
-        if: matrix.qemu == true
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: arm64
 
       - name: Install Linux Dependencies
         if: matrix.os == 'linux'
@@ -95,15 +82,7 @@ jobs:
           cd build/linux/x64/release/bundle
           zip -r ../../../taskly-${{ env.VERSION }}-linux-x64.zip .
       
-      - name: Build Linux arm64 app
-        if: matrix.os == 'linux' && matrix.arch == 'arm64'
-        run: |
-          docker run --rm -v "$PWD":/app -w /app \
-            --platform linux/arm64 \
-            cirrusci/flutter:stable \
-            bash -c "flutter pub get && flutter build linux --release"
-          cd build/linux/arm64/release/bundle
-          zip -r ../../../taskly-${{ env.VERSION }}-linux-arm64.zip .
+
       
       - name: Build macOS x64 app
         if: matrix.os == 'macos' && matrix.arch == 'x64'
@@ -129,16 +108,6 @@ jobs:
           $destination = "build\taskly-$version-windows-x64.zip"
           Compress-Archive -Path $source -DestinationPath $destination -Force
       
-      - name: Build Windows arm64 app
-        if: matrix.os == 'windows' && matrix.arch == 'arm64'
-        shell: powershell
-        run: |
-          flutter build windows --release --target-platform=windows-arm64
-          $version = $env:VERSION
-          $source = "build\windows\arm64\runner\Release"
-          $destination = "build\taskly-$version-windows-arm64.zip"
-          Compress-Archive -Path $source -DestinationPath $destination -Force
-      
       - name: List build artifacts
         shell: bash
         run: |
@@ -157,7 +126,6 @@ jobs:
             
             ### Windows
             - [taskly-${{ env.VERSION }}-windows-x64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-windows-x64.zip)
-            - [taskly-${{ env.VERSION }}-windows-arm64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-windows-arm64.zip) (ARM)
             
             ### macOS
             - [taskly-${{ env.VERSION }}-macos-x64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-macos-x64.zip) (Intel)
@@ -165,7 +133,6 @@ jobs:
             
             ### Linux
             - [taskly-${{ env.VERSION }}-linux-x64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-linux-x64.zip)
-            - [taskly-${{ env.VERSION }}-linux-arm64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-linux-arm64.zip)
             
             ---
             
