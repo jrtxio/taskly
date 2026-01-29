@@ -99,6 +99,50 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
           });
         }
       });
+
+    // Initialize completion animation
+    _completionAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+
+    // Scale animation for the checkbox (bounce effect)
+    _scaleAnimation = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.0, end: 1.3)
+            .chain(CurveTween(curve: Curves.easeOut)),
+        weight: 40,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.3, end: 0.9)
+            .chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 30,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 0.9, end: 1.0)
+            .chain(CurveTween(curve: Curves.elasticOut)),
+        weight: 30,
+      ),
+    ]).animate(_completionAnimationController);
+
+    // Check icon scale animation (pop in)
+    _checkScaleAnimation = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 0.0, end: 1.2)
+            .chain(CurveTween(curve: Curves.easeOut)),
+        weight: 60,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.2, end: 1.0)
+            .chain(CurveTween(curve: Curves.elasticOut)),
+        weight: 40,
+      ),
+    ]).animate(_completionAnimationController);
+
+    // If the task is already completed, set animation to end state
+    if (widget.task.completed) {
+      _completionAnimationController.value = 1.0;
+    }
   }
 
   @override
@@ -114,10 +158,18 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
         _notesController.text = widget.task.notes ?? '';
       }
     }
+
+    // Trigger completion animation when task becomes completed
+    if (!oldWidget.task.completed && widget.task.completed) {
+      _completionAnimationController.forward(from: 0.0);
+    } else if (oldWidget.task.completed && !widget.task.completed) {
+      _completionAnimationController.reverse(from: 1.0);
+    }
   }
 
   @override
   void dispose() {
+    _completionAnimationController.dispose();
     _textController.dispose();
     _notesController.dispose();
     _textFocusNode.dispose();
@@ -392,24 +444,35 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
       key: Key('checkbox_${widget.task.id}'),
       onTap: widget.onToggle,
       behavior: HitTestBehavior.opaque,
-      child: Container(
-        width: AppDesign.checkboxSize,
-        height: AppDesign.checkboxSize,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: widget.task.completed
-                ? Colors.transparent
-                : AppTheme.onSurfaceTertiary(context),
-            width: 1.5,
-          ),
-          color: widget.task.completed
-              ? Theme.of(context).colorScheme.primary
-              : Colors.transparent,
-        ),
-        child: widget.task.completed
-            ? const Icon(Icons.check, color: Colors.white, size: 16)
-            : null,
+      child: AnimatedBuilder(
+        animation: _completionAnimationController,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _scaleAnimation.value,
+            child: Container(
+              width: AppDesign.checkboxSize,
+              height: AppDesign.checkboxSize,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: widget.task.completed
+                      ? Colors.transparent
+                      : AppTheme.onSurfaceTertiary(context),
+                  width: 1.5,
+                ),
+                color: widget.task.completed
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.transparent,
+              ),
+              child: widget.task.completed
+                  ? Transform.scale(
+                      scale: _checkScaleAnimation.value,
+                      child: const Icon(Icons.check, color: Colors.white, size: 16),
+                    )
+                  : null,
+            ),
+          );
+        },
       ),
     );
   }
