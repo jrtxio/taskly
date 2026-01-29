@@ -307,8 +307,13 @@ section {
 .platform-icon svg {
     width: 64px;
     height: 64px;
-    fill: var(--c-text-primary);
-    /* Dark icons */
+    fill: var(--c-text-secondary);
+    /* Grey icons */
+    transition: fill 0.3s var(--ease-apple);
+}
+
+.platform-item:hover .platform-icon svg {
+    fill: var(--c-primary);
 }
 
 /* Footer */
@@ -358,4 +363,213 @@ footer {
     }
 
     /* Hide for now or implement burger */
+}
+
+/* App Mockup Styles */
+.app-window {
+    width: 100%;
+    max-width: 800px;
+    height: 500px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin-top: 40px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    position: relative;
+    text-align: left;
+    /* Reset text align from hero center */
+}
+
+.window-header {
+    height: 38px;
+    background: #f6f6f6;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    padding-left: 16px;
+    gap: 8px;
+}
+
+.traffic-light {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.traffic-light.close {
+    background-color: #ff5f57;
+    border: 1px solid #e0443e;
+}
+
+.traffic-light.minimize {
+    background-color: #febc2e;
+    border: 1px solid #dba524;
+}
+
+.traffic-light.maximize {
+    background-color: #28c840;
+    border: 1px solid #1aa52b;
+}
+
+.window-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.window-sidebar {
+    width: 220px;
+    background: #fbfbfd;
+    /* slightly darker than body */
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sidebar-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--c-text-secondary);
+    padding-left: 10px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.sidebar-item {
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 6px;
+    color: var(--c-text-primary);
+    cursor: default;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-item.active {
+    background: rgba(0, 0, 0, 0.06);
+    font-weight: 500;
+}
+
+.window-content {
+    flex: 1;
+    background: #fff;
+    padding: 30px 40px;
+}
+
+.mock-task {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.mock-task:last-child {
+    border-bottom: none;
+}
+
+.mock-checkbox {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid #d1d1d6;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.mock-text {
+    display: flex;
+    flex-direction: column;
+    font-size: 15px;
+    color: var(--c-text-primary);
+}
+
+.mock-subtext {
+    font-size: 12px;
+    color: #ff3b30;
+    /* red for due date */
+    margin-top: 4px;
+}
+
+/* Language Switcher Dropdown */
+.lang-dropdown-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    font-size: 13px;
+    color: var(--c-text-primary);
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: background 0.2s;
+    font-weight: 500;
+}
+
+.lang-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.globe-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--c-text-secondary);
+    transition: color 0.2s;
+}
+
+.lang-btn:hover .globe-icon {
+    color: var(--c-text-primary);
+}
+
+.lang-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    padding: 6px;
+    min-width: 120px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.2s var(--ease-apple);
+    z-index: 100;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Show menu on hover or focus within */
+.lang-dropdown-wrapper:hover .lang-menu,
+.lang-dropdown-wrapper:focus-within .lang-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.lang-menu li {
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--c-text-primary);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: block;
+}
+
+.lang-menu li:hover {
+    background: var(--c-bg-body);
+    color: var(--c-primary);
 }

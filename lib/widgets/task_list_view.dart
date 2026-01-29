@@ -60,6 +60,7 @@ class _TaskListViewState extends State<TaskListView> {
   final _quickAddController = TextEditingController();
   bool _isSubmitting = false;
   int? _selectedTaskId;
+  bool _isInputHovered = false;
 
   @override
   void dispose() {
@@ -293,37 +294,78 @@ class _TaskListViewState extends State<TaskListView> {
   }
 
   Widget _buildQuickAddInput() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: widget.isDatabaseConnected ? AppTheme.surfaceContainer(context) : AppTheme.surfaceContainerHighest(context),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _quickAddController,
-              enabled: widget.isDatabaseConnected,
-              decoration: InputDecoration(
-                hintText: widget.isDatabaseConnected ? '+ 添加任务' : '请先创建或打开数据库',
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                hintStyle: TextStyle(
-                  color: widget.isDatabaseConnected
-                      ? AppTheme.onSurfaceSecondary(context)
-                      : AppTheme.onSurfaceTertiary(context),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), 
+      child: MouseRegion(
+        cursor: SystemMouseCursors.text,
+        onEnter: (_) => setState(() => _isInputHovered = true),
+        onExit: (_) => setState(() => _isInputHovered = false),
+        child: GestureDetector(
+          onTap: () {
+            // Tapping anywhere in the row focuses the text field
+            // Note: If we had a FocusNode for the container we could request focus here,
+            // but for now relying on the TextField's hit test or user tapping closer to text 
+            // is acceptable, or we could add a FocusNode if needed. 
+            // Since the TextField occupies the Expanded space, it captures most taps.
+          },
+          child: Container(
+            padding: AppDesign.contentPadding,
+            decoration: BoxDecoration(
+              color: _isInputHovered ? AppTheme.highlightBackground(context) : Colors.transparent,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: AppDesign.checkboxSize,
+                  height: AppDesign.checkboxSize,
+                  alignment: Alignment.center,
+                  child: Icon(
+                    Icons.add,
+                    size: 20,
+                    // Use primary color to make it look like an actionable button
+                    color: Theme.of(context).colorScheme.primary, 
+                  ),
                 ),
-              ),
-              onSubmitted: (_) => _handleQuickAdd(),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: TextField(
+                    controller: _quickAddController,
+                    enabled: widget.isDatabaseConnected,
+                    decoration: InputDecoration(
+                      filled: false,
+                      hintText: widget.isDatabaseConnected ? '添加任务' : '请先创建或打开数据库',
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                      hintStyle: TextStyle(
+                        fontSize: 14,
+                        color: widget.isDatabaseConnected
+                            ? AppTheme.onSurfaceSecondary(context)
+                            : AppTheme.onSurfaceTertiary(context),
+                      ),
+                    ),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                    onSubmitted: (_) => _handleQuickAdd(),
+                  ),
+                ),
+                if (_isSubmitting)
+                  const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+              ],
             ),
           ),
-          if (_isSubmitting)
-            const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-        ],
+        ),
       ),
     );
   }
