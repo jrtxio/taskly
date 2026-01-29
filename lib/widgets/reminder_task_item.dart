@@ -487,6 +487,9 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
         textInputAction: TextInputAction.done,
       );
     } else {
+      final hasNotes = widget.task.notes != null && widget.task.notes!.isNotEmpty;
+      final isInEditingContext = _isTitleEditing; // 标题正在编辑时，备注区域也应可点击
+      
       return GestureDetector(
         onTap: () {
           setState(() {
@@ -497,13 +500,21 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
           });
         },
         behavior: HitTestBehavior.opaque,
-        child: Text(
-          widget.task.notes ?? '',
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-            height: 1.4,
-            fontWeight: FontWeight.w400,
+        child: Container(
+          constraints: (isInEditingContext && !hasNotes) 
+              ? const BoxConstraints(minHeight: 20) 
+              : null,
+          child: Text(
+            hasNotes 
+                ? widget.task.notes! 
+                : (isInEditingContext ? AppLocalizations.of(context)!.hintAddNotes : ''),
+            style: TextStyle(
+              fontSize: 12,
+              color: hasNotes ? Colors.grey[600] : Colors.grey[400],
+              height: 1.4,
+              fontWeight: FontWeight.w400,
+              fontStyle: hasNotes ? FontStyle.normal : FontStyle.italic,
+            ),
           ),
         ),
       );
