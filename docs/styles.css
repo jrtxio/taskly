@@ -440,74 +440,96 @@ footer {
 .smart-lists-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 10px;
     margin-bottom: 24px;
+    margin-top: 12px;
 }
 
 .smart-list-card {
-    background: #ffffff;
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 10px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    height: 72px;
+    /* Fixed height for aspect ratio look */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    /* Soft shadow */
     cursor: default;
+    position: relative;
+    overflow: hidden;
 }
 
-.smart-icon-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.smart-card-content {
+    height: 100%;
+    position: relative;
 }
 
-.smart-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
-
-.smart-list-card.today .smart-icon {
+/* Colors for Smart Lists (Solid Backgrounds) */
+.smart-list-card.today {
     background: #007AFF;
 }
 
-.smart-list-card.scheduled .smart-icon {
+.smart-list-card.scheduled {
     background: #FF3B30;
 }
 
-.smart-list-card.all .smart-icon {
-    background: #5E5E62;
+.smart-list-card.all {
+    background: #8E8E93;
 }
 
-/* Darker gray for All */
-.smart-list-card.flagged .smart-icon {
+.smart-list-card.flagged {
     background: #FF9500;
 }
 
+.smart-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: white;
+}
+
 .smart-count {
-    font-size: 20px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 22px;
     font-weight: 700;
-    color: #1d1d1f;
+    color: white;
+    line-height: 1;
 }
 
 .smart-label {
-    font-size: 13px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    font-size: 14px;
     font-weight: 600;
-    color: #636366;
+    color: white;
 }
 
 /* My Lists */
+.sidebar-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    margin-bottom: 4px;
+    margin-top: 8px;
+}
+
 .sidebar-section-title {
     font-size: 12px;
     font-weight: 600;
     color: #8c8c91;
-    padding: 0 10px;
-    margin-bottom: 4px;
-    margin-top: 8px;
+}
+
+.sidebar-add-btn {
+    color: #8c8c91;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-add-btn:hover {
+    color: #007AFF;
 }
 
 .sidebar-item {
@@ -521,6 +543,8 @@ footer {
     gap: 10px;
     font-weight: 500;
     transition: background 0.2s;
+    margin-bottom: 2px;
+    /* slight spacing */
 }
 
 .sidebar-item:hover {
@@ -532,14 +556,15 @@ footer {
 }
 
 .list-icon {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 14px;
+    font-size: 18px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .icon-blue {
