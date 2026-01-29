@@ -137,17 +137,9 @@ class DatabaseService implements DatabaseServiceInterface {
       CREATE INDEX idx_tasks_due_date ON $_tableTasks(due_date)
     ''');
 
-    // Insert default lists
+    // Insert default list
     await db.insert(_tableLists, {
       'name': '工作',
-      'created_at': DateTime.now().toIso8601String(),
-    });
-    await db.insert(_tableLists, {
-      'name': '生活',
-      'created_at': DateTime.now().toIso8601String(),
-    });
-    await db.insert(_tableLists, {
-      'name': '学习',
       'created_at': DateTime.now().toIso8601String(),
     });
   }
