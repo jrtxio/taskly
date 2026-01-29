@@ -5,6 +5,7 @@ import '../models/task.dart';
 import '../models/todo_list.dart';
 import '../providers/task_provider.dart';
 import '../theme/app_design.dart';
+import '../theme/app_theme.dart';
 import '../utils/date_parser.dart';
 import 'reminder_task_item.dart';
 
@@ -177,7 +178,7 @@ class _TaskListViewState extends State<TaskListView> {
     if (widget.selectedList != null) {
       final list = widget.selectedList!;
       title = list.name;
-      iconColor = list.color ?? Colors.blue;
+      iconColor = list.color ?? Theme.of(context).colorScheme.primary;
       icon = list.icon != null ? null : Icons.folder;
     } else {
       title = widget.currentViewTitle ?? '';
@@ -187,13 +188,13 @@ class _TaskListViewState extends State<TaskListView> {
 
     return Container(
       padding: const EdgeInsets.only(left: 8, right: 16, top: 12, bottom: 12),
-      decoration: const BoxDecoration(color: Colors.white),
+      decoration: BoxDecoration(color: AppTheme.cardBackground(context)),
       child: Row(
         children: [
           IconButton(
             icon: Icon(
               widget.isSidebarVisible ? Icons.chevron_left : Icons.menu,
-              color: Colors.grey[600],
+              color: AppTheme.onSurfaceVariant(context),
             ),
             onPressed: widget.onToggleSidebar,
             padding: EdgeInsets.zero,
@@ -214,15 +215,15 @@ class _TaskListViewState extends State<TaskListView> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFD1D5DB),
+                        color: AppTheme.badgeBackground(context),
                         borderRadius: AppDesign.borderRadiusSmall,
                       ),
                       child: Text(
                         widget.completedCount.toString(),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFF424242),
+                          color: AppTheme.badgeText(context),
                         ),
                       ),
                     ),
@@ -245,7 +246,7 @@ class _TaskListViewState extends State<TaskListView> {
                           await taskProvider.refreshTasks();
                         },
                         style: TextButton.styleFrom(
-                          foregroundColor: Colors.blue,
+                          foregroundColor: Theme.of(context).colorScheme.primary,
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           minimumSize: Size.zero,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -287,7 +288,7 @@ class _TaskListViewState extends State<TaskListView> {
       case '完成':
         return const Color(0xFFFF9500);
       default:
-        return Colors.blue;
+        return Theme.of(context).colorScheme.primary;
     }
   }
 
@@ -295,7 +296,7 @@ class _TaskListViewState extends State<TaskListView> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: widget.isDatabaseConnected ? Colors.grey[50] : Colors.grey[200],
+        color: widget.isDatabaseConnected ? AppTheme.surfaceContainer(context) : AppTheme.surfaceContainerHighest(context),
       ),
       child: Row(
         children: [
@@ -309,8 +310,8 @@ class _TaskListViewState extends State<TaskListView> {
                 contentPadding: const EdgeInsets.symmetric(vertical: 8),
                 hintStyle: TextStyle(
                   color: widget.isDatabaseConnected
-                      ? Colors.grey[500]
-                      : Colors.grey[400],
+                      ? AppTheme.onSurfaceSecondary(context)
+                      : AppTheme.onSurfaceTertiary(context),
                 ),
               ),
               onSubmitted: (_) => _handleQuickAdd(),
@@ -332,7 +333,7 @@ class _TaskListViewState extends State<TaskListView> {
       return Center(
         child: Text(
           AppLocalizations.of(context)!.taskListEmptyHint,
-          style: const TextStyle(fontSize: 16, color: Colors.grey),
+          style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       );
     }
@@ -350,11 +351,11 @@ class _TaskListViewState extends State<TaskListView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.check_circle_outline, size: 64, color: Colors.grey[300]),
+            Icon(Icons.check_circle_outline, size: 64, color: AppTheme.dividerColor(context)),
             const SizedBox(height: 16),
             Text(
               AppLocalizations.of(context)!.taskListEmpty,
-              style: TextStyle(color: Colors.grey[500], fontSize: 16),
+              style: TextStyle(color: AppTheme.onSurfaceSecondary(context), fontSize: 16),
             ),
           ],
         ),
@@ -374,7 +375,7 @@ class _TaskListViewState extends State<TaskListView> {
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 child: Container(
                   height: 1,
-                  color: Colors.grey[300],
+                  color: AppTheme.dividerColor(context),
                 ),
               ),
               Padding(
@@ -465,7 +466,7 @@ class _TaskListViewState extends State<TaskListView> {
             id: listId,
             name: '列表 $listId',
             icon: null,
-            color: Colors.blue,
+            color: Theme.of(context).colorScheme.primary,
           ),
         );
 
@@ -479,7 +480,7 @@ class _TaskListViewState extends State<TaskListView> {
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 child: Container(
                   height: 1,
-                  color: Colors.grey[300],
+                  color: AppTheme.dividerColor(context),
                 ),
               ),
             );
@@ -516,7 +517,7 @@ class _TaskListViewState extends State<TaskListView> {
   }
 
   Widget _buildListHeader(TodoList list, int taskCount) {
-    final color = list.color ?? Colors.blue;
+    final color = list.color ?? Theme.of(context).colorScheme.primary;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Row(
@@ -534,25 +535,25 @@ class _TaskListViewState extends State<TaskListView> {
           const SizedBox(width: 8),
           Text(
             list.name,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF424242),
+              color: AppTheme.badgeText(context),
             ),
           ),
           const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: Color(0xFFD1D5DB),
+              color: AppTheme.badgeBackground(context),
               borderRadius: AppDesign.borderRadiusSmall,
             ),
             child: Text(
               taskCount.toString(),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
-                color: Color(0xFF424242),
+                color: AppTheme.badgeText(context),
               ),
             ),
           ),

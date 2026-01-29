@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../models/task.dart';
 import '../models/todo_list.dart';
 import '../theme/app_design.dart';
+import '../theme/app_theme.dart';
 import '../utils/date_parser.dart';
 
 class ReminderTaskItem extends StatefulWidget {
@@ -35,7 +36,8 @@ class ReminderTaskItem extends StatefulWidget {
   State<ReminderTaskItem> createState() => _ReminderTaskItemState();
 }
 
-class _ReminderTaskItemState extends State<ReminderTaskItem> {
+class _ReminderTaskItemState extends State<ReminderTaskItem>
+    with SingleTickerProviderStateMixin {
   late TextEditingController _textController;
   late TextEditingController _notesController;
   late FocusNode _textFocusNode;
@@ -45,6 +47,11 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
   bool _isNotesEditing = false;
 
   bool _isInteractingWithPicker = false;
+
+  // Animation for task completion
+  late AnimationController _completionAnimationController;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _checkScaleAnimation;
 
   @override
   void initState() {
@@ -340,8 +347,8 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
         child: Container(
           decoration: BoxDecoration(
             color: (_isHovered || widget.isSelected)
-                ? Colors.grey[50]
-                : Colors.white,
+                ? AppTheme.highlightBackground(context)
+                : AppTheme.cardBackground(context),
           ),
           child: Padding(
             padding: AppDesign.contentPadding,
@@ -393,11 +400,11 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
           border: Border.all(
             color: widget.task.completed
                 ? Colors.transparent
-                : Colors.grey[400]!,
+                : AppTheme.onSurfaceTertiary(context),
             width: 1.5,
           ),
           color: widget.task.completed
-              ? const Color(0xFF007AFF)
+              ? Theme.of(context).colorScheme.primary
               : Colors.transparent,
         ),
         child: widget.task.completed
@@ -413,7 +420,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
         controller: _textController,
         focusNode: _textFocusNode,
         autofocus: true,
-        cursorColor: const Color(0xFF007AFF),
+        cursorColor: Theme.of(context).colorScheme.primary,
         cursorWidth: 1.5,
         enableInteractiveSelection: true,
         decoration: const InputDecoration(
@@ -427,7 +434,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: widget.task.completed ? Colors.grey[500] : Colors.black87,
+          color: widget.task.completed ? AppTheme.onSurfaceSecondary(context) : Theme.of(context).colorScheme.onSurface,
           height: 1.5,
         ),
         onSubmitted: _handleTextSubmitted,
@@ -452,7 +459,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
             fontSize: 14,
             fontWeight: FontWeight.w400,
             decoration: widget.task.completed ? TextDecoration.lineThrough : null,
-            color: widget.task.completed ? Colors.grey[500] : Colors.black87,
+            color: widget.task.completed ? AppTheme.onSurfaceSecondary(context) : Theme.of(context).colorScheme.onSurface,
             height: 1.5,
           ),
         ),
@@ -465,7 +472,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
       return TextField(
         controller: _notesController,
         focusNode: _notesFocusNode,
-        cursorColor: const Color(0xFF007AFF),
+        cursorColor: Theme.of(context).colorScheme.primary,
         cursorWidth: 1.5,
         enableInteractiveSelection: true,
         decoration: const InputDecoration(
@@ -478,7 +485,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
         ),
         style: TextStyle(
           fontSize: 12,
-          color: Colors.grey[600],
+          color: AppTheme.onSurfaceVariant(context),
           height: 1.4,
           fontWeight: FontWeight.w400,
         ),
@@ -511,7 +518,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                 : (isInEditingContext ? AppLocalizations.of(context)!.hintAddNotes : ''),
             style: TextStyle(
               fontSize: 12,
-              color: hasNotes ? Colors.grey[600] : Colors.grey[400],
+              color: hasNotes ? AppTheme.onSurfaceVariant(context) : AppTheme.onSurfaceTertiary(context),
               height: 1.4,
               fontWeight: FontWeight.w400,
               fontStyle: hasNotes ? FontStyle.normal : FontStyle.italic,
@@ -544,9 +551,9 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                 child: Container(
                   padding: const EdgeInsets.only(right: 8, top: 4, bottom: 4),
                   decoration: BoxDecoration(
-                    color: isEditing ? Colors.blue[50] : Colors.transparent,
+                    color: isEditing ? AppTheme.chipBackground(context) : Colors.transparent,
                     borderRadius: AppDesign.borderRadiusSmall,
-                    border: isEditing ? Border.all(color: Colors.blue[200]!) : null,
+                    border: isEditing ? Border.all(color: AppTheme.chipBorder(context)) : null,
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -554,7 +561,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                       Icon(
                         Icons.calendar_today,
                         size: 14,
-                        color: isEditing ? const Color(0xFF007AFF) : (hasDate ? Colors.grey[500] : Colors.grey[300]),
+                        color: isEditing ? Theme.of(context).colorScheme.primary : (hasDate ? AppTheme.onSurfaceSecondary(context) : AppTheme.dividerColor(context)),
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -563,7 +570,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                             : AppLocalizations.of(context)!.labelAddDate,
                         style: TextStyle(
                           fontSize: 12,
-                          color: isEditing ? Colors.blue[700] : (hasDate ? Colors.grey[600] : Colors.grey[400]),
+                          color: isEditing ? Theme.of(context).colorScheme.primary : (hasDate ? AppTheme.onSurfaceVariant(context) : AppTheme.onSurfaceTertiary(context)),
                           fontStyle: FontStyle.normal,
                         ),
                       ),
@@ -583,9 +590,9 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                 child: Container(
                   padding: const EdgeInsets.only(right: 8, top: 4, bottom: 4),
                   decoration: BoxDecoration(
-                    color: isEditing ? Colors.blue[50] : Colors.transparent,
+                    color: isEditing ? AppTheme.chipBackground(context) : Colors.transparent,
                     borderRadius: AppDesign.borderRadiusSmall,
-                    border: isEditing ? Border.all(color: Colors.blue[200]!) : null,
+                    border: isEditing ? Border.all(color: AppTheme.chipBorder(context)) : null,
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -594,11 +601,11 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                         Icons.access_time,
                         size: 14,
                         color: isEditing
-                            ? const Color(0xFF007AFF)
+                            ? Theme.of(context).colorScheme.primary
                             : (widget.task.dueTime != null &&
                                     widget.task.dueTime!.isNotEmpty
-                                ? Colors.grey[500]
-                                : Colors.grey[300]),
+                                ? AppTheme.onSurfaceSecondary(context)
+                                : AppTheme.dividerColor(context)),
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -609,11 +616,11 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                         style: TextStyle(
                           fontSize: 12,
                           color: isEditing
-                              ? Colors.blue[700]
+                              ? Theme.of(context).colorScheme.primary
                               : (widget.task.dueTime != null &&
                                       widget.task.dueTime!.isNotEmpty
-                                  ? Colors.grey[600]
-                                  : Colors.grey[400]),
+                                  ? AppTheme.onSurfaceVariant(context)
+                                  : AppTheme.onSurfaceTertiary(context)),
                           fontStyle: FontStyle.normal,
                         ),
                       ),
@@ -634,7 +641,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
       behavior: HitTestBehavior.opaque,
       child: Container(
         padding: const EdgeInsets.all(6),
-        child: Icon(Icons.info_outline, size: 18, color: Colors.grey[400]),
+        child: Icon(Icons.info_outline, size: 18, color: AppTheme.onSurfaceTertiary(context)),
       ),
     );
   }

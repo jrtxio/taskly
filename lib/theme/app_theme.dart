@@ -372,4 +372,91 @@ class AppTheme {
       ),
     );
   }
+
+  // ============ Semantic Color Helpers ============
+  // These methods return appropriate colors based on current theme brightness
+
+  /// Light gray background for containers (sidebar, input areas)
+  static Color surfaceContainer(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF2C2C2E)
+        : Colors.grey[50]!;
+  }
+
+  /// Darker container background for disabled states
+  static Color surfaceContainerHighest(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF3A3A3C)
+        : Colors.grey[200]!;
+  }
+
+  /// Secondary text color (hints, placeholders)
+  static Color onSurfaceVariant(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF98989D)
+        : Colors.grey[600]!;
+  }
+
+  /// Tertiary text color (even more subtle)
+  static Color onSurfaceSecondary(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF8E8E93)
+        : Colors.grey[500]!;
+  }
+
+  /// Subtle text/icon color
+  static Color onSurfaceTertiary(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF636366)
+        : Colors.grey[400]!;
+  }
+
+  /// Divider and border color
+  static Color dividerColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF38383A)
+        : Colors.grey[300]!;
+  }
+
+  /// Card/tile background color
+  static Color cardBackground(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF2C2C2E)
+        : Colors.white;
+  }
+
+  /// Highlight background (hover, selected states)
+  static Color highlightBackground(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF3A3A3C)
+        : Colors.grey[50]!;
+  }
+
+  /// Badge/tag background color
+  static Color badgeBackground(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF48484A)
+        : const Color(0xFFD1D5DB);
+  }
+
+  /// Badge/tag text color
+  static Color badgeText(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? Colors.white
+        : const Color(0xFF424242);
+  }
+
+  /// Chip background when editing (date/time pickers)
+  static Color chipBackground(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF0A84FF).withOpacity(0.15)
+        : Colors.blue[50]!;
+  }
+
+  /// Chip border when editing
+  static Color chipBorder(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF0A84FF).withOpacity(0.3)
+        : Colors.blue[200]!;
+  }
 }

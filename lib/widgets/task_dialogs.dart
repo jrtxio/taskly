@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../models/task.dart';
 import '../models/todo_list.dart';
 import '../utils/date_parser.dart';
+import '../theme/app_theme.dart';
 
 class TaskInputDialog extends StatefulWidget {
   final List<TodoList> lists;
@@ -123,17 +124,17 @@ class _TaskInputDialogState extends State<TaskInputDialog> {
             TextField(
               controller: _textController,
               maxLines: 3,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: AppTheme.cardBackground(context),
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                  borderSide: BorderSide(color: AppTheme.dividerColor(context)),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                  borderSide: BorderSide(color: AppTheme.dividerColor(context)),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF007AFF)),
+                  borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                 ),
                 hintText: '+ 添加任务',
               ),
@@ -143,17 +144,17 @@ class _TaskInputDialogState extends State<TaskInputDialog> {
             const SizedBox(height: 8),
             TextField(
               controller: _dateController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: AppTheme.cardBackground(context),
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                  borderSide: BorderSide(color: AppTheme.dividerColor(context)),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                  borderSide: BorderSide(color: AppTheme.dividerColor(context)),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF007AFF)),
+                  borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                 ),
                 hintText: '例如: +10m, @10am, 2025-08-07',
               ),
@@ -163,7 +164,7 @@ class _TaskInputDialogState extends State<TaskInputDialog> {
               '支持: +10m(10分钟), +2h(2小时), +1d(明天), @10am(上午10点), @10:30pm(晚上10:30)',
               style: Theme.of(
                 context,
-              ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+              ).textTheme.bodySmall?.copyWith(color: AppTheme.onSurfaceVariant(context)),
             ),
             const SizedBox(height: 16),
             const Text('任务列表:'),
@@ -388,17 +389,17 @@ class _TaskDetailDialogState extends State<TaskDetailDialog> {
             const SizedBox(height: 8),
             TextField(
               controller: _textController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: AppTheme.cardBackground(context),
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                  borderSide: BorderSide(color: AppTheme.dividerColor(context)),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                  borderSide: BorderSide(color: AppTheme.dividerColor(context)),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF007AFF)),
+                  borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                 ),
               ),
             ),
@@ -408,17 +409,17 @@ class _TaskDetailDialogState extends State<TaskDetailDialog> {
             TextField(
               controller: _notesController,
               maxLines: 4,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: AppTheme.cardBackground(context),
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                  borderSide: BorderSide(color: AppTheme.dividerColor(context)),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                  borderSide: BorderSide(color: AppTheme.dividerColor(context)),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF007AFF)),
+                  borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                 ),
                 hintText: '添加备注信息...',
               ),
@@ -431,7 +432,7 @@ class _TaskDetailDialogState extends State<TaskDetailDialog> {
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[300]!),
+                  border: Border.all(color: AppTheme.dividerColor(context)),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Row(
@@ -442,8 +443,8 @@ class _TaskDetailDialogState extends State<TaskDetailDialog> {
                       _getCombinedDueDate(),
                       style: TextStyle(
                         color: _selectedDate != null
-                            ? Colors.black87
-                            : Colors.grey,
+                            ? Theme.of(context).colorScheme.onSurface
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -458,7 +459,7 @@ class _TaskDetailDialogState extends State<TaskDetailDialog> {
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[300]!),
+                  border: Border.all(color: AppTheme.dividerColor(context)),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Row(
@@ -469,8 +470,8 @@ class _TaskDetailDialogState extends State<TaskDetailDialog> {
                       _getDueTime(),
                       style: TextStyle(
                         color: _selectedTime != null
-                            ? Colors.black87
-                            : Colors.grey,
+                            ? Theme.of(context).colorScheme.onSurface
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -609,17 +610,17 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
             TextField(
               controller: _textController,
               maxLines: 3,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: AppTheme.cardBackground(context),
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                  borderSide: BorderSide(color: AppTheme.dividerColor(context)),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                  borderSide: BorderSide(color: AppTheme.dividerColor(context)),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF007AFF)),
+                  borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                 ),
               ),
             ),
@@ -630,15 +631,15 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
               controller: _dateController,
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.white,
-                border: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                fillColor: AppTheme.cardBackground(context),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppTheme.dividerColor(context)),
                 ),
-                enabledBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppTheme.dividerColor(context)),
                 ),
-                focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF007AFF)),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                 ),
                 hintText: l10n.hintDateExample,
               ),
@@ -648,7 +649,7 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
               l10n.hintDateSupport,
               style: Theme.of(
                 context,
-              ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+              ).textTheme.bodySmall?.copyWith(color: AppTheme.onSurfaceVariant(context)),
             ),
             const SizedBox(height: 16),
             Text(l10n.labelTaskList),

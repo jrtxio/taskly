@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/todo_list.dart';
 import '../providers/list_provider.dart';
 import '../theme/app_design.dart';
+import '../theme/app_theme.dart';
 import 'emoji_picker.dart';
 import 'color_picker.dart';
 
@@ -66,10 +67,10 @@ class _ListNavigationState extends State<ListNavigation> {
           children: [
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 12,
-                color: Colors.grey,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
             const Spacer(),
@@ -78,7 +79,7 @@ class _ListNavigationState extends State<ListNavigation> {
             Icon(
               isExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
               size: 16,
-              color: Colors.grey,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ],
         ),
@@ -170,7 +171,7 @@ class _ListNavigationState extends State<ListNavigation> {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: selectedColor ?? Colors.blue,
+                              color: selectedColor ?? Theme.of(context).colorScheme.primary,
                               shape: BoxShape.circle,
                             ),
                             child: Center(
@@ -226,7 +227,7 @@ class _ListNavigationState extends State<ListNavigation> {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: selectedColor ?? Colors.blue,
+                              color: selectedColor ?? Theme.of(context).colorScheme.primary,
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -362,7 +363,7 @@ class _ListNavigationState extends State<ListNavigation> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Container(
-      color: Colors.grey[50],
+      color: AppTheme.surfaceContainer(context),
       child: Column(
         children: [
           Expanded(
@@ -432,7 +433,7 @@ class _ListNavigationState extends State<ListNavigation> {
                 if (_isMyListsExpanded)
                   ...widget.lists.map((list) {
                     final isSelected = widget.selectedList?.id == list.id;
-                    final tileColor = list.color ?? Colors.blue;
+                    final tileColor = list.color ?? Theme.of(context).colorScheme.primary;
                     final taskCount = widget.taskCounts?[list.id] ?? 0;
 
                     return AnimatedOpacity(
@@ -442,7 +443,7 @@ class _ListNavigationState extends State<ListNavigation> {
                       child: Container(
                         margin: AppDesign.tileMargin,
                         decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFF007AFF) : Colors.white,
+                          color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.cardBackground(context),
                           borderRadius: AppDesign.borderRadiusMedium,
                           boxShadow: AppDesign.subtleShadow,
                         ),
@@ -459,7 +460,7 @@ class _ListNavigationState extends State<ListNavigation> {
                             child: InkWell(
                               borderRadius: AppDesign.borderRadiusMedium,
                               splashColor: tileColor.withOpacity(0.2),
-                              highlightColor: Colors.grey[200],
+                              highlightColor: AppTheme.highlightBackground(context),
                               child: Padding(
                                 padding: AppDesign.sidebarItemPadding,
                                 child: Row(
@@ -498,7 +499,7 @@ class _ListNavigationState extends State<ListNavigation> {
                                         style: TextStyle(
                                           fontSize: 13,
                                           fontWeight: FontWeight.w500,
-                                          color: isSelected ? Colors.white : Colors.black87,
+                                          color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
                                         ),
                                       ),
                                     ),
@@ -511,7 +512,7 @@ class _ListNavigationState extends State<ListNavigation> {
                                         decoration: BoxDecoration(
                                           color: isSelected
                                               ? Colors.white.withOpacity(0.3)
-                                              : Colors.grey[300],
+                                              : AppTheme.badgeBackground(context),
                                           borderRadius: BorderRadius.circular(10),
                                         ),
                                         child: Text(
@@ -519,7 +520,7 @@ class _ListNavigationState extends State<ListNavigation> {
                                           style: TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.w500,
-                                            color: isSelected ? Colors.white : Colors.black87,
+                                            color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
                                           ),
                                         ),
                                       ),
