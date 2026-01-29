@@ -47,7 +47,6 @@ class ListNavigation extends StatefulWidget {
 }
 
 class _ListNavigationState extends State<ListNavigation> {
-  bool _isSmartListsExpanded = true;
   bool _isMyListsExpanded = true;
 
   Widget _buildSectionHeader({
@@ -368,53 +367,49 @@ class _ListNavigationState extends State<ListNavigation> {
           Expanded(
             child: ListView(
               children: [
-                _buildSectionHeader(
-                  title: l10n.sectionSmartLists,
-                  isExpanded: _isSmartListsExpanded,
-                  onToggle: () => setState(() => _isSmartListsExpanded = !_isSmartListsExpanded),
-                ),
-                if (_isSmartListsExpanded)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                    child: GridView.count(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      childAspectRatio: 2.0,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: [
-                        _buildSmartViewButton(
-                          l10n.navToday,
-                          Icons.today,
-                          const Color(0xFF007AFF),
-                          widget.todayCount ?? 0,
-                          widget.onTodayTap,
-                        ),
-                        _buildSmartViewButton(
-                          l10n.navPlanned,
-                          Icons.calendar_month,
-                          const Color(0xFFFF3B30),
-                          widget.plannedCount ?? 0,
-                          widget.onPlannedTap,
-                        ),
-                        _buildSmartViewButton(
-                          l10n.navAll,
-                          Icons.list,
-                          const Color(0xFF8E8E93),
-                          widget.allCount ?? 0,
-                          widget.onAllTap,
-                        ),
-                        _buildSmartViewButton(
-                          l10n.navCompleted,
-                          Icons.check_circle,
-                          const Color(0xFFFF9500),
-                          widget.completedCount ?? 0,
-                          widget.onCompletedTap,
-                        ),
-                      ],
-                    ),
+                // Smart lists - directly display without section header
+                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 2.0,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      _buildSmartViewButton(
+                        l10n.navToday,
+                        Icons.today,
+                        const Color(0xFF007AFF),
+                        widget.todayCount ?? 0,
+                        widget.onTodayTap,
+                      ),
+                      _buildSmartViewButton(
+                        l10n.navPlanned,
+                        Icons.calendar_month,
+                        const Color(0xFFFF3B30),
+                        widget.plannedCount ?? 0,
+                        widget.onPlannedTap,
+                      ),
+                      _buildSmartViewButton(
+                        l10n.navAll,
+                        Icons.list,
+                        const Color(0xFF8E8E93),
+                        widget.allCount ?? 0,
+                        widget.onAllTap,
+                      ),
+                      _buildSmartViewButton(
+                        l10n.navCompleted,
+                        Icons.check_circle,
+                        const Color(0xFFFF9500),
+                        widget.completedCount ?? 0,
+                        widget.onCompletedTap,
+                      ),
+                    ],
                   ),
+                ),
 
                 _buildSectionHeader(
                   title: l10n.sectionMyLists,
