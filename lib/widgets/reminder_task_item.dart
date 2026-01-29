@@ -66,11 +66,13 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
           });
           widget.onSelect();
         } else {
-          // Delay to allow interactions (like clicking date picker) to register
+          // Delay to allow interactions (like clicking date picker or notes) to register
           Future.delayed(const Duration(milliseconds: 200), () {
             if (!mounted) return;
             if (_isInteractingWithPicker) return;
             if (_textFocusNode.hasFocus) return;
+            // 如果正在编辑备注，不要关闭编辑模式
+            if (_isNotesEditing || _notesFocusNode.hasFocus) return;
 
             _saveTextChanges();
             setState(() {
@@ -560,6 +562,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
       return TextField(
         controller: _notesController,
         focusNode: _notesFocusNode,
+        autofocus: true,
         cursorColor: Theme.of(context).colorScheme.primary,
         cursorWidth: 1.5,
         enableInteractiveSelection: true,
@@ -592,24 +595,29 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
       }
       
       return GestureDetector(
-        onTap: () {
-          // 先取消标题焦点（如果有），避免状态冲突
+        onTapDown: (_) {
+          // 使用 onTapDown 而不是 onTap，确保事件在点击时立即处理
+          // 先设置状态，防止焦点变化导致的状态重置
+          setState(() {
+            _isTitleEditing = false;
+            _isNotesEditing = true;
+          });
+          // 取消标题焦点
           if (_textFocusNode.hasFocus) {
             _textFocusNode.unfocus();
           }
-          setState(() {
-            _isTitleEditing = false; // 确保标题编辑状态关闭
-            _isNotesEditing = true;
-          });
+          // 请求备注焦点
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            _notesFocusNode.requestFocus();
+            if (mounted) {
+              _notesFocusNode.requestFocus();
+            }
           });
         },
         behavior: HitTestBehavior.opaque,
         child: Container(
           width: double.infinity, // 扩展到整个宽度，增大可点击区域
-          constraints: const BoxConstraints(minHeight: 24), // 始终保持最小高度
-          padding: const EdgeInsets.symmetric(vertical: 2), // 增加垂直 padding
+          constraints: const BoxConstraints(minHeight: 32), // 增大最小高度，确保点击区域足够大
+          padding: const EdgeInsets.symmetric(vertical: 4), // 增加垂直 padding
           child: Text(
             hasNotes 
                 ? widget.task.notes! 
