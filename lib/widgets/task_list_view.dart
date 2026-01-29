@@ -280,13 +280,13 @@ class _TaskListViewState extends State<TaskListView> {
   Color _getViewTitleColor(String title) {
     switch (title) {
       case '今天':
-        return const Color(0xFF007AFF);
+        return RemindersColors.today;
       case '计划':
-        return const Color(0xFFFF3B30);
+        return RemindersColors.scheduled;
       case '全部':
-        return const Color(0xFF8E8E93);
+        return RemindersColors.all;
       case '完成':
-        return const Color(0xFFFF9500);
+        return RemindersColors.completed;
       default:
         return Theme.of(context).colorScheme.primary;
     }
