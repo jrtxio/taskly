@@ -208,32 +208,25 @@ class _MainScreenState extends State<MainScreen> {
                     // Monitor database connection status changes
                     final isConnected = appProvider.isDatabaseConnected;
                     if (_wasConnected != isConnected) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) async {
                         if (isConnected) {
                           _updateStatus(AppLocalizations.of(context)!.statusDatabaseConnected);
+                          // Refresh data when database becomes connected
+                          if (listProvider.lists.isEmpty) {
+                            await _loadInitialData();
+                          }
                         } else {
                           _updateStatus(AppLocalizations.of(context)!.statusDatabaseClosed);
+                          // Clear data when database is disconnected
+                          if (listProvider.lists.isNotEmpty ||
+                              taskProvider.tasks.isNotEmpty) {
+                            listProvider.clearLists();
+                            taskProvider.clearTasks();
+                            _updateTaskCounts();
+                          }
                         }
                       });
                       _wasConnected = isConnected;
-                    }
-
-                    // Refresh data when database connection changes
-                    if (appProvider.isDatabaseConnected &&
-                        listProvider.lists.isEmpty) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) async {
-                        await _loadInitialData();
-                      });
-                    }
-                    // Clear data when database is disconnected
-                    if (!appProvider.isDatabaseConnected &&
-                        (listProvider.lists.isNotEmpty ||
-                            taskProvider.tasks.isNotEmpty)) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        listProvider.clearLists();
-                        taskProvider.clearTasks();
-                        _updateTaskCounts();
-                      });
                     }
                     return Row(
                       children: [
