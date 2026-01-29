@@ -9,23 +9,46 @@ import '../utils/path_utils.dart';
 class AppMenuBar extends StatelessWidget {
   const AppMenuBar({super.key});
 
+  // 统一的菜单项样式
+  static final ButtonStyle _menuItemStyle = ButtonStyle(
+    minimumSize: WidgetStateProperty.all(const Size(120, 32)),
+    padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 12, vertical: 6)),
+  );
+
+  // 顶级菜单按钮样式
+  static final ButtonStyle _submenuButtonStyle = ButtonStyle(
+    minimumSize: WidgetStateProperty.all(const Size(0, 32)),
+    padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 10, vertical: 4)),
+  );
+
+  // 下拉菜单样式
+  static final MenuStyle _dropdownMenuStyle = MenuStyle(
+    backgroundColor: WidgetStateProperty.all(Colors.white),
+    elevation: WidgetStateProperty.all(4),
+    shape: WidgetStateProperty.all(
+      RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+    ),
+    padding: WidgetStateProperty.all(const EdgeInsets.symmetric(vertical: 4)),
+  );
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     
     return Container(
-      height: 36,
+      height: 32,
       decoration: BoxDecoration(
         color: Colors.grey[100],
         border: Border(bottom: BorderSide(color: Colors.grey[300]!)),
       ),
       child: Row(
         children: [
+          const SizedBox(width: 4),
           MenuBar(
             style: MenuStyle(
               backgroundColor: WidgetStateProperty.all(Colors.transparent),
               elevation: WidgetStateProperty.all(0),
-              padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 8)),
+              padding: WidgetStateProperty.all(EdgeInsets.zero),
             ),
             children: [
               _buildFileMenu(context, l10n),
@@ -41,21 +64,30 @@ class AppMenuBar extends StatelessWidget {
 
   SubmenuButton _buildFileMenu(BuildContext context, AppLocalizations l10n) {
     return SubmenuButton(
+      style: _submenuButtonStyle,
+      menuStyle: _dropdownMenuStyle,
       menuChildren: [
         MenuItemButton(
+          style: _menuItemStyle,
           onPressed: () => _showNewDatabaseDialog(context),
           child: Text(l10n.menuNewDatabase),
         ),
         MenuItemButton(
+          style: _menuItemStyle,
           onPressed: () => _showOpenDatabaseDialog(context),
           child: Text(l10n.menuOpenDatabase),
         ),
         MenuItemButton(
+          style: _menuItemStyle,
           onPressed: () => _showCloseDatabaseDialog(context),
           child: Text(l10n.menuCloseDatabase),
         ),
-        const Divider(height: 1),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          child: Divider(height: 1),
+        ),
         MenuItemButton(
+          style: _menuItemStyle,
           onPressed: () => exit(0),
           child: Text(l10n.menuExit),
         ),
@@ -68,13 +100,16 @@ class AppMenuBar extends StatelessWidget {
     final appProvider = Provider.of<AppProvider>(context);
     
     return SubmenuButton(
+      style: _submenuButtonStyle,
+      menuStyle: _dropdownMenuStyle,
       menuChildren: [
         MenuItemButton(
+          style: _menuItemStyle,
           onPressed: () => _showLanguageDialog(context, appProvider),
-          leadingIcon: const Icon(Icons.translate, size: 18),
+          leadingIcon: const Icon(Icons.translate, size: 16),
           trailingIcon: Text(
-            appProvider.language == 'en' ? 'English' : '简体中文',
-            style: TextStyle(color: Colors.grey[600], fontSize: 12),
+            appProvider.language == 'en' ? 'English' : '中文',
+            style: TextStyle(color: Colors.grey[500], fontSize: 12),
           ),
           child: Text(l10n.menuLanguage),
         ),
@@ -85,8 +120,11 @@ class AppMenuBar extends StatelessWidget {
 
   SubmenuButton _buildHelpMenu(BuildContext context, AppLocalizations l10n) {
     return SubmenuButton(
+      style: _submenuButtonStyle,
+      menuStyle: _dropdownMenuStyle,
       menuChildren: [
         MenuItemButton(
+          style: _menuItemStyle,
           onPressed: () => _showAboutDialog(context),
           child: Text(l10n.menuAbout),
         ),
