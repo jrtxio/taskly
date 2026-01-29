@@ -206,7 +206,7 @@ class _TaskListViewState extends State<TaskListView> {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: iconColor),
                   ),
                   if (title == '完成' && widget.completedCount != null) ...[
                     const SizedBox(width: 8),
