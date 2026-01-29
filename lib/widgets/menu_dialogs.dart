@@ -70,17 +70,17 @@ class AppMenuBar extends StatelessWidget {
         MenuItemButton(
           style: _menuItemStyle,
           onPressed: () => _showNewDatabaseDialog(context),
-          child: Text(l10n.menuNewDatabase),
+          child: Text(l10n.menuNewDatabase, style: const TextStyle(fontSize: 13)),
         ),
         MenuItemButton(
           style: _menuItemStyle,
           onPressed: () => _showOpenDatabaseDialog(context),
-          child: Text(l10n.menuOpenDatabase),
+          child: Text(l10n.menuOpenDatabase, style: const TextStyle(fontSize: 13)),
         ),
         MenuItemButton(
           style: _menuItemStyle,
           onPressed: () => _showCloseDatabaseDialog(context),
-          child: Text(l10n.menuCloseDatabase),
+          child: Text(l10n.menuCloseDatabase, style: const TextStyle(fontSize: 13)),
         ),
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -89,10 +89,10 @@ class AppMenuBar extends StatelessWidget {
         MenuItemButton(
           style: _menuItemStyle,
           onPressed: () => exit(0),
-          child: Text(l10n.menuExit),
+          child: Text(l10n.menuExit, style: const TextStyle(fontSize: 13)),
         ),
       ],
-      child: Text(l10n.menuFile),
+      child: Text(l10n.menuFile, style: const TextStyle(fontSize: 13)),
     );
   }
 
@@ -111,10 +111,10 @@ class AppMenuBar extends StatelessWidget {
             appProvider.language == 'en' ? 'English' : '中文',
             style: TextStyle(color: Colors.grey[500], fontSize: 12),
           ),
-          child: Text(l10n.menuLanguage),
+          child: Text(l10n.menuLanguage, style: const TextStyle(fontSize: 13)),
         ),
       ],
-      child: Text(l10n.menuSettings),
+      child: Text(l10n.menuSettings, style: const TextStyle(fontSize: 13)),
     );
   }
 
@@ -126,10 +126,10 @@ class AppMenuBar extends StatelessWidget {
         MenuItemButton(
           style: _menuItemStyle,
           onPressed: () => _showAboutDialog(context),
-          child: Text(l10n.menuAbout),
+          child: Text(l10n.menuAbout, style: const TextStyle(fontSize: 13)),
         ),
       ],
-      child: Text(l10n.menuHelp),
+      child: Text(l10n.menuHelp, style: const TextStyle(fontSize: 13)),
     );
   }
 
