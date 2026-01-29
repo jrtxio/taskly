@@ -631,99 +631,102 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
       return const SizedBox.shrink();
     }
 
-    return Padding(
-      padding: EdgeInsets.zero, // Remove extra padding, Column handles it better
-      child: Row(
-        children: [
-          if (hasDate || isEditing)
-            MouseRegion(
-              cursor: isEditing ? SystemMouseCursors.click : SystemMouseCursors.basic,
-              child: GestureDetector(
-                onTap: isEditing ? _showDatePicker : null,
-                child: Container(
-                  padding: const EdgeInsets.only(right: 8, top: 4, bottom: 4),
-                  decoration: BoxDecoration(
-                    color: isEditing ? AppTheme.chipBackground(context) : Colors.transparent,
-                    borderRadius: AppDesign.borderRadiusSmall,
-                    border: isEditing ? Border.all(color: AppTheme.chipBorder(context)) : null,
+    return Row(
+      children: [
+        if (hasDate || isEditing)
+          MouseRegion(
+            cursor: isEditing ? SystemMouseCursors.click : SystemMouseCursors.basic,
+            child: GestureDetector(
+              onTap: isEditing ? _showDatePicker : null,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: isEditing ? AppTheme.chipBackground(context) : Colors.transparent,
+                  borderRadius: AppDesign.borderRadiusSmall,
+                  border: Border.all(
+                    color: isEditing ? AppTheme.chipBorder(context) : Colors.transparent,
+                    width: 1,
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.calendar_today,
-                        size: 14,
-                        color: isEditing ? Theme.of(context).colorScheme.primary : (hasDate ? AppTheme.onSurfaceSecondary(context) : AppTheme.dividerColor(context)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.calendar_today,
+                      size: 14,
+                      color: isEditing ? Theme.of(context).colorScheme.primary : (hasDate ? AppTheme.onSurfaceSecondary(context) : AppTheme.dividerColor(context)),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      hasDate
+                          ? DateParser.formatDateOnlyForDisplay(widget.task.dueDate!, AppLocalizations.of(context)!)
+                          : AppLocalizations.of(context)!.labelAddDate,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isEditing ? Theme.of(context).colorScheme.primary : (hasDate ? AppTheme.onSurfaceVariant(context) : AppTheme.onSurfaceTertiary(context)),
+                        fontStyle: FontStyle.normal,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        hasDate
-                            ? DateParser.formatDateOnlyForDisplay(widget.task.dueDate!, AppLocalizations.of(context)!)
-                            : AppLocalizations.of(context)!.labelAddDate,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isEditing ? Theme.of(context).colorScheme.primary : (hasDate ? AppTheme.onSurfaceVariant(context) : AppTheme.onSurfaceTertiary(context)),
-                          fontStyle: FontStyle.normal,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          if ((widget.task.dueTime != null &&
-                  widget.task.dueTime!.isNotEmpty) ||
-              isEditing) ...[
-            if (hasDate) const SizedBox(width: 8),
-            MouseRegion(
-              cursor: isEditing ? SystemMouseCursors.click : SystemMouseCursors.basic,
-              child: GestureDetector(
-                onTap: isEditing ? _showTimePicker : null,
-                child: Container(
-                  padding: const EdgeInsets.only(right: 8, top: 4, bottom: 4),
-                  decoration: BoxDecoration(
-                    color: isEditing ? AppTheme.chipBackground(context) : Colors.transparent,
-                    borderRadius: AppDesign.borderRadiusSmall,
-                    border: isEditing ? Border.all(color: AppTheme.chipBorder(context)) : null,
+          ),
+        if ((widget.task.dueTime != null &&
+                widget.task.dueTime!.isNotEmpty) ||
+            isEditing) ...[
+          if (hasDate || isEditing) const SizedBox(width: 4),
+          MouseRegion(
+            cursor: isEditing ? SystemMouseCursors.click : SystemMouseCursors.basic,
+            child: GestureDetector(
+              onTap: isEditing ? _showTimePicker : null,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: isEditing ? AppTheme.chipBackground(context) : Colors.transparent,
+                  borderRadius: AppDesign.borderRadiusSmall,
+                  border: Border.all(
+                    color: isEditing ? AppTheme.chipBorder(context) : Colors.transparent,
+                    width: 1,
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.access_time,
-                        size: 14,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.access_time,
+                      size: 14,
+                      color: isEditing
+                          ? Theme.of(context).colorScheme.primary
+                          : (widget.task.dueTime != null &&
+                                  widget.task.dueTime!.isNotEmpty
+                              ? AppTheme.onSurfaceSecondary(context)
+                              : AppTheme.dividerColor(context)),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      widget.task.dueTime != null &&
+                              widget.task.dueTime!.isNotEmpty
+                          ? DateParser.formatTimeForDisplay(widget.task.dueTime)
+                          : AppLocalizations.of(context)!.labelAddTime,
+                      style: TextStyle(
+                        fontSize: 12,
                         color: isEditing
                             ? Theme.of(context).colorScheme.primary
                             : (widget.task.dueTime != null &&
                                     widget.task.dueTime!.isNotEmpty
-                                ? AppTheme.onSurfaceSecondary(context)
-                                : AppTheme.dividerColor(context)),
+                                ? AppTheme.onSurfaceVariant(context)
+                                : AppTheme.onSurfaceTertiary(context)),
+                        fontStyle: FontStyle.normal,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        widget.task.dueTime != null &&
-                                widget.task.dueTime!.isNotEmpty
-                            ? DateParser.formatTimeForDisplay(widget.task.dueTime)
-                            : AppLocalizations.of(context)!.labelAddTime,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isEditing
-                              ? Theme.of(context).colorScheme.primary
-                              : (widget.task.dueTime != null &&
-                                      widget.task.dueTime!.isNotEmpty
-                                  ? AppTheme.onSurfaceVariant(context)
-                                  : AppTheme.onSurfaceTertiary(context)),
-                          fontStyle: FontStyle.normal,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ],
+          ),
         ],
-      ),
+      ],
     );
   }
 
