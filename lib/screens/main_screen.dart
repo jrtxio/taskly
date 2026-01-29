@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:taskly/l10n/app_localizations.dart';
@@ -23,7 +24,8 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   TaskViewType _currentViewType = TaskViewType.all;
-  String _statusMessage = '';
+  String _transientMessage = '';
+  Timer? _statusTimer;
   int? _todayCount;
   int? _plannedCount;
   int? _allCount;
@@ -39,6 +41,12 @@ class _MainScreenState extends State<MainScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadInitialData();
     });
+  }
+  
+  @override
+  void dispose() {
+    _statusTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _resizeWindow() async {
@@ -73,9 +81,7 @@ class _MainScreenState extends State<MainScreen> {
       }
 
       await _updateTaskCounts();
-      if (mounted) {
-        _updateStatus(AppLocalizations.of(context)!.statusDataLoaded);
-      }
+      // Initial load doesn't need a status update as persistent status covers it
     }
   }
 
@@ -106,9 +112,43 @@ class _MainScreenState extends State<MainScreen> {
 
   void _updateStatus(String message) {
     if (mounted) {
+      _statusTimer?.cancel();
       setState(() {
-        _statusMessage = message;
+        _transientMessage = message;
       });
+      _statusTimer = Timer(const Duration(seconds: 3), () {
+        if (mounted) {
+          setState(() {
+            _transientMessage = '';
+          });
+        }
+      });
+    }
+  }
+
+  String _getPersistentStatus(BuildContext context) {
+    final appProvider = Provider.of<AppProvider>(context, listen: false);
+    final l10n = AppLocalizations.of(context)!;
+
+    if (!appProvider.isDatabaseConnected) {
+      return l10n.statusDatabaseNotConnected;
+    }
+
+    switch (_currentViewType) {
+      case TaskViewType.all:
+        return l10n.statusShowAll;
+      case TaskViewType.today:
+        return l10n.statusShowToday;
+      case TaskViewType.planned:
+        return l10n.statusShowPlanned;
+      case TaskViewType.completed:
+        return l10n.statusShowCompleted;
+      case TaskViewType.list:
+         final listProvider = Provider.of<ListProvider>(context, listen: false);
+         if (listProvider.selectedList != null) {
+           return l10n.statusSwitchList(listProvider.selectedList!.name);
+         }
+         return '';
     }
   }
 
@@ -349,6 +389,10 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildStatusBar(BuildContext context) {
+    final statusText = _transientMessage.isNotEmpty 
+        ? _transientMessage 
+        : _getPersistentStatus(context);
+
     return Container(
       height: 28,
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -359,7 +403,7 @@ class _MainScreenState extends State<MainScreen> {
       child: Row(
         children: [
           Text(
-            _statusMessage.isEmpty ? AppLocalizations.of(context)!.statusDatabaseNotConnected : _statusMessage,
+            statusText,
             style: TextStyle(fontSize: 12, color: Colors.grey[600]),
           ),
         ],

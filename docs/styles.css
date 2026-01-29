@@ -367,12 +367,12 @@ footer {
 
 /* App Mockup Styles */
 .app-window {
-    width: 100%;
-    max-width: 800px;
-    height: 500px;
+    width: 900px;
+    max-width: 95%;
+    height: 600px;
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.12), 0 10px 30px rgba(0, 0, 0, 0.06);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -380,16 +380,19 @@ footer {
     border: 1px solid rgba(0, 0, 0, 0.1);
     position: relative;
     text-align: left;
-    /* Reset text align from hero center */
 }
 
 .window-header {
-    height: 38px;
-    background: #f6f6f6;
+    height: 52px;
+    background: #fbfbfd;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     display: flex;
     align-items: center;
-    padding-left: 16px;
+    padding-left: 20px;
+}
+
+.window-controls {
+    display: flex;
     gap: 8px;
 }
 
@@ -420,53 +423,236 @@ footer {
     overflow: hidden;
 }
 
+/* Sidebar */
 .window-sidebar {
-    width: 220px;
-    background: #fbfbfd;
-    /* slightly darker than body */
-    border-right: 1px solid rgba(0, 0, 0, 0.05);
-    padding: 20px 10px;
+    width: 260px;
+    background: #f2f2f7;
+    /* Matching RemindersColors.lightSidebar */
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 16px;
     display: flex;
     flex-direction: column;
     gap: 4px;
+    overflow-y: auto;
 }
 
-.sidebar-title {
-    font-size: 11px;
+/* Smart Lists Grid */
+.smart-lists-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.smart-list-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    cursor: default;
+}
+
+.smart-icon-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.smart-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.smart-list-card.today .smart-icon {
+    background: #007AFF;
+}
+
+.smart-list-card.scheduled .smart-icon {
+    background: #FF3B30;
+}
+
+.smart-list-card.all .smart-icon {
+    background: #5E5E62;
+}
+
+/* Darker gray for All */
+.smart-list-card.flagged .smart-icon {
+    background: #FF9500;
+}
+
+.smart-count {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1d1d1f;
+}
+
+.smart-label {
+    font-size: 13px;
     font-weight: 600;
-    color: var(--c-text-secondary);
-    padding-left: 10px;
-    margin-bottom: 8px;
-    text-transform: uppercase;
+    color: #636366;
+}
+
+/* My Lists */
+.sidebar-section-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #8c8c91;
+    padding: 0 10px;
+    margin-bottom: 4px;
+    margin-top: 8px;
 }
 
 .sidebar-item {
     padding: 8px 12px;
     font-size: 14px;
-    border-radius: 6px;
-    color: var(--c-text-primary);
+    border-radius: 8px;
+    color: #1d1d1f;
     cursor: default;
     display: flex;
     align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.sidebar-item:hover {
+    background: rgba(0, 0, 0, 0.03);
 }
 
 .sidebar-item.active {
-    background: rgba(0, 0, 0, 0.06);
-    font-weight: 500;
+    background: #e4e4e6;
 }
 
+.list-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+}
+
+.icon-blue {
+    background: #007AFF;
+}
+
+.icon-purple {
+    background: #AF52DE;
+}
+
+.icon-green {
+    background: #34C759;
+}
+
+.list-count {
+    margin-left: auto;
+    color: #8c8c91;
+    font-size: 13px;
+}
+
+/* Main Content */
 .window-content {
     flex: 1;
-    background: #fff;
-    padding: 30px 40px;
+    background: #ffffff;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
 }
 
+.list-header {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-left {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.sidebar-toggle-icon {
+    display: flex;
+    align-items: center;
+    color: #8e8e93;
+    margin-right: 4px;
+}
+
+.list-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #007AFF;
+}
+
+.list-actions {
+    color: #007AFF;
+    font-size: 24px;
+    font-weight: 300;
+    cursor: pointer;
+    line-height: 0.5;
+    opacity: 0;
+    /* Hidden but takes space if needed, or just hide for now */
+}
+
+/* Quick Add Input (Top) */
+.quick-add-input {
+    margin: 4px 8px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-radius: 6px;
+    transition: background 0.2s;
+    cursor: text;
+}
+
+.quick-add-input:hover {
+    background: rgba(0, 0, 0, 0.05);
+    /* highlightBackground */
+}
+
+.add-icon {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #007AFF;
+}
+
+.input-placeholder {
+    font-size: 14px;
+    color: #8e8e93;
+    /* onSurfaceSecondary */
+}
+
+.tasks-container {
+    padding: 0 8px;
+    /* Reduced side padding slightly */
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Task Item */
 .mock-task {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    gap: 14px;
+    /* Matches SizedBox width 14 in QuickAdd */
+    padding: 12px 12px;
+    /* Content padding */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .mock-task:last-child {
@@ -474,26 +660,71 @@ footer {
 }
 
 .mock-checkbox {
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
-    border: 1.5px solid #d1d1d6;
-    margin-top: 2px;
+    border: 1.5px solid #c7c7cc;
+    margin-top: 1px;
     flex-shrink: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.mock-text {
+.mock-checkbox:hover {
+    border-color: #8e8e93;
+}
+
+.mock-task.completed .mock-checkbox.checked {
+    background: #007AFF;
+    border-color: #007AFF;
+}
+
+.mock-text-col {
     display: flex;
     flex-direction: column;
-    font-size: 15px;
-    color: var(--c-text-primary);
+    gap: 2px;
+    flex: 1;
 }
 
-.mock-subtext {
+.mock-text-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.task-title {
+    font-size: 15px;
+    color: #1d1d1f;
+    line-height: 1.4;
+}
+
+.mock-task.completed .task-title {
+    text-decoration: line-through;
+    color: #8e8e93;
+}
+
+.task-tags {
+    display: flex;
+    gap: 6px;
+}
+
+.task-tag {
     font-size: 12px;
+    padding: 0;
+    color: #8e8e93;
+}
+
+.task-tag.red {
     color: #ff3b30;
-    /* red for due date */
-    margin-top: 4px;
+}
+
+.task-notes {
+    font-size: 13px;
+    color: #8e8e93;
+    line-height: 1.3;
 }
 
 /* Language Switcher Dropdown */

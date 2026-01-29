@@ -62,44 +62,167 @@
             <!-- CSS App Mockup -->
             <div class="app-window animate-on-scroll">
                 <div class="window-header">
-                    <div class="traffic-light close"></div>
-                    <div class="traffic-light minimize"></div>
-                    <div class="traffic-light maximize"></div>
+                    <div class="window-controls">
+                        <div class="traffic-light close"></div>
+                        <div class="traffic-light minimize"></div>
+                        <div class="traffic-light maximize"></div>
+                    </div>
                 </div>
                 <div class="window-body">
                     <div class="window-sidebar">
-                        <div class="sidebar-title" data-en="Lists" data-zh="列表">Lists</div>
+                        <!-- Smart Lists Grid -->
+                        <div class="smart-lists-grid">
+                            <div class="smart-list-card today">
+                                <div class="smart-icon-row">
+                                    <div class="smart-icon">
+                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                            <path
+                                                d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zm-7 5h5v5h-5v-5z" />
+                                        </svg>
+                                    </div>
+                                    <div class="smart-count">2</div>
+                                </div>
+                                <div class="smart-label" data-en="Today" data-zh="今天">Today</div>
+                            </div>
+                            <div class="smart-list-card scheduled">
+                                <div class="smart-icon-row">
+                                    <div class="smart-icon">
+                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                            <path
+                                                d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z" />
+                                        </svg>
+                                    </div>
+                                    <div class="smart-count">5</div>
+                                </div>
+                                <div class="smart-label" data-en="Scheduled" data-zh="计划">Scheduled</div>
+                            </div>
+                            <div class="smart-list-card all">
+                                <div class="smart-icon-row">
+                                    <div class="smart-icon">
+                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                            <path
+                                                d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" />
+                                        </svg>
+                                    </div>
+                                    <div class="smart-count">12</div>
+                                </div>
+                                <div class="smart-label" data-en="All" data-zh="全部">All</div>
+                            </div>
+                            <div class="smart-list-card flagged">
+                                <div class="smart-icon-row">
+                                    <div class="smart-icon">
+                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                            <path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+                                        </svg>
+                                    </div>
+                                    <div class="smart-count">0</div>
+                                </div>
+                                <div class="smart-label" data-en="Flagged" data-zh="旗标">Flagged</div>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-section-title" data-en="My Lists" data-zh="我的列表">My Lists</div>
                         <div class="sidebar-item active">
-                            <span data-en="📥 Inbox" data-zh="📥 收件箱">📥 Inbox</span>
+                            <div class="list-icon icon-blue">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                    <path
+                                        d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z" />
+                                </svg>
+                            </div>
+                            <span data-en="Work" data-zh="工作">Work</span>
+                            <span class="list-count">3</span>
                         </div>
                         <div class="sidebar-item">
-                            <span data-en="💼 Work" data-zh="💼 工作">💼 Work</span>
+                            <div class="list-icon icon-purple">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                    <path
+                                        d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3zm5 15h-2v-6H9v6H7v-7.81l5-4.5 5 4.5V18z" />
+                                </svg>
+                            </div>
+                            <span data-en="Personal" data-zh="个人">Personal</span>
+                            <span class="list-count">8</span>
                         </div>
                         <div class="sidebar-item">
-                            <span data-en="🏠 Personal" data-zh="🏠 个人">🏠 Personal</span>
+                            <div class="list-icon icon-green">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                    <path
+                                        d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm6 9.09c0 4-2.55 7.7-6 8.83-3.45-1.13-6-4.82-6-8.83v-4.7l6-2.25 6 2.25v4.7z" />
+                                </svg>
+                            </div>
+                            <span data-en="Ideas" data-zh="创意">Ideas</span>
+                            <span class="list-count"></span>
                         </div>
                     </div>
+
                     <div class="window-content">
+                        <!-- List Header -->
+                        <div class="list-header">
+                            <div class="header-left">
+                                <div class="sidebar-toggle-icon">
+                                    <svg viewBox="0 0 24 24" width="24" height="24" fill="#8e8e93">
+                                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+                                    </svg>
+                                </div>
+                                <h2 class="list-title" data-en="Work" data-zh="工作">Work</h2>
+                            </div>
+                            <div class="list-actions">...</div>
+                        </div>
+
+                        <!-- Quick Add Input (Top) -->
+                        <div class="quick-add-input">
+                            <div class="add-icon">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                                </svg>
+                            </div>
+                            <div class="input-placeholder" data-en="Add Task" data-zh="添加任务">Add Task</div>
+                        </div>
+
                         <!-- Mock Tasks -->
-                        <div class="mock-task">
-                            <div class="mock-checkbox"></div>
-                            <div class="mock-text">
-                                <span data-en="Meeting with design team" data-zh="与设计团队开会">Meeting with design
-                                    team</span>
-                                <div class="mock-subtext">Tomorrow 10:00 AM</div>
+                        <div class="tasks-container">
+                            <div class="mock-task">
+                                <div class="mock-checkbox"></div>
+                                <div class="mock-text-col">
+                                    <div class="mock-text-row">
+                                        <span class="task-title" data-en="Meeting with design team"
+                                            data-zh="与设计团队开会">Meeting with design team</span>
+                                        <div class="task-tags">
+                                            <span class="task-tag red">Tomorrow 10:00 AM</span>
+                                        </div>
+                                    </div>
+                                    <div class="task-notes" data-en="Discuss new homepage layout" data-zh="讨论新首页布局">
+                                        Discuss new homepage layout</div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="mock-task">
-                            <div class="mock-checkbox"></div>
-                            <div class="mock-text">
-                                <span data-en="Submit project report" data-zh="提交项目报告">Submit project report</span>
-                                <div class="mock-subtext">Fri 5:00 PM</div>
+
+                            <div class="mock-task">
+                                <div class="mock-checkbox"></div>
+                                <div class="mock-text-col">
+                                    <div class="mock-text-row">
+                                        <span class="task-title" data-en="Submit project report" data-zh="提交项目报告">Submit
+                                            project report</span>
+                                        <div class="task-tags">
+                                            <span class="task-tag red">Fri 5:00 PM</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="mock-task">
-                            <div class="mock-checkbox"></div>
-                            <div class="mock-text" style="opacity: 0.5;">
-                                <span data-en="Buy groceries" data-zh="购买杂货">Buy groceries</span>
+
+                            <div class="mock-task completed">
+                                <div class="mock-checkbox checked">
+                                    <svg viewBox="0 0 24 24" width="12" height="12" fill="white" stroke="white"
+                                        stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </div>
+                                <div class="mock-text-col">
+                                    <div class="mock-text-row">
+                                        <span class="task-title" data-en="Update dependencies" data-zh="更新依赖">Update
+                                            dependencies</span>
+                                    </div>
+                                    <div class="task-notes" data-en="Flutter 3.29 upgrade" data-zh="Flutter 3.29 升级">
+                                        Flutter 3.29 upgrade</div>
+                                </div>
                             </div>
                         </div>
                     </div>
