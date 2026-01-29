@@ -80,7 +80,7 @@ jobs:
         run: |
           flutter build linux --release
           cd build/linux/x64/release/bundle
-          zip -r ../../../taskly-${{ env.VERSION }}-linux-x64.zip .
+          zip -r $GITHUB_WORKSPACE/build/taskly-${{ env.VERSION }}-linux-x64.zip .
       
 
       
@@ -89,14 +89,14 @@ jobs:
         run: |
           flutter build macos --release
           cd build/macos/Build/Products/Release
-          zip -r ../../../taskly-${{ env.VERSION }}-macos-x64.zip Taskly.app
+          zip -r $GITHUB_WORKSPACE/build/taskly-${{ env.VERSION }}-macos-x64.zip Taskly.app
       
       - name: Build macOS arm64 app
         if: matrix.os == 'macos' && matrix.arch == 'arm64'
         run: |
           flutter build macos --release
           cd build/macos/Build/Products/Release
-          zip -r ../../../taskly-${{ env.VERSION }}-macos-arm64.zip Taskly.app
+          zip -r $GITHUB_WORKSPACE/build/taskly-${{ env.VERSION }}-macos-arm64.zip Taskly.app
       
       - name: Build Windows x64 app
         if: matrix.os == 'windows' && matrix.arch == 'x64'
