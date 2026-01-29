@@ -141,7 +141,7 @@ class TaskProvider with ChangeNotifier {
 
     try {
       await _taskRepository.addTask(task);
-      await loadTasks(viewType: _currentView, keyword: _searchKeyword);
+      await loadTasks(viewType: _currentView, listId: _currentListId, keyword: _searchKeyword);
     } catch (e, stackTrace) {
       _setError(
         AppError(
@@ -210,7 +210,7 @@ class TaskProvider with ChangeNotifier {
 
     try {
       await _taskRepository.toggleTaskCompleted(id);
-      await loadTasks(viewType: _currentView, keyword: _searchKeyword);
+      await loadTasks(viewType: _currentView, listId: _currentListId, keyword: _searchKeyword);
     } catch (e, stackTrace) {
       _setError(
         AppError(
@@ -241,7 +241,7 @@ class TaskProvider with ChangeNotifier {
 
     try {
       await _taskRepository.deleteTask(id);
-      await loadTasks(viewType: _currentView, keyword: _searchKeyword);
+      await loadTasks(viewType: _currentView, listId: _currentListId, keyword: _searchKeyword);
     } catch (e, stackTrace) {
       _setError(
         AppError(
