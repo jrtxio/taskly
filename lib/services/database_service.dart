@@ -510,7 +510,7 @@ class DatabaseService implements DatabaseServiceInterface {
   Future<int> getTaskCountByList(int listId) async {
     final db = await database;
     final result = await db.rawQuery(
-      'SELECT COUNT(*) as count FROM $_tableTasks WHERE list_id = ?',
+      'SELECT COUNT(*) as count FROM $_tableTasks WHERE list_id = ? AND completed = 0',
       [listId],
     );
     return result.first['count'] as int;

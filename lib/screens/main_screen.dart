@@ -305,9 +305,9 @@ class _MainScreenState extends State<MainScreen> {
                             isLoading: taskProvider.isLoading,
                             isDatabaseConnected:
                                 appProvider.isDatabaseConnected,
-                            onToggleTask: (id) {
-                              taskProvider.toggleTaskCompleted(id);
-                              _updateTaskCounts();
+                            onToggleTask: (id) async {
+                              await taskProvider.toggleTaskCompleted(id);
+                              await _updateTaskCounts();
                               _updateStatus(AppLocalizations.of(context)!.statusUpdateTaskState);
                             },
                             onEditTask: (task) {
