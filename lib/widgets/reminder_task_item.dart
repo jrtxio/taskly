@@ -284,6 +284,8 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
   }
 
   void _handleContainerTap() {
+    // 如果已经在编辑状态，不处理外层点击，让内部组件自己处理
+    if (_isTitleEditing || _isNotesEditing) return;
     if (!_textFocusNode.hasFocus && !_notesFocusNode.hasFocus) {
       widget.onSelect();
     }
@@ -440,11 +442,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildTitleField(),
-                      if (_isTitleEditing ||
-                          _isNotesEditing ||
-                          (widget.task.notes != null &&
-                              widget.task.notes!.isNotEmpty))
-                        _buildNotesField(),
+                      _buildNotesField(),
                       _buildDateTime(
                         hasNotes: widget.task.notes != null &&
                             widget.task.notes!.isNotEmpty,
@@ -588,9 +586,19 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
       final hasNotes = widget.task.notes != null && widget.task.notes!.isNotEmpty;
       final isInEditingContext = _isTitleEditing; // 标题正在编辑时，备注区域也应可点击
       
+      // 只有当有备注或正在编辑标题时才显示备注区域
+      if (!hasNotes && !isInEditingContext) {
+        return const SizedBox.shrink();
+      }
+      
       return GestureDetector(
         onTap: () {
+          // 先取消标题焦点（如果有），避免状态冲突
+          if (_textFocusNode.hasFocus) {
+            _textFocusNode.unfocus();
+          }
           setState(() {
+            _isTitleEditing = false; // 确保标题编辑状态关闭
             _isNotesEditing = true;
           });
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -599,13 +607,13 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
         },
         behavior: HitTestBehavior.opaque,
         child: Container(
-          constraints: (isInEditingContext && !hasNotes) 
-              ? const BoxConstraints(minHeight: 20) 
-              : null,
+          width: double.infinity, // 扩展到整个宽度，增大可点击区域
+          constraints: const BoxConstraints(minHeight: 24), // 始终保持最小高度
+          padding: const EdgeInsets.symmetric(vertical: 2), // 增加垂直 padding
           child: Text(
             hasNotes 
                 ? widget.task.notes! 
-                : (isInEditingContext ? AppLocalizations.of(context)!.hintAddNotes : ''),
+                : AppLocalizations.of(context)!.hintAddNotes,
             style: TextStyle(
               fontSize: 12,
               color: hasNotes ? AppTheme.onSurfaceVariant(context) : AppTheme.onSurfaceTertiary(context),
