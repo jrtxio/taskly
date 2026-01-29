@@ -24,26 +24,27 @@ class NativeMenuBar extends StatelessWidget {
   }
 
   PlatformMenu _buildMacOSFileMenu(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return PlatformMenu(
-      label: '文件',
+      label: l10n.menuFile,
       menus: [
         PlatformMenuItem(
-          label: '新建数据库',
+          label: l10n.menuNewDatabase,
           onSelected: () => _showNewDatabaseDialog(context),
           shortcut: const SingleActivator(LogicalKeyboardKey.keyN, meta: true),
         ),
         PlatformMenuItem(
-          label: '打开数据库',
+          label: l10n.menuOpenDatabase,
           onSelected: () => _showOpenDatabaseDialog(context),
           shortcut: const SingleActivator(LogicalKeyboardKey.keyO, meta: true),
         ),
         PlatformMenuItem(
-          label: '关闭数据库',
+          label: l10n.menuCloseDatabase,
           onSelected: () => _showCloseDatabaseDialog(context),
           shortcut: const SingleActivator(LogicalKeyboardKey.keyW, meta: true),
         ),
         PlatformMenuItem(
-          label: '退出',
+          label: l10n.menuExit,
           onSelected: () => _exitApp(context),
           shortcut: const SingleActivator(LogicalKeyboardKey.keyQ, meta: true),
         ),
@@ -52,11 +53,12 @@ class NativeMenuBar extends StatelessWidget {
   }
 
   PlatformMenu _buildWindowsFileMenu(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return PlatformMenu(
-      label: '文件',
+      label: l10n.menuFile,
       menus: [
         PlatformMenuItem(
-          label: '新建数据库',
+          label: l10n.menuNewDatabase,
           onSelected: () => _showNewDatabaseDialog(context),
           shortcut: const SingleActivator(
             LogicalKeyboardKey.keyN,
@@ -64,7 +66,7 @@ class NativeMenuBar extends StatelessWidget {
           ),
         ),
         PlatformMenuItem(
-          label: '打开数据库',
+          label: l10n.menuOpenDatabase,
           onSelected: () => _showOpenDatabaseDialog(context),
           shortcut: const SingleActivator(
             LogicalKeyboardKey.keyO,
@@ -72,7 +74,7 @@ class NativeMenuBar extends StatelessWidget {
           ),
         ),
         PlatformMenuItem(
-          label: '关闭数据库',
+          label: l10n.menuCloseDatabase,
           onSelected: () => _showCloseDatabaseDialog(context),
           shortcut: const SingleActivator(
             LogicalKeyboardKey.keyW,
@@ -80,7 +82,7 @@ class NativeMenuBar extends StatelessWidget {
           ),
         ),
         PlatformMenuItem(
-          label: '退出',
+          label: l10n.menuExit,
           onSelected: () => _exitApp(context),
           shortcut: const SingleActivator(LogicalKeyboardKey.f4, alt: true),
         ),
@@ -89,8 +91,9 @@ class NativeMenuBar extends StatelessWidget {
   }
 
   PlatformMenu _buildSettingsMenu(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return PlatformMenu(
-      label: '设置',
+      label: l10n.menuSettings,
       menus: [
         PlatformMenuItem(
           label: 'English',
@@ -107,7 +110,7 @@ class NativeMenuBar extends StatelessWidget {
   PlatformMenu _buildHelpMenu(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return PlatformMenu(
-      label: '帮助',
+      label: l10n.menuHelp,
       menus: [
         PlatformMenuItem(
           label: l10n.menuAbout,
@@ -120,6 +123,7 @@ class NativeMenuBar extends StatelessWidget {
   bool get _isMacOS => Platform.isMacOS;
 
   void _showNewDatabaseDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final appProvider = Provider.of<AppProvider>(context, listen: false);
     final TextEditingController pathController = TextEditingController(
       text: PathUtils.getDefaultDbPath(),
@@ -128,21 +132,21 @@ class NativeMenuBar extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('新建数据库'),
+        title: Text(l10n.dialogNewDatabase),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('请输入新数据库文件的路径和名称'),
+            Text(l10n.dialogEnterDbPath),
             const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: pathController,
-                    decoration: const InputDecoration(
-                      hintText: '数据库文件路径',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      hintText: l10n.dialogDbPathHint,
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                 ),
@@ -150,7 +154,7 @@ class NativeMenuBar extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () async {
                     final result = await FilePicker.platform.saveFile(
-                      dialogTitle: '保存数据库文件',
+                      dialogTitle: l10n.dialogSaveDbTitle,
                       fileName: 'tasks.db',
                       type: FileType.custom,
                       allowedExtensions: ['db'],
@@ -160,7 +164,7 @@ class NativeMenuBar extends StatelessWidget {
                       pathController.text = result;
                     }
                   },
-                  child: const Text('浏览...'),
+                  child: Text(l10n.dialogBrowse),
                 ),
               ],
             ),
@@ -169,7 +173,7 @@ class NativeMenuBar extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('取消'),
+            child: Text(l10n.dialogCancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -177,7 +181,7 @@ class NativeMenuBar extends StatelessWidget {
               if (path.isEmpty) {
                 ScaffoldMessenger.of(
                   context,
-                ).showSnackBar(const SnackBar(content: Text('请输入数据库文件路径')));
+                ).showSnackBar(SnackBar(content: Text(l10n.dialogInputDbPath)));
                 return;
               }
 
@@ -195,7 +199,7 @@ class NativeMenuBar extends StatelessWidget {
                 }
               }
             },
-            child: const Text('确定'),
+            child: Text(l10n.dialogConfirm),
           ),
         ],
       ),
@@ -203,10 +207,11 @@ class NativeMenuBar extends StatelessWidget {
   }
 
   void _showOpenDatabaseDialog(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final appProvider = Provider.of<AppProvider>(context, listen: false);
 
     final result = await FilePicker.platform.pickFiles(
-      dialogTitle: '选择数据库文件',
+      dialogTitle: l10n.dialogSelectDbFile,
       type: FileType.custom,
       allowedExtensions: ['db'],
     );
@@ -229,24 +234,25 @@ class NativeMenuBar extends StatelessWidget {
   }
 
   void _showCloseDatabaseDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final appProvider = Provider.of<AppProvider>(context, listen: false);
 
     if (!appProvider.isDatabaseConnected) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('当前没有打开的数据库')));
+      ).showSnackBar(SnackBar(content: Text(l10n.dialogNoDbOpened)));
       return;
     }
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('确认关闭数据库'),
-        content: const Text('确定要关闭当前数据库吗？'),
+        title: Text(l10n.dialogConfirmCloseDb),
+        content: Text(l10n.dialogConfirmCloseDbContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('取消'),
+            child: Text(l10n.dialogCancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -264,7 +270,7 @@ class NativeMenuBar extends StatelessWidget {
                 }
               }
             },
-            child: const Text('确定'),
+            child: Text(l10n.dialogConfirm),
           ),
         ],
       ),

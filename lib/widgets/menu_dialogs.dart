@@ -134,10 +134,11 @@ class AppMenuBar extends StatelessWidget {
   }
 
   void _showLanguageDialog(BuildContext context, AppProvider appProvider) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('选择语言'),
+        title: Text(l10n.dialogSelectLanguage),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -164,7 +165,7 @@ class AppMenuBar extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('取消'),
+            child: Text(l10n.dialogCancel),
           ),
         ],
       ),
@@ -172,16 +173,17 @@ class AppMenuBar extends StatelessWidget {
   }
 
   void _showAboutDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showAboutDialog(
       context: context,
-      applicationName: 'Taskly',
+      applicationName: l10n.appTitle,
       applicationVersion: '0.0.1',
       applicationLegalese: '© 2025 Taskly Team',
       children: [
-        const Padding(
-          padding: EdgeInsets.only(top: 16.0),
+        Padding(
+          padding: const EdgeInsets.only(top: 16.0),
           child: Text(
-            '一款专注高效的个人任务管理工具\n帮助您轻松规划、组织和完成各项任务',
+            l10n.aboutContent,
             textAlign: TextAlign.center,
           ),
         ),
@@ -190,6 +192,7 @@ class AppMenuBar extends StatelessWidget {
   }
 
   void _showNewDatabaseDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final appProvider = Provider.of<AppProvider>(context, listen: false);
     final TextEditingController pathController = TextEditingController(
       text: PathUtils.getDefaultDbPath(),
@@ -198,21 +201,21 @@ class AppMenuBar extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('新建数据库'),
+        title: Text(l10n.dialogNewDatabase),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('请输入新数据库文件的路径和名称'),
+            Text(l10n.dialogEnterDbPath),
             const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: pathController,
-                    decoration: const InputDecoration(
-                      hintText: '数据库文件路径',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      hintText: l10n.dialogDbPathHint,
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                 ),
@@ -220,7 +223,7 @@ class AppMenuBar extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () async {
                     final result = await FilePicker.platform.saveFile(
-                      dialogTitle: '保存数据库文件',
+                      dialogTitle: l10n.dialogSaveDbTitle,
                       fileName: 'tasks.db',
                       type: FileType.custom,
                       allowedExtensions: ['db'],
@@ -230,7 +233,7 @@ class AppMenuBar extends StatelessWidget {
                       pathController.text = result;
                     }
                   },
-                  child: const Text('浏览...'),
+                  child: Text(l10n.dialogBrowse),
                 ),
               ],
             ),
@@ -239,7 +242,7 @@ class AppMenuBar extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('取消'),
+            child: Text(l10n.dialogCancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -247,7 +250,7 @@ class AppMenuBar extends StatelessWidget {
               if (path.isEmpty) {
                 ScaffoldMessenger.of(
                   context,
-                ).showSnackBar(const SnackBar(content: Text('请输入数据库文件路径')));
+                ).showSnackBar(SnackBar(content: Text(l10n.dialogInputDbPath)));
                 return;
               }
 
@@ -265,7 +268,7 @@ class AppMenuBar extends StatelessWidget {
                 }
               }
             },
-            child: const Text('确定'),
+            child: Text(l10n.dialogConfirm),
           ),
         ],
       ),
