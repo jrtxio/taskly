@@ -3,6 +3,7 @@ import 'package:taskly/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../models/todo_list.dart';
 import '../providers/list_provider.dart';
+import '../theme/app_design.dart';
 import 'emoji_picker.dart';
 import 'color_picker.dart';
 
@@ -439,20 +440,11 @@ class _ListNavigationState extends State<ListNavigation> {
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeIn,
                       child: Container(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 4,
-                        ),
+                        margin: AppDesign.tileMargin,
                         decoration: BoxDecoration(
                           color: isSelected ? const Color(0xFF007AFF) : Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 2,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
+                          borderRadius: AppDesign.borderRadiusMedium,
+                          boxShadow: AppDesign.subtleShadow,
                         ),
                         child: GestureDetector(
                           onTap: () => widget.onSelectList(list),
@@ -462,17 +454,14 @@ class _ListNavigationState extends State<ListNavigation> {
                           child: Container(
                             decoration: BoxDecoration(
                               color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: AppDesign.borderRadiusMedium,
                             ),
                             child: InkWell(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: AppDesign.borderRadiusMedium,
                               splashColor: tileColor.withOpacity(0.2),
                               highlightColor: Colors.grey[200],
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 10,
-                                  horizontal: 12,
-                                ),
+                                padding: AppDesign.sidebarItemPadding,
                                 child: Row(
                                   children: [
                                     Container(
@@ -568,14 +557,8 @@ class _ListNavigationState extends State<ListNavigation> {
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: [
-            BoxShadow(
-              color: Color.fromRGBO(0, 0, 0, 0.1),
-              blurRadius: 3,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          borderRadius: AppDesign.borderRadiusMedium,
+          boxShadow: AppDesign.cardShadow,
         ),
         child: Stack(
           children: [

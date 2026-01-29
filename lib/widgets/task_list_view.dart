@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/task.dart';
 import '../models/todo_list.dart';
 import '../providers/task_provider.dart';
+import '../theme/app_design.dart';
 import '../utils/date_parser.dart';
 import 'reminder_task_item.dart';
 
@@ -214,7 +215,7 @@ class _TaskListViewState extends State<TaskListView> {
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
                         color: const Color(0xFFD1D5DB),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: AppDesign.borderRadiusSmall,
                       ),
                       child: Text(
                         widget.completedCount.toString(),
@@ -544,7 +545,7 @@ class _TaskListViewState extends State<TaskListView> {
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
               color: Color(0xFFD1D5DB),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: AppDesign.borderRadiusSmall,
             ),
             child: Text(
               taskCount.toString(),

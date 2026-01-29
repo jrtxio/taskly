@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'app_design.dart';
 
 class AppTheme {
   static ThemeData get lightTheme {
@@ -21,18 +22,18 @@ class AppTheme {
         ),
         iconTheme: IconThemeData(color: Colors.black87),
       ),
-      cardTheme: const CardThemeData(
+      cardTheme: CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius: AppDesign.borderRadiusMedium,
         ),
         color: Colors.white,
       ),
-      dialogTheme: const DialogThemeData(
+      dialogTheme: DialogThemeData(
         backgroundColor: Colors.white,
         elevation: 24,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius: AppDesign.borderRadiusMedium,
         ),
         titleTextStyle: TextStyle(
           fontSize: 20,
@@ -70,9 +71,9 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Color(0xFF007AFF), width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: AppDesign.paddingL,
+          vertical: AppDesign.paddingM,
         ),
       ),
       checkboxTheme: CheckboxThemeData(

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../models/task.dart';
 import '../models/todo_list.dart';
+import '../theme/app_design.dart';
 import '../utils/date_parser.dart';
 
 class ReminderTaskItem extends StatefulWidget {
@@ -343,7 +344,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                 : Colors.white,
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+            padding: AppDesign.contentPadding,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -385,8 +386,8 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
       onTap: widget.onToggle,
       behavior: HitTestBehavior.opaque,
       child: Container(
-        width: 22,
-        height: 22,
+        width: AppDesign.checkboxSize,
+        height: AppDesign.checkboxSize,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
@@ -544,7 +545,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                   padding: const EdgeInsets.only(right: 8, top: 4, bottom: 4),
                   decoration: BoxDecoration(
                     color: isEditing ? Colors.blue[50] : Colors.transparent,
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: AppDesign.borderRadiusSmall,
                     border: isEditing ? Border.all(color: Colors.blue[200]!) : null,
                   ),
                   child: Row(
@@ -583,7 +584,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                   padding: const EdgeInsets.only(right: 8, top: 4, bottom: 4),
                   decoration: BoxDecoration(
                     color: isEditing ? Colors.blue[50] : Colors.transparent,
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: AppDesign.borderRadiusSmall,
                     border: isEditing ? Border.all(color: Colors.blue[200]!) : null,
                   ),
                   child: Row(
