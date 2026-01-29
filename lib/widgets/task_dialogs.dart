@@ -275,8 +275,8 @@ class _TaskDetailDialogState extends State<TaskDetailDialog> {
     final picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate ?? now,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
     );
     if (picked != null) {
       setState(() {

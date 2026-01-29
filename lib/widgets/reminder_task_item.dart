@@ -43,6 +43,8 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
   bool _isTitleEditing = false;
   bool _isNotesEditing = false;
 
+  bool _isInteractingWithPicker = false;
+
   @override
   void initState() {
     super.initState();
@@ -56,9 +58,16 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
           });
           widget.onSelect();
         } else {
-          _saveTextChanges();
-          setState(() {
-            _isTitleEditing = false;
+          // Delay to allow interactions (like clicking date picker) to register
+          Future.delayed(const Duration(milliseconds: 200), () {
+            if (!mounted) return;
+            if (_isInteractingWithPicker) return;
+            if (_textFocusNode.hasFocus) return;
+
+            _saveTextChanges();
+            setState(() {
+              _isTitleEditing = false;
+            });
           });
         }
       });
@@ -70,9 +79,15 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
           });
           widget.onSelect();
         } else {
-          _saveNotesChanges();
-          setState(() {
-            _isNotesEditing = false;
+          Future.delayed(const Duration(milliseconds: 200), () {
+            if (!mounted) return;
+            if (_isInteractingWithPicker) return;
+            if (_notesFocusNode.hasFocus) return;
+
+            _saveNotesChanges();
+            setState(() {
+              _isNotesEditing = false;
+            });
           });
         }
       });
@@ -128,15 +143,33 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
   }
 
   Future<void> _showDatePicker() async {
+    _isInteractingWithPicker = true;
+    final wasTitleEditing = _isTitleEditing;
+    final wasNotesEditing = _isNotesEditing;
+    
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: widget.task.dueDate != null &&
               widget.task.dueDate!.isNotEmpty
           ? DateTime.tryParse(widget.task.dueDate!) ?? DateTime.now()
           : DateTime.now(),
-      firstDate: DateTime.now().subtract(const Duration(days: 365)),
-      lastDate: DateTime.now().add(const Duration(days: 3650)),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
     );
+
+    // Restore focus first, then reset the flag after focus is restored
+    if (wasTitleEditing) {
+      _textFocusNode.requestFocus();
+    } else if (wasNotesEditing) {
+      _notesFocusNode.requestFocus();
+    }
+    
+    // Reset the flag after a frame to ensure focus restoration completes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _isInteractingWithPicker = false;
+      }
+    });
 
     if (pickedDate == null) return;
 
@@ -149,6 +182,10 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
   }
 
   Future<void> _showTimePicker() async {
+    _isInteractingWithPicker = true;
+    final wasTitleEditing = _isTitleEditing;
+    final wasNotesEditing = _isNotesEditing;
+    
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: widget.task.dueTime != null &&
@@ -159,6 +196,20 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
             )
           : const TimeOfDay(hour: 9, minute: 0),
     );
+
+    // Restore focus first, then reset the flag after focus is restored
+    if (wasTitleEditing) {
+      _textFocusNode.requestFocus();
+    } else if (wasNotesEditing) {
+      _notesFocusNode.requestFocus();
+    }
+    
+    // Reset the flag after a frame to ensure focus restoration completes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _isInteractingWithPicker = false;
+      }
+    });
 
     if (pickedTime == null) return;
 
@@ -317,7 +368,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem> {
                 ),
                 const SizedBox(width: 4),
                 Opacity(
-                  opacity: _isHovered ? 1.0 : 0.0,
+                  opacity: (_isHovered || widget.isSelected) ? 1.0 : 0.0,
                   child: _buildInfoButton(),
                 ),
               ],

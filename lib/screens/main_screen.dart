@@ -182,9 +182,7 @@ class _MainScreenState extends State<MainScreen> {
                     if (appProvider.isDatabaseConnected &&
                         listProvider.lists.isEmpty) {
                       WidgetsBinding.instance.addPostFrameCallback((_) async {
-                        await listProvider.loadLists();
-                        await taskProvider.loadAllTasks();
-                        await _updateTaskCounts();
+                        await _loadInitialData();
                       });
                     }
                     // Clear data when database is disconnected
