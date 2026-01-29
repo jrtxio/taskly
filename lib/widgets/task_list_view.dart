@@ -185,7 +185,7 @@ class _TaskListViewState extends State<TaskListView> {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.only(left: 8, right: 16, top: 12, bottom: 12),
       decoration: const BoxDecoration(color: Colors.white),
       child: Row(
         children: [
@@ -195,41 +195,18 @@ class _TaskListViewState extends State<TaskListView> {
               color: Colors.grey[600],
             ),
             onPressed: widget.onToggleSidebar,
-            padding: const EdgeInsets.only(left: -12),
+            padding: EdgeInsets.zero,
             constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
             tooltip: widget.isSidebarVisible ? '隐藏侧边栏' : '显示侧边栏',
           ),
           if (widget.isDatabaseConnected) ...[
-            const SizedBox(width: 8),
-            Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                color: iconColor ?? Colors.blue,
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: icon != null
-                    ? Icon(icon, color: Colors.white, size: 14)
-                    : (widget.selectedList?.icon != null
-                          ? Text(
-                              widget.selectedList!.icon!,
-                              style: const TextStyle(fontSize: 14),
-                            )
-                          : const Icon(
-                              Icons.folder,
-                              color: Colors.white,
-                              size: 14,
-                            )),
-              ),
-            ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 4),
             Expanded(
               child: Row(
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
                   ),
                   if (title == '完成' && widget.completedCount != null) ...[
                     const SizedBox(width: 8),
