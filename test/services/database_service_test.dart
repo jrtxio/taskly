@@ -527,5 +527,18 @@ void main() {
         returnsNormally,
       );
     });
+    test('resetConnection should not clear _customDatabasePath', () async {
+      final customPath = 'test_custom_path.db';
+      databaseService.setDatabasePath(customPath);
+      
+      // Verify path is set initially
+      expect(await databaseService.getDatabasePath(), customPath);
+      
+      // Reset connection
+      databaseService.resetConnection();
+      
+      // Verify path is still set
+      expect(await databaseService.getDatabasePath(), customPath);
+    });
   });
 }

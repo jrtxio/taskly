@@ -211,7 +211,6 @@ class AppProvider with ChangeNotifier {
       // Reset database service connection
       final dbService = sl<DatabaseServiceInterface>();
       dbService.setDatabasePath(dbPath);
-      dbService.resetConnection();
 
       // Initialize new database
       await dbService.init();
@@ -255,7 +254,6 @@ class AppProvider with ChangeNotifier {
       // Set new path and reset connection
       final dbService = sl<DatabaseServiceInterface>();
       dbService.setDatabasePath(path);
-      dbService.resetConnection();
 
       // Initialize database
       await dbService.init();

@@ -654,6 +654,5 @@ class DatabaseService implements DatabaseServiceInterface {
   @override
   void resetConnection() {
     _database = null;
-    _customDatabasePath = null;
   }
 }
