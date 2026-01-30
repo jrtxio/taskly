@@ -514,11 +514,11 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
     return TextField(
       controller: _textController,
       focusNode: _textFocusNode,
-      readOnly: !_isTitleEditing,
+      readOnly: false,
       showCursor: _isTitleEditing,
       cursorColor: Theme.of(context).colorScheme.primary,
       cursorWidth: 1.5,
-      enableInteractiveSelection: _isTitleEditing,
+      enableInteractiveSelection: true,
       decoration: const InputDecoration(
         filled: false,
         border: InputBorder.none,
@@ -528,19 +528,6 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
         isDense: true,
       ),
       style: textStyle,
-      onTap: () {
-        if (!_isTitleEditing) {
-          setState(() {
-            _isTitleEditing = true;
-          });
-          // Ensure we request focus after the state change
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              _textFocusNode.requestFocus();
-            }
-          });
-        }
-      },
       onSubmitted: _handleTextSubmitted,
       maxLines: null,
     );
@@ -569,11 +556,11 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
     return TextField(
       controller: _notesController,
       focusNode: _notesFocusNode,
-      readOnly: !_isNotesEditing,
+      readOnly: false,
       showCursor: _isNotesEditing,
       cursorColor: Theme.of(context).colorScheme.primary,
       cursorWidth: 1.5,
-      enableInteractiveSelection: _isNotesEditing,
+      enableInteractiveSelection: true,
       decoration: InputDecoration(
         filled: false,
         border: InputBorder.none,
@@ -590,23 +577,6 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
         ),
       ),
       style: notesStyle,
-      onTap: () {
-        if (!_isNotesEditing) {
-          setState(() {
-            _isTitleEditing = false;
-            _isNotesEditing = true;
-          });
-          if (_textFocusNode.hasFocus) {
-            _textFocusNode.unfocus();
-          }
-          // Request focus essentially immediately
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              _notesFocusNode.requestFocus();
-            }
-          });
-        }
-      },
       onSubmitted: _handleNotesSubmitted,
       maxLines: null,
     );
