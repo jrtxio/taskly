@@ -153,21 +153,33 @@ class _TaskListViewState extends State<TaskListView> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.isDatabaseConnected) {
-      return Column(
-        children: [
-          _buildHeader(),
-          Expanded(child: _buildTaskList()),
-        ],
-      );
-    }
+    final content = !widget.isDatabaseConnected
+        ? Column(
+            children: [
+              _buildHeader(),
+              Expanded(child: _buildTaskList()),
+            ],
+          )
+        : Column(
+            children: [
+              _buildHeader(),
+              if (widget.showQuickAddInput) _buildQuickAddInput(),
+              Expanded(child: _buildTaskList()),
+            ],
+          );
 
-    return Column(
-      children: [
-        _buildHeader(),
-        if (widget.showQuickAddInput) _buildQuickAddInput(),
-        Expanded(child: _buildTaskList()),
-      ],
+    return GestureDetector(
+      onTap: () {
+        // Clear focus (keyboard) and selection when tapping on empty space
+        FocusScope.of(context).unfocus();
+        if (_selectedTaskId != null) {
+          setState(() {
+            _selectedTaskId = null;
+          });
+        }
+      },
+      behavior: HitTestBehavior.translucent,
+      child: content,
     );
   }
 

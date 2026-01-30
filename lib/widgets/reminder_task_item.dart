@@ -509,37 +509,40 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
     
     // Always use TextField but control interaction via readOnly
     // This ensures identical height in both states
-    return GestureDetector(
+    // Always use TextField but control interaction via readOnly
+    // This ensures identical height in both states
+    return TextField(
+      controller: _textController,
+      focusNode: _textFocusNode,
+      readOnly: !_isTitleEditing,
+      showCursor: _isTitleEditing,
+      cursorColor: Theme.of(context).colorScheme.primary,
+      cursorWidth: 1.5,
+      enableInteractiveSelection: _isTitleEditing,
+      decoration: const InputDecoration(
+        filled: false,
+        border: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        contentPadding: EdgeInsets.symmetric(horizontal: AppDesign.paddingS, vertical: 0),
+        isDense: true,
+      ),
+      style: textStyle,
       onTap: () {
         if (!_isTitleEditing) {
           setState(() {
             _isTitleEditing = true;
           });
+          // Ensure we request focus after the state change
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            _textFocusNode.requestFocus();
+            if (mounted) {
+              _textFocusNode.requestFocus();
+            }
           });
         }
       },
-      child: TextField(
-        controller: _textController,
-        focusNode: _textFocusNode,
-        readOnly: !_isTitleEditing,
-        showCursor: _isTitleEditing,
-        cursorColor: Theme.of(context).colorScheme.primary,
-        cursorWidth: 1.5,
-        enableInteractiveSelection: _isTitleEditing,
-        decoration: const InputDecoration(
-          filled: false,
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(horizontal: AppDesign.paddingS, vertical: 0),
-          isDense: true,
-        ),
-        style: textStyle,
-        onSubmitted: _handleTextSubmitted,
-        maxLines: null,
-      ),
+      onSubmitted: _handleTextSubmitted,
+      maxLines: null,
     );
   }
 
@@ -562,7 +565,31 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
     );
     
     // Always use TextField but control interaction via readOnly
-    return GestureDetector(
+    // Always use TextField but control interaction via readOnly
+    return TextField(
+      controller: _notesController,
+      focusNode: _notesFocusNode,
+      readOnly: !_isNotesEditing,
+      showCursor: _isNotesEditing,
+      cursorColor: Theme.of(context).colorScheme.primary,
+      cursorWidth: 1.5,
+      enableInteractiveSelection: _isNotesEditing,
+      decoration: InputDecoration(
+        filled: false,
+        border: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        contentPadding: const EdgeInsets.symmetric(horizontal: AppDesign.paddingS, vertical: 0),
+        isDense: true,
+        hintText: hasNotes ? null : AppLocalizations.of(context)!.hintAddNotes,
+        hintStyle: TextStyle(
+          fontSize: 12,
+          color: AppTheme.onSurfaceTertiary(context),
+          height: 1.4,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+      style: notesStyle,
       onTap: () {
         if (!_isNotesEditing) {
           setState(() {
@@ -572,6 +599,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
           if (_textFocusNode.hasFocus) {
             _textFocusNode.unfocus();
           }
+          // Request focus essentially immediately
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               _notesFocusNode.requestFocus();
@@ -579,33 +607,8 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
           });
         }
       },
-      child: TextField(
-        controller: _notesController,
-        focusNode: _notesFocusNode,
-        readOnly: !_isNotesEditing,
-        showCursor: _isNotesEditing,
-        cursorColor: Theme.of(context).colorScheme.primary,
-        cursorWidth: 1.5,
-        enableInteractiveSelection: _isNotesEditing,
-        decoration: InputDecoration(
-          filled: false,
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: AppDesign.paddingS, vertical: 0),
-          isDense: true,
-          hintText: hasNotes ? null : AppLocalizations.of(context)!.hintAddNotes,
-          hintStyle: TextStyle(
-            fontSize: 12,
-            color: AppTheme.onSurfaceTertiary(context),
-            height: 1.4,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        style: notesStyle,
-        onSubmitted: _handleNotesSubmitted,
-        maxLines: null,
-      ),
+      onSubmitted: _handleNotesSubmitted,
+      maxLines: null,
     );
   }
 
