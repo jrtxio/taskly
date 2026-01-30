@@ -71,7 +71,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
             if (!mounted) return;
             if (_isInteractingWithPicker) return;
             if (_textFocusNode.hasFocus) return;
-            // 如果正在编辑备注，不要关闭编辑模式
+            // If notes are being edited, do not close edit mode
             if (_isNotesEditing || _notesFocusNode.hasFocus) return;
 
             _saveTextChanges();
@@ -286,7 +286,7 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
   }
 
   void _handleContainerTap() {
-    // 如果已经在编辑状态，不处理外层点击，让内部组件自己处理
+    // If already in edit mode, do not handle outer tap, let internal components handle it
     if (_isTitleEditing || _isNotesEditing) return;
     if (!_textFocusNode.hasFocus && !_notesFocusNode.hasFocus) {
       widget.onSelect();

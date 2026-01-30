@@ -9,19 +9,19 @@ import '../utils/path_utils.dart';
 class AppMenuBar extends StatelessWidget {
   const AppMenuBar({super.key});
 
-  // 统一的菜单项样式
+  // Unified menu item style
   static final ButtonStyle _menuItemStyle = ButtonStyle(
     minimumSize: WidgetStateProperty.all(const Size(120, 32)),
     padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 12, vertical: 6)),
   );
 
-  // 顶级菜单按钮样式
+  // Top-level menu button style
   static final ButtonStyle _submenuButtonStyle = ButtonStyle(
     minimumSize: WidgetStateProperty.all(const Size(0, 32)),
     padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 10, vertical: 4)),
   );
 
-  // 下拉菜单样式
+  // Dropdown menu style
   static final MenuStyle _dropdownMenuStyle = MenuStyle(
     backgroundColor: WidgetStateProperty.all(Colors.white),
     elevation: WidgetStateProperty.all(4),

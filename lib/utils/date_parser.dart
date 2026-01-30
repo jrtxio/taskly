@@ -326,10 +326,10 @@ class DateParser {
   /// - timeCommand: extracted time command (e.g., '+1d', '@10am', etc.)
   ///
   /// Examples:
-  /// - "买牛奶 @10am" → ("买牛奶", "@10am")
-  /// - "会议 +2h" → ("会议", "+2h")
-  /// - "去健身房 @8pm mon" → ("去健身房", "@8pm mon")
-  /// - "写报告" → ("写报告", null)
+  /// - "Buy milk @10am" → ("Buy milk", "@10am")
+  /// - "Meeting +2h" → ("Meeting", "+2h")
+  /// - "Go to gym @8pm mon" → ("Go to gym", "@8pm mon")
+  /// - "Write report" → ("Write report", null)
   ///
   /// Time commands can be:
   /// - Relative: +10m, +2h, +1d, +1w, +6M
