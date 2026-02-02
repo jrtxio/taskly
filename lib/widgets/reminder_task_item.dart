@@ -181,6 +181,26 @@ class _ReminderTaskItemState extends State<ReminderTaskItem>
 
   void _saveTextChanges() {
     final value = _textController.text;
+    final (taskText, timeCommand) = DateParser.extractTimeCommand(value);
+    
+    // If a time command was found and parsed
+    if (timeCommand != null && timeCommand.isNotEmpty) {
+      final dueDate = DateParser.parse(timeCommand);
+      if (dueDate != null) {
+        // Update the text controller to show the stripped text
+        _textController.text = taskText;
+        
+        final dueTime = DateParser.formatTimeForDisplay(dueDate);
+        final updatedTask = widget.task.copyWith(
+          text: taskText,
+          dueDate: dueDate,
+          dueTime: dueTime,
+        );
+        widget.onUpdate(updatedTask);
+        return;
+      }
+    }
+
     if (value != widget.task.text) {
       final updatedTask = widget.task.copyWith(text: value);
       widget.onUpdate(updatedTask);

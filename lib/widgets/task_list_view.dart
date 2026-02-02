@@ -94,11 +94,17 @@ class _TaskListViewState extends State<TaskListView> {
       return;
     }
 
+    String? dueTime;
+    if (dueDate != null) {
+      dueTime = DateParser.formatTimeForDisplay(dueDate);
+    }
+
     final task = Task(
       id: 0,
       listId: listId,
       text: taskText,
       dueDate: dueDate,
+      dueTime: dueTime,
       completed: false,
       createdAt: DateTime.now().toIso8601String(),
     );
