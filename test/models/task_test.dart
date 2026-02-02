@@ -187,5 +187,31 @@ void main() {
       expect(task.dueTime, null);
       expect(task.notes, null);
     });
+
+    test('should allow setting nullable fields to null using copyWith', () {
+      final taskWithValues = Task(
+        id: testId,
+        listId: testListId,
+        text: testText,
+        dueDate: testDueDate,
+        dueTime: testDueTime,
+        completed: testCompleted,
+        createdAt: testCreatedAt,
+        notes: testNotes,
+      );
+
+      final updatedTask = taskWithValues.copyWith(
+        dueDate: null,
+        dueTime: null,
+        notes: null,
+      );
+
+      expect(updatedTask.dueDate, null);
+      expect(updatedTask.dueTime, null);
+      expect(updatedTask.notes, null);
+      // Ensure other fields remain unchanged
+      expect(updatedTask.id, testId);
+      expect(updatedTask.text, testText);
+    });
   });
 }

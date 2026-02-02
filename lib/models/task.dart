@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 
 @immutable
 class Task {
+  static const _sentinel = Object();
+
   final int id;
   final int listId;
   final String text;
@@ -61,21 +63,21 @@ class Task {
     int? id,
     int? listId,
     String? text,
-    String? dueDate,
-    String? dueTime,
+    Object? dueDate = _sentinel,
+    Object? dueTime = _sentinel,
     bool? completed,
     String? createdAt,
-    String? notes,
+    Object? notes = _sentinel,
   }) {
     return Task(
       id: id ?? this.id,
       listId: listId ?? this.listId,
       text: text ?? this.text,
-      dueDate: dueDate ?? this.dueDate,
-      dueTime: dueTime ?? this.dueTime,
+      dueDate: dueDate == _sentinel ? this.dueDate : dueDate as String?,
+      dueTime: dueTime == _sentinel ? this.dueTime : dueTime as String?,
       completed: completed ?? this.completed,
       createdAt: createdAt ?? this.createdAt,
-      notes: notes ?? this.notes,
+      notes: notes == _sentinel ? this.notes : notes as String?,
     );
   }
 
