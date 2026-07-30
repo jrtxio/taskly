@@ -1,0 +1,41 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Taskly.Views.Dialogs.TaskDetailDialog"
+        Width="450" SizeToContent="Height"
+        CanResize="False" WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False" Title="任务详情">
+
+    <Border Padding="24">
+        <StackPanel Spacing="14">
+            <StackPanel Spacing="6">
+                <TextBlock Text="任务" FontSize="13" Foreground="{DynamicResource ThemeSecondaryTextBrush}"/>
+                <TextBox x:Name="TaskBox" AcceptsReturn="True" TextWrapping="Wrap"/>
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+                <TextBlock Text="备注" FontSize="13" Foreground="{DynamicResource ThemeSecondaryTextBrush}"/>
+                <TextBox x:Name="NotesBox" AcceptsReturn="True" TextWrapping="Wrap" Height="80"
+                         Watermark="添加备注..."/>
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,12,*">
+                <StackPanel Grid.Column="0" Spacing="6">
+                    <TextBlock Text="日期" FontSize="13" Foreground="{DynamicResource ThemeSecondaryTextBrush}"/>
+                    <TextBox x:Name="DateBox" PointerReleased="OnPickDate" IsReadOnly="True"
+                             Watermark="yyyy-MM-dd"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2" Spacing="6">
+                    <TextBlock Text="时间" FontSize="13" Foreground="{DynamicResource ThemeSecondaryTextBrush}"/>
+                    <TextBox x:Name="TimeBox" PointerReleased="OnPickTime" IsReadOnly="True"
+                             Watermark="HH:mm"/>
+                </StackPanel>
+            </Grid>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,8,0,0">
+                <Button Content="删除" Click="OnDelete" Classes="danger" MinWidth="72"/>
+                <Button Content="取消" Click="OnCancel" MinWidth="72"/>
+                <Button Content="保存" Click="OnSave" Classes="accent" MinWidth="72"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

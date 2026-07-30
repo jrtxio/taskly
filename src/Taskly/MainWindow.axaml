@@ -1,0 +1,53 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="clr-namespace:Taskly.Views"
+        x:Class="Taskly.MainWindow"
+        Title="Taskly"
+        Background="{DynamicResource ThemeBackgroundBrush}">
+
+    <DockPanel LastChildFill="True">
+
+        <!-- 顶部菜单栏 -->
+        <Menu DockPanel.Dock="Top" Height="32">
+            <MenuItem Header="文件">
+                <MenuItem Header="新建数据库" Click="OnMenuNewDb" InputGesture="Ctrl+N"/>
+                <MenuItem Header="打开数据库" Click="OnMenuOpenDb" InputGesture="Ctrl+O"/>
+                <MenuItem Header="关闭数据库" Click="OnMenuCloseDb" InputGesture="Ctrl+W"/>
+                <Separator/>
+                <MenuItem Header="退出" Click="OnMenuExit" InputGesture="Ctrl+Q"/>
+            </MenuItem>
+            <MenuItem Header="设置">
+                <MenuItem Header="语言">
+                    <MenuItem Header="简体中文" Click="OnMenuLangZh" ToggleType="Radio" IsChecked="{Binding IsChinese}"/>
+                    <MenuItem Header="English" Click="OnMenuLangEn" ToggleType="Radio"/>
+                </MenuItem>
+                <MenuItem Header="深色模式" Click="OnMenuToggleTheme" ToggleType="CheckBox" IsChecked="{Binding IsDark}"/>
+            </MenuItem>
+            <MenuItem Header="帮助">
+                <MenuItem Header="关于" Click="OnMenuAbout"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- 底部状态栏 -->
+        <Border DockPanel.Dock="Bottom" Classes="status-bar" Height="28">
+            <TextBlock Text="{Binding StatusMessage}" FontSize="12"
+                       VerticalAlignment="Center"
+                       Foreground="{DynamicResource ThemeSecondaryTextBrush}"/>
+        </Border>
+
+        <!-- 主内容区：侧边栏 + 任务面板 -->
+        <Grid ColumnDefinitions="Auto,Auto,*">
+
+            <!-- 左侧栏 -->
+            <v:ListPane x:Name="ListPaneControl" Grid.Column="0" Width="280"
+                        IsVisible="{Binding IsSidebarVisible}"/>
+
+            <!-- 分隔线 -->
+            <GridSplitter Grid.Column="1" Width="1" Background="{DynamicResource ThemeDividerBrush}"
+                          ResizeDirection="Columns"/>
+
+            <!-- 任务面板 -->
+            <v:TaskPane x:Name="TaskPaneControl" Grid.Column="2"/>
+        </Grid>
+    </DockPanel>
+</Window>

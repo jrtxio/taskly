@@ -1,0 +1,17 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Taskly.Views.Dialogs.DatePickerDialog"
+        Width="340" SizeToContent="Height"
+        CanResize="False" WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False" Title="选择日期">
+
+    <DockPanel LastChildFill="True">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8"
+                    Margin="16,12">
+            <Button Content="清除" Click="OnClear" MinWidth="64"/>
+            <Button Content="取消" Click="OnCancel" MinWidth="64"/>
+            <Button Content="确定" Click="OnConfirm" Classes="accent" MinWidth="64"/>
+        </StackPanel>
+        <Calendar x:Name="Calendar" Margin="16" HorizontalAlignment="Center"/>
+    </DockPanel>
+</Window>

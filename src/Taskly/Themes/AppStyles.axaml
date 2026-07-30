@@ -1,0 +1,124 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 强调色按钮 -->
+    <Style Selector="Button.accent">
+        <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="24,10"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    <Style Selector="Button.accent:pressed /template/ ContentPresenter">
+        <Setter Property="Opacity" Value="0.85"/>
+    </Style>
+
+    <!-- 普通文字按钮 -->
+    <Style Selector="Button.flat">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="16,8"/>
+    </Style>
+    <Style Selector="Button.flat:pressed /template/ ContentPresenter">
+        <Setter Property="Opacity" Value="0.7"/>
+    </Style>
+
+    <!-- 危险/删除按钮 -->
+    <Style Selector="Button.danger">
+        <Setter Property="Foreground" Value="#FF3B30"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="16,8"/>
+    </Style>
+
+    <!-- 圆形复选框（仿 macOS Reminders 的圆形勾选） -->
+    <Style Selector="CheckBox.reminder">
+        <Setter Property="CornerRadius" Value="11"/>
+        <Setter Property="BorderThickness" Value="1.5"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeTertiaryTextBrush}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="MinWidth" Value="22"/>
+        <Setter Property="MinHeight" Value="22"/>
+        <Setter Property="Width" Value="22"/>
+        <Setter Property="Height" Value="22"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="CheckBox.reminder:checked">
+        <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+    </Style>
+    <!-- 隐藏默认勾选标记，用自定义对号 -->
+    <Style Selector="CheckBox.reminder /template/ Path">
+        <Setter Property="IsVisible" Value="True"/>
+        <Setter Property="Fill" Value="White"/>
+    </Style>
+
+    <!-- 圆形头像/图标容器 -->
+    <Style Selector="Border.circle">
+        <Setter Property="CornerRadius" Value="100"/>
+    </Style>
+
+    <!-- 列表项 -->
+    <Style Selector="ListBoxItem.list-item">
+        <Setter Property="Padding" Value="12,10"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="Margin" Value="8,1"/>
+    </Style>
+    <Style Selector="ListBoxItem.list-item:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ThemeHoverBackgroundBrush}"/>
+    </Style>
+    <Style Selector="ListBoxItem.list-item:selected /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ThemeSelectionBackgroundBrush}"/>
+    </Style>
+    <Style Selector="ListBoxItem.list-item:selected:focus /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ThemeSelectionBackgroundBrush}"/>
+    </Style>
+
+    <!-- 任务行 -->
+    <Style Selector="Border.task-row">
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="16,8"/>
+    </Style>
+    <Style Selector="Border.task-row:pointerover">
+        <Setter Property="Background" Value="{DynamicResource ThemeHoverBackgroundBrush}"/>
+    </Style>
+    <Style Selector="Border.task-row.selected">
+        <Setter Property="Background" Value="{DynamicResource ThemeSelectionBackgroundBrush}"/>
+    </Style>
+
+    <!-- 文本输入框 -->
+    <Style Selector="TextBox">
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeInputBorderBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource ThemeSurfaceBrush}"/>
+        <Setter Property="Padding" Value="12,8"/>
+    </Style>
+    <Style Selector="TextBox:focus">
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+    </Style>
+
+    <!-- 菜单栏项 -->
+    <Style Selector="Menu">
+        <Setter Property="Background" Value="{DynamicResource ThemeSidebarBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeDividerBrush}"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+    </Style>
+
+    <!-- 状态栏 -->
+    <Style Selector="Border.status-bar">
+        <Setter Property="Background" Value="{DynamicResource ThemeSidebarBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeDividerBrush}"/>
+        <Setter Property="BorderThickness" Value="0,1,0,0"/>
+        <Setter Property="Padding" Value="16,0"/>
+    </Style>
+
+    <!-- 完成态文本（删除线 + 灰色） -->
+    <Style Selector="TextBlock.completed">
+        <Setter Property="Foreground" Value="{DynamicResource ThemeSecondaryTextBrush}"/>
+    </Style>
+
+</Styles>

@@ -1,0 +1,73 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Taskly.ViewModels"
+             xmlns:v="clr-namespace:Taskly.Views"
+             xmlns:m="clr-namespace:Taskly.Models"
+             x:Class="Taskly.Views.TaskPane">
+
+    <DockPanel LastChildFill="True">
+
+        <!-- 标题栏 -->
+        <Border DockPanel.Dock="Top" Background="{DynamicResource ThemeCardBackgroundBrush}"
+                BorderBrush="{DynamicResource ThemeDividerBrush}" BorderThickness="0,0,0,1" Padding="16,12">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button Grid.Column="0" Background="Transparent" BorderThickness="0" Padding="6"
+                        VerticalAlignment="Center" Click="OnToggleSidebar"
+                        ToolTip.Tip="隐藏侧边栏">
+                    <TextBlock Text="‹" FontSize="20"/>
+                </Button>
+                <TextBlock x:Name="TitleText" Grid.Column="1" Text="Taskly" FontSize="24" FontWeight="SemiBold"
+                           VerticalAlignment="Center" Margin="8,0,0,0"/>
+                <!-- 显示/隐藏已完成切换 -->
+                <Button x:Name="ShowCompletedBtn" Grid.Column="2" Background="Transparent"
+                        BorderThickness="0" Padding="12,4"
+                        VerticalAlignment="Center"
+                        Click="OnToggleShowCompleted"
+                        IsVisible="{Binding IsConnected}">
+                    <TextBlock x:Name="ShowCompletedLabel" Text="显示已完成" FontSize="13"
+                               Foreground="{DynamicResource AccentBrush}"/>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- 快速添加（仅数据库已连接时显示） -->
+        <Border DockPanel.Dock="Top" Padding="16,8" Background="{DynamicResource ThemeCardBackgroundBrush}"
+                IsVisible="{Binding IsConnected}">
+            <TextBox x:Name="QuickAddBox" Text="{Binding QuickAddText}" Watermark="+ 添加任务"
+                     KeyDown="OnQuickAddKeyDown"/>
+        </Border>
+
+        <!-- 任务列表区 -->
+        <ScrollViewer>
+            <Panel>
+                <!-- 无数据库提示 -->
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                            IsVisible="{Binding IsNotConnected}">
+                    <TextBlock Text="📂" FontSize="48" HorizontalAlignment="Center" Opacity="0.4"/>
+                    <TextBlock x:Name="NoDbHint" Text="请点击「文件」菜单创建或打开数据库" FontSize="14"
+                               Foreground="{DynamicResource ThemeSecondaryTextBrush}"
+                               HorizontalAlignment="Center" Margin="0,12,0,0"/>
+                </StackPanel>
+
+                <!-- 空状态（有数据库但无任务） -->
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                            IsVisible="{Binding ShowEmptyState}">
+                    <TextBlock Text="✓" FontSize="48" HorizontalAlignment="Center" Opacity="0.3"
+                               Foreground="{DynamicResource ThemeDividerBrush}"/>
+                    <TextBlock x:Name="EmptyText" Text="暂无任务" FontSize="14"
+                               Foreground="{DynamicResource ThemeSecondaryTextBrush}"
+                               HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                </StackPanel>
+
+                <!-- 任务列表 -->
+                <ItemsControl ItemsSource="{Binding Tasks}" IsVisible="{Binding HasTasks}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="m:TaskItem">
+                            <v:TaskItemRow/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Panel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

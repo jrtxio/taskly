@@ -1,0 +1,162 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.os }}-${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux x64
+          - os: linux
+            arch: x64
+            runner: ubuntu-latest
+            rid: linux-x64
+          # macOS x64 (Intel)
+          - os: macos
+            arch: x64
+            runner: macos-15-intel
+            rid: osx-x64
+          # macOS arm64 (Apple Silicon)
+          - os: macos
+            arch: arm64
+            runner: macos-14
+            rid: osx-arm64
+          # Windows x64
+          - os: windows
+            arch: x64
+            runner: windows-latest
+            rid: win-x64
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Linux dependencies
+        if: matrix.os == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Show environment info
+        shell: bash
+        run: |
+          echo "Runner OS: ${{ matrix.os }}"
+          echo "Matrix Arch: ${{ matrix.arch }}"
+          echo "RID: ${{ matrix.rid }}"
+          dotnet --version
+
+      - name: Restore dependencies
+        run: dotnet restore src/Taskly/Taskly.csproj
+
+      - name: Build (test compile)
+        run: dotnet build src/Taskly/Taskly.csproj -c Release --no-restore
+
+      - name: Get version from tag
+        id: get_version
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+          else
+            VERSION=0.0.0-dev
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Publish application
+        run: dotnet publish src/Taskly/Taskly.csproj -c Release -r ${{ matrix.rid }} --self-contained false -p:Version=${{ env.VERSION }} -o publish
+
+      - name: Package Linux / macOS
+        if: matrix.os != 'windows'
+        shell: bash
+        run: |
+          cd publish
+          zip -r "$GITHUB_WORKSPACE/build/taskly-${{ env.VERSION }}-${{ matrix.os }}-${{ matrix.arch }}.zip" .
+
+      - name: Package Windows
+        if: matrix.os == 'windows'
+        shell: powershell
+        run: |
+          $version = $env:VERSION
+          New-Item -ItemType Directory -Force -Path build | Out-Null
+          Compress-Archive -Path publish\* -DestinationPath "build\taskly-$version-${{ matrix.os }}-${{ matrix.arch }}.zip" -Force
+
+      - name: List build artifacts
+        shell: bash
+        run: |
+          ls -la build/ || echo "Build directory not found"
+          ls -la build/*.zip 2>/dev/null || echo "No zip files found in build/"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: taskly-${{ matrix.os }}-${{ matrix.arch }}
+          path: build/taskly-*.zip
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get version from tag
+        shell: bash
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: List downloaded artifacts
+        shell: bash
+        run: |
+          ls -la artifacts/ || echo "No artifacts"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/taskly-*.zip
+          name: Release v${{ env.VERSION }}
+          generate_release_notes: true
+          body: |
+            ## Downloads
+
+            ### Windows
+            - [taskly-${{ env.VERSION }}-windows-x64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-windows-x64.zip)
+
+            ### macOS
+            - [taskly-${{ env.VERSION }}-macos-x64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-macos-x64.zip) (Intel)
+            - [taskly-${{ env.VERSION }}-macos-arm64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-macos-arm64.zip) (Apple Silicon)
+
+            ### Linux
+            - [taskly-${{ env.VERSION }}-linux-x64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-linux-x64.zip)
+
+            ---
+
+            *Release notes are automatically generated.*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

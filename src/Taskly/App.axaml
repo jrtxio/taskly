@@ -1,0 +1,34 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Taskly.App"
+             RequestedThemeVariant="Light">
+
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://Taskly/Themes/AppStyles.axaml"/>
+    </Application.Styles>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://Taskly/Themes/Colors.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- 默认浅色主题下的语义色画刷 -->
+            <SolidColorBrush x:Key="ThemeBackgroundBrush" Color="#FFFFFFFF"/>
+            <SolidColorBrush x:Key="ThemeSidebarBrush" Color="#FFF2F2F7"/>
+            <SolidColorBrush x:Key="ThemeSurfaceBrush" Color="#FFF9F9F9"/>
+            <SolidColorBrush x:Key="ThemeCardBackgroundBrush" Color="#FFFFFFFF"/>
+            <SolidColorBrush x:Key="ThemeDividerBrush" Color="#FFD1D1D6"/>
+            <SolidColorBrush x:Key="ThemeOnSurfaceBrush" Color="#FF1D1D1F"/>
+            <SolidColorBrush x:Key="ThemeSecondaryTextBrush" Color="#FF86868B"/>
+            <SolidColorBrush x:Key="ThemeTertiaryTextBrush" Color="#FFAEAEB2"/>
+            <SolidColorBrush x:Key="ThemeSelectionBackgroundBrush" Color="#1A007AFF"/>
+            <SolidColorBrush x:Key="ThemeHoverBackgroundBrush" Color="#0D000000"/>
+            <SolidColorBrush x:Key="ThemeBadgeBackgroundBrush" Color="#FFE5E5EA"/>
+            <SolidColorBrush x:Key="ThemeBadgeTextBrush" Color="#FF3C3C43"/>
+            <SolidColorBrush x:Key="ThemeInputBorderBrush" Color="#FFD1D1D6"/>
+        </ResourceDictionary>
+    </Application.Resources>
+
+</Application>

@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:Taskly.Converters"
+             x:Class="Taskly.Views.TaskItemRow">
+
+    <UserControl.Resources>
+        <c:ColorToBrushConverter x:Key="ColorToBrush"/>
+    </UserControl.Resources>
+
+    <UserControl.ContextMenu>
+        <ContextMenu x:Name="TaskContextMenu" Opening="OnContextMenuOpening">
+            <MenuItem Header="标记完成/未完成" Click="OnToggle"/>
+            <MenuItem Header="删除" Click="OnDelete"/>
+        </ContextMenu>
+    </UserControl.ContextMenu>
+
+    <Border Classes="task-row">
+        <StackPanel Spacing="4">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <!-- 圆形 checkbox -->
+                <CheckBox Grid.Column="0" Classes="reminder" IsChecked="{Binding Completed}"
+                          Click="OnToggle" Margin="0,0,12,0"/>
+                <!-- 标题（行内可编辑） -->
+                <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}"
+                         BorderThickness="0" Background="Transparent"
+                         FontSize="14"
+                         TextWrapping="Wrap"
+                         LostFocus="OnTextLostFocus"/>
+                <!-- 信息按钮 -->
+                <Button Grid.Column="2" Background="Transparent" BorderThickness="0"
+                        Padding="6" VerticalAlignment="Center"
+                        Click="OnInfoClick" ToolTip.Tip="详情">
+                    <TextBlock Text="ⓘ" FontSize="16" Foreground="{DynamicResource ThemeTertiaryTextBrush}"/>
+                </Button>
+            </Grid>
+
+            <!-- 备注 -->
+            <TextBox Text="{Binding Notes, Mode=TwoWay}"
+                     IsVisible="{Binding Notes, Converter={x:Static c:StringToVisibilityConverter.Instance}}"
+                     BorderThickness="0" Background="Transparent"
+                     FontSize="12" Margin="34,0,0,0"
+                     Foreground="{DynamicResource ThemeSecondaryTextBrush}"
+                     Watermark="添加备注..."
+                     TextWrapping="Wrap"
+                     LostFocus="OnNotesLostFocus"/>
+
+            <!-- 日期/时间行 -->
+            <StackPanel Orientation="Horizontal" Spacing="12" Margin="34,2,0,0"
+                        IsVisible="{Binding DueDate, Converter={x:Static c:StringToVisibilityConverter.Instance}}">
+                <Button Background="Transparent" BorderThickness="0" Padding="0"
+                        Click="OnDateClick">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="🗓" FontSize="11"/>
+                        <TextBlock Text="{Binding DueDate}" FontSize="12"
+                                   Foreground="{DynamicResource AccentBrush}"/>
+                    </StackPanel>
+                </Button>
+                <Button Background="Transparent" BorderThickness="0" Padding="0"
+                        IsVisible="{Binding DueTime, Converter={x:Static c:StringToVisibilityConverter.Instance}}"
+                        Click="OnTimeClick">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="🕐" FontSize="11"/>
+                        <TextBlock Text="{Binding DueTime}" FontSize="12"
+                                   Foreground="{DynamicResource AccentBrush}"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>
