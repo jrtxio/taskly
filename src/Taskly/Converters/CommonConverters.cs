@@ -103,23 +103,29 @@ public class StringToVisibilityConverter : IValueConverter
         => throw new NotSupportedException();
 }
 
-/// <summary>Color? → Brush（null 返回透明）。</summary>
+/// <summary>ARGB int? → Brush（null 返回透明）。
+/// TodoList.Color 以 int? 存储，UI 绑定经此转换器渲染。</summary>
 public class ColorToBrushConverter : IValueConverter
 {
     public static readonly ColorToBrushConverter Instance = new();
 
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is Color c)
+        switch (value)
         {
-            return new SolidColorBrush(c);
+            case int i:
+                return new SolidColorBrush(Color.FromUInt32((uint)i));
+            case uint u:
+                return new SolidColorBrush(Color.FromUInt32(u));
+            case Color c:
+                return new SolidColorBrush(c);
         }
 
         return Brushes.Transparent;
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-        => value is SolidColorBrush b ? b.Color : Avalonia.Media.Colors.Transparent;
+        => value is SolidColorBrush b ? (int)b.Color.ToUInt32() : 0;
 }
 
 /// <summary>多值：null 合并（取第一个非 null）。用于颜色回退。</summary>

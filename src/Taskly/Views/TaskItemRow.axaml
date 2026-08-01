@@ -9,8 +9,8 @@
 
     <UserControl.ContextMenu>
         <ContextMenu x:Name="TaskContextMenu" Opening="OnContextMenuOpening">
-            <MenuItem Header="标记完成/未完成" Click="OnToggle"/>
-            <MenuItem Header="删除" Click="OnDelete"/>
+            <MenuItem x:Name="ToggleMenuItem" Header="标记完成/未完成" Click="OnToggle"/>
+            <MenuItem x:Name="DeleteMenuItem" Header="删除" Click="OnDelete"/>
         </ContextMenu>
     </UserControl.ContextMenu>
 
@@ -27,7 +27,7 @@
                          TextWrapping="Wrap"
                          LostFocus="OnTextLostFocus"/>
                 <!-- 信息按钮 -->
-                <Button Grid.Column="2" Background="Transparent" BorderThickness="0"
+                <Button Grid.Column="2" x:Name="InfoBtn" Background="Transparent" BorderThickness="0"
                         Padding="6" VerticalAlignment="Center"
                         Click="OnInfoClick" ToolTip.Tip="详情">
                     <TextBlock Text="ⓘ" FontSize="16" Foreground="{DynamicResource ThemeTertiaryTextBrush}"/>
@@ -35,7 +35,7 @@
             </Grid>
 
             <!-- 备注 -->
-            <TextBox Text="{Binding Notes, Mode=TwoWay}"
+            <TextBox x:Name="NotesBox" Text="{Binding Notes, Mode=TwoWay}"
                      IsVisible="{Binding Notes, Converter={x:Static c:StringToVisibilityConverter.Instance}}"
                      BorderThickness="0" Background="Transparent"
                      FontSize="12" Margin="34,0,0,0"

@@ -47,7 +47,35 @@ public partial class MainWindow : Window
         MinWidth = 760;
         MinHeight = 520;
 
+        // 菜单文案本地化 + 监听语言切换
+        ApplyLanguage();
+        i18n.LanguageChanged += OnLanguageChanged;
+
         Opened += OnOpened;
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e) => ApplyLanguage();
+
+    /// <summary>应用当前语言的菜单文案。中文为设计期默认值，切换到英文时覆盖。</summary>
+    private void ApplyLanguage()
+    {
+        if (_i18n is null)
+        {
+            return;
+        }
+
+        MenuFile.Header = _i18n.T("menuFile");
+        MenuNewDatabase.Header = _i18n.T("menuNewDatabase");
+        MenuOpenDatabase.Header = _i18n.T("menuOpenDatabase");
+        MenuCloseDatabase.Header = _i18n.T("menuCloseDatabase");
+        MenuExit.Header = _i18n.T("menuExit");
+        MenuSettings.Header = _i18n.T("menuSettings");
+        MenuLanguage.Header = _i18n.T("menuLanguage");
+        MenuLangZh.Header = _i18n.T("menuLangZh");
+        MenuLangEn.Header = _i18n.T("menuLangEn");
+        MenuDarkMode.Header = _i18n.T("menuDarkMode");
+        MenuHelp.Header = _i18n.T("menuHelp");
+        MenuAbout.Header = _i18n.T("menuAbout");
     }
 
     private async void OnOpened(object? sender, EventArgs e)

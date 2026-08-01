@@ -20,6 +20,9 @@ public partial class DatePickerDialog : Window
     {
         InitializeComponent();
         Title = i18n.T("labelAddDate");
+        ClearBtn.Content = i18n.T("dialogClear");
+        CancelBtn.Content = i18n.T("dialogCancel");
+        ConfirmBtn.Content = i18n.T("dialogConfirm");
         Calendar.DisplayDateStart = new DateTime(1900, 1, 1);
         Calendar.DisplayDateEnd = new DateTime(2100, 12, 31);
 

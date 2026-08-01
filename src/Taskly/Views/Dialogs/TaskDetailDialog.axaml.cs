@@ -30,6 +30,14 @@ public partial class TaskDetailDialog : Window
         _i18n = i18n;
         InitializeComponent();
         Title = _i18n.T("dialogTaskDetail");
+        TaskLabel.Text = _i18n.T("labelTask");
+        NotesLabel.Text = _i18n.T("labelNotes");
+        NotesBox.Watermark = _i18n.T("hintAddNotes");
+        DateLabel.Text = _i18n.T("labelDate");
+        TimeLabel.Text = _i18n.T("labelTime");
+        DeleteBtn.Content = _i18n.T("taskDelete");
+        CancelBtn.Content = _i18n.T("dialogCancel");
+        SaveBtn.Content = _i18n.T("dialogSave");
         TaskBox.Text = task.Text;
         NotesBox.Text = task.Notes ?? string.Empty;
         DateBox.Text = task.DueDate ?? string.Empty;

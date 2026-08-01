@@ -54,7 +54,7 @@ public sealed partial class MainViewModel : ViewModelBase
 
         // 应用语言
         var lang = _config.Language;
-        _i18n.SetLanguage(lang);
+        I18n.SetLanguage(lang);
 
         // 应用主题（配置默认浅色，如需持久化可扩展）
         _theme.Apply(false);
@@ -182,7 +182,7 @@ public sealed partial class MainViewModel : ViewModelBase
     [RelayCommand]
     public async Task SetLanguageAsync(string language)
     {
-        _i18n.SetLanguage(language);
+        I18n.SetLanguage(language);
         _config.Language = language;
         await _config.SaveAsync();
     }

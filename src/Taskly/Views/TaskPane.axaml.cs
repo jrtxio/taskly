@@ -48,7 +48,23 @@ public partial class TaskPane : UserControl
         {
             NoDbHint.Text = _i18n.T("taskListEmptyHint");
             EmptyText.Text = _i18n.T("taskListEmpty");
+            UpdateSidebarTooltip();
         }
+    }
+
+    /// <summary>根据侧边栏当前显隐状态更新切换按钮的 tooltip 文案。</summary>
+    private void UpdateSidebarTooltip()
+    {
+        if (_i18n is null)
+        {
+            return;
+        }
+
+        var main = App.Services.GetRequiredService<MainViewModel>();
+        // 侧边栏可见时按钮意图是「隐藏」，反之「显示」
+        ToolTip.SetTip(SidebarToggleBtn, main.IsSidebarVisible
+            ? _i18n.T("sidebarHide")
+            : _i18n.T("sidebarShow"));
     }
 
     private void UpdateShowCompletedLabel()
@@ -75,6 +91,7 @@ public partial class TaskPane : UserControl
     public void OnToggleSidebar(object? sender, RoutedEventArgs e)
     {
         App.Services.GetRequiredService<MainViewModel>().ToggleSidebar();
+        UpdateSidebarTooltip();
     }
 
     /// <summary>显示/隐藏已完成切换。</summary>

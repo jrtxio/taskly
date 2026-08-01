@@ -20,6 +20,26 @@ public partial class TaskItemRow : UserControl
     public TaskItemRow()
     {
         InitializeComponent();
+        Loaded += OnLoaded;
+    }
+
+    private void OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        // 首次渲染后应用本地化文案，并订阅语言切换
+        ApplyLanguage();
+        I18n.LanguageChanged += OnLanguageChanged;
+        Unloaded += (_, _) => I18n.LanguageChanged -= OnLanguageChanged;
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e) => ApplyLanguage();
+
+    /// <summary>应用当前语言的静态文案（右键菜单两项、详情 tooltip、备注水印）。</summary>
+    private void ApplyLanguage()
+    {
+        ToggleMenuItem.Header = I18n.T("menuToggleCompleted");
+        DeleteMenuItem.Header = I18n.T("taskDelete");
+        ToolTip.SetTip(InfoBtn, I18n.T("labelTaskInfo"));
+        NotesBox.Watermark = I18n.T("hintAddNotes");
     }
 
     private TaskItem? Task => DataContext as TaskItem;
@@ -161,7 +181,7 @@ public partial class TaskItemRow : UserControl
         }
 
         menu.Items.Add(new Separator());
-        var moveParent = new MenuItem { Header = "移动到列表" };
+        var moveParent = new MenuItem { Header = I18n.T("menuMoveToList") };
         foreach (var t in targets)
         {
             var child = new MenuItem

@@ -76,6 +76,8 @@ public sealed partial class I18nService : ObservableObject
         _zh["menuMarkUncompleted"] = "标记未完成";
         _zh["menuMoveToList"] = "移动到列表";
         _zh["menuDeleteTask"] = "删除任务";
+        _zh["menuToggleCompleted"] = "标记完成/未完成";
+        _zh["menuDarkMode"] = "深色模式";
         _zh["aboutContent"] = "一款专注高效的个人任务管理工具\n帮助您轻松规划、组织和完成各项任务";
 
         // 导航/智能列表
@@ -129,6 +131,7 @@ public sealed partial class I18nService : ObservableObject
         _zh["dialogCannotAddTask"] = "无法添加任务";
         _zh["dialogDbNotConnectedContent"] = "数据库未连接，请先创建或打开数据库文件";
         _zh["dialogSave"] = "保存";
+        _zh["labelTaskInfo"] = "详情";
         _zh["labelTaskDesc"] = "任务描述:";
         _zh["labelDueDateOptional"] = "截止日期 (可选):";
         _zh["labelTaskList"] = "任务列表:";
@@ -211,6 +214,8 @@ public sealed partial class I18nService : ObservableObject
         _en["menuMarkUncompleted"] = "Mark Uncompleted";
         _en["menuMoveToList"] = "Move to List";
         _en["menuDeleteTask"] = "Delete Task";
+        _en["menuToggleCompleted"] = "Mark Completed / Uncompleted";
+        _en["menuDarkMode"] = "Dark Mode";
         _en["aboutContent"] = "A focused and efficient personal task management tool\nHelping you plan, organize and complete tasks easily";
 
         _en["navToday"] = "Today";
@@ -259,6 +264,7 @@ public sealed partial class I18nService : ObservableObject
         _en["dialogCannotAddTask"] = "Cannot Add Task";
         _en["dialogDbNotConnectedContent"] = "Database not connected, please create or open a database file first";
         _en["dialogSave"] = "Save";
+        _en["labelTaskInfo"] = "Info";
         _en["labelTaskDesc"] = "Task Description:";
         _en["labelDueDateOptional"] = "Due Date (Optional):";
         _en["labelTaskList"] = "Task List:";

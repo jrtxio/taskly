@@ -11,11 +11,20 @@ internal sealed class Program
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
+    //
+    // 单二进制双模式：无参数 → GUI；带子命令参数 → CLI（在 Avalonia 初始化前 return，
+    // CLI 路径完全不启动 Avalonia，可在无头/agent 环境运行）。
     [STAThread]
-    public static void Main(string[] args)
+    public static int Main(string[] args)
     {
+        if (args.Length > 0)
+        {
+            return Cli.Cli.Run(args);
+        }
+
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
+        return 0;
     }
 
     /// <summary>

@@ -13,8 +13,12 @@ public interface ITaskRepository
     Task<int> AddTaskAsync(TaskItem task);
     Task<int> UpdateTaskAsync(TaskItem task);
     Task<int> ToggleTaskCompletedAsync(int id);
+    /// <summary>幂等地设置完成状态（completed=true 置完成，false 置未完成）。</summary>
+    Task<int> SetTaskCompletedAsync(int id, bool completed);
     Task<int> DeleteTaskAsync(int id);
     Task<List<TaskItem>> SearchTasksAsync(string keyword);
+    /// <summary>按 id 查询单个任务。不存在返回 null。</summary>
+    Task<TaskItem?> GetTaskByIdAsync(int id);
     Task<Dictionary<int, List<TaskItem>>> GroupTasksByListAsync(List<TaskItem> tasks);
 
     // 各视图任务数（用于智能视图计数 badge）
@@ -86,6 +90,8 @@ public sealed class TaskRepository : ITaskRepository
 
     public Task<int> ToggleTaskCompletedAsync(int id) => _db.ToggleTaskCompletedAsync(id);
 
+    public Task<int> SetTaskCompletedAsync(int id, bool completed) => _db.SetTaskCompletedAsync(id, completed);
+
     public Task<int> DeleteTaskAsync(int id) => _db.DeleteTaskAsync(id);
 
     public async Task<List<TaskItem>> SearchTasksAsync(string keyword)
@@ -97,6 +103,8 @@ public sealed class TaskRepository : ITaskRepository
 
         return await _db.SearchTasksAsync(keyword.Trim());
     }
+
+    public Task<Models.TaskItem?> GetTaskByIdAsync(int id) => _db.GetTaskByIdAsync(id);
 
     /// <summary>按 listId 分组。对应原版 groupTasksByList（key 为 listId）。</summary>
     public Task<Dictionary<int, List<TaskItem>>> GroupTasksByListAsync(List<TaskItem> tasks)

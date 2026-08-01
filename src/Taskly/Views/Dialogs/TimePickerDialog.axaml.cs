@@ -20,6 +20,9 @@ public partial class TimePickerDialog : Window
     {
         InitializeComponent();
         Title = i18n.T("labelAddTime");
+        ClearBtn.Content = i18n.T("dialogClear");
+        CancelBtn.Content = i18n.T("dialogCancel");
+        ConfirmBtn.Content = i18n.T("dialogConfirm");
 
         if (!string.IsNullOrEmpty(currentTime) &&
             TimeSpan.TryParse(currentTime, CultureInfo.InvariantCulture, out var ts))
