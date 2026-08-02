@@ -143,6 +143,8 @@ jobs:
           chmod +x AppDir/usr/bin/Taskly
           # .desktop 必须在 AppDir 根目录
           cp packaging/linux/taskly.desktop AppDir/taskly.desktop
+          # 图标（appimagetool 要求 Icon=taskly 对应 taskly.png 存在）
+          cp packaging/linux/taskly.png AppDir/taskly.png
           cp packaging/linux/AppRun AppDir/AppRun
           chmod +x AppDir/AppRun
 
