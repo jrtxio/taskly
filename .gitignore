@@ -55,3 +55,4 @@ Noise/
 taskly-noise/
 noise-app-template/
 .zcode/
+packaging/macos/dmg/background*.png

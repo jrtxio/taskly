@@ -1,11 +1,8 @@
 #!/bin/bash
 # Create a decorated .dmg (background + /Applications link + icon layout)
-# using node-appdmg, which writes the .DS_Store binary directly — no
-# Finder/AppleScript needed, so it works reliably in headless CI.
+# using node-appdmg, then hide the .background folder.
 #
 # Usage: create-dmg.sh <spec_json> <output_dmg>
-#   <spec_json>   — path to the appdmg spec JSON
-#   <output_dmg>  — destination .dmg path
 set -u
 
 SPEC="$1"
@@ -16,13 +13,11 @@ if [ -z "$SPEC" ] || [ -z "$OUTPUT_DMG" ]; then
     exit 1
 fi
 
-# Ensure appdmg is available
 if ! command -v appdmg >/dev/null 2>&1; then
     echo "create-dmg.sh: appdmg not found. Install with: npm install -g appdmg"
     exit 1
 fi
 
-# Force-eject any stale "Taskly" mounts that would cause "Resource busy".
 EJECT_TASKLY() {
     local dev
     dev=$(hdiutil info 2>/dev/null | awk '/^\/dev\/disk/{d=$1} /Taskly/{if(d)print d; d=""}' | head -1)
@@ -33,34 +28,50 @@ EJECT_TASKLY() {
     fi
 }
 
+hide_background() {
+    # Mount the DMG read-write, set invisible flag + move .background
+    # icon off-screen, then convert back to compressed read-only.
+    local rw_dmg="${OUTPUT_DMG%.dmg}-rw.dmg"
+    local mnt
+    mnt=$(mktemp -d /tmp/taskly-dmg-XXXX)
+
+    if ! hdiutil convert -format UDRW -ov "$OUTPUT_DMG" -o "$rw_dmg" 2>/dev/null; then
+        echo "Warning: UDRW convert failed, .background may be visible"
+        rm -rf "$mnt"; return 0
+    fi
+    if ! hdiutil attach -readwrite -nobrowse -mountpoint "$mnt" "$rw_dmg" 2>/dev/null; then
+        echo "Warning: RW mount failed, .background may be visible"
+        rm -f "$rw_dmg"; rm -rf "$mnt"; return 0
+    fi
+
+    # 1) Invisible flag
+    if [ -d "$mnt/.background" ]; then
+        chflags hidden "$mnt/.background" 2>/dev/null || true
+        command -v SetFile >/dev/null 2>&1 && SetFile -a V "$mnt/.background" 2>/dev/null || true
+    fi
+
+    # 2) Move .background icon off-screen via Python ds_store
+    python3 "$SPEC_DIR/hide_dsstore.py" "$mnt/.DS_Store" 2>/dev/null || true
+
+    sync
+    hdiutil detach "$mnt" -force 2>/dev/null || true
+    rm -f "$OUTPUT_DMG"
+    hdiutil convert -format UDZO -ov "$rw_dmg" -o "$OUTPUT_DMG" 2>/dev/null
+    rm -f "$rw_dmg"
+    rm -rf "$mnt"
+}
+
+# Resolve the directory containing spec.json (for sibling scripts)
+SPEC_DIR=$(cd "$(dirname "$SPEC")" && pwd)
+
 MAX_RETRIES=5
 for i in $(seq 1 "$MAX_RETRIES"); do
     echo "Attempt $i/$MAX_RETRIES: creating $OUTPUT_DMG via appdmg"
     EJECT_TASKLY
     if appdmg "$SPEC" "$OUTPUT_DMG" 2>&1; then
         echo "Success: $OUTPUT_DMG created"
-
-        # Hide the .background folder inside the DMG image.
-        # Mount read-write, set hidden flag, repack as compressed read-only.
         echo "Hiding .background folder..."
-        RW_DMG="${OUTPUT_DMG%.dmg}-rw.dmg"
-        MOUNT_POINT=$(mktemp -d /tmp/taskly-dmg-XXXX)
-        if hdiutil convert -format UDRW -ov "$OUTPUT_DMG" -o "$RW_DMG" 2>/dev/null && \
-           hdiutil attach -readwrite -nobrowse -mountpoint "$MOUNT_POINT" "$RW_DMG" 2>/dev/null; then
-            # Set the hidden/invisible flag on .background
-            if [ -d "$MOUNT_POINT/.background" ]; then
-                chflags hidden "$MOUNT_POINT/.background" 2>/dev/null || true
-                command -v SetFile >/dev/null 2>&1 && SetFile -a V "$MOUNT_POINT/.background" 2>/dev/null || true
-            fi
-            hdiutil detach "$MOUNT_POINT" -force 2>/dev/null || true
-            # Repack as compressed read-only DMG
-            rm -f "$OUTPUT_DMG"
-            hdiutil convert -format UDZO -ov "$RW_DMG" -o "$OUTPUT_DMG" 2>/dev/null
-            rm -f "$RW_DMG"
-        else
-            echo "Warning: could not hide .background (non-fatal)"
-        fi
-        rm -rf "$MOUNT_POINT"
+        hide_background
         EJECT_TASKLY
         exit 0
     fi
