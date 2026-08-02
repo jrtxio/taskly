@@ -5,9 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-08-02
+
+### Fixed
+- Release build: create `build/` directory before zipping on Linux/macOS
+  (was failing with "Could not create output file").
+
 ## [0.2.0] - 2026-08-02
 
 ### Added
+- **`install-cli` / `uninstall-cli`**: install the `taskly` command to the
+  system PATH from the GUI (Tools menu) or CLI. macOS/Linux: shell wrapper in
+  `~/.local/bin` (auto-adds to shell PATH); Windows: `taskly.cmd` + user PATH
+  registry update. After install, `taskly` works from any terminal.
 - **Command-line interface (CLI)** for AI agents and scripting. The same
   binary serves GUI (no args) and CLI (subcommands), without booting Avalonia
   in CLI mode. Subcommands: `list`, `lists`, `add`, `update`, `done`, `undone`,

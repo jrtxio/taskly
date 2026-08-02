@@ -318,6 +318,9 @@ public partial class MainWindow : Window
         MenuDarkMode.Header = _i18n.T("menuDarkMode");
         MenuHelp.Header = _i18n.T("menuHelp");
         MenuAbout.Header = _i18n.T("menuAbout");
+        MenuTools.Header = _i18n.T("menuTools");
+        MenuInstallCli.Header = _i18n.T("menuInstallCli");
+        MenuUninstallCli.Header = _i18n.T("menuUninstallCli");
 
         // macOS NativeMenu：首次构建已在 OnOpened 完成（正确的语言），
         // 语言切换时只需更新文案/勾选态（顶级标题运行时刷新受限，需重启）。
@@ -429,6 +432,27 @@ public partial class MainWindow : Window
     private void OnMenuLangEn(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _ = _main?.SetLanguageAsync("en");
     private void OnMenuToggleTheme(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _main?.ToggleTheme();
     private void OnMenuAbout(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _ = ShowAboutAsync();
+
+    // ---------------- 命令行工具安装 ----------------
+    private void OnMenuInstallCli(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _ = InstallCliAsync(install: true);
+    private void OnMenuUninstallCli(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _ = InstallCliAsync(install: false);
+
+    private async Task InstallCliAsync(bool install)
+    {
+        if (_i18n is null)
+        {
+            return;
+        }
+
+        var result = install ? Cli.CliInstaller.Install() : Cli.CliInstaller.Uninstall();
+
+        var title = install ? _i18n.T("menuInstallCli") : _i18n.T("menuUninstallCli");
+        await new Views.Dialogs.ConfirmDialog(
+            title,
+            result.Message + (result.NeedsShellRestart ? "\n\n请打开新的终端窗口使更改生效。" : ""),
+            _i18n.T("dialogConfirm"),
+            _i18n.T("dialogCancel")).ShowDialog<bool>(this);
+    }
 
     private async Task ShowAboutAsync()
     {

@@ -85,6 +85,7 @@ jobs:
         if: matrix.os != 'windows'
         shell: bash
         run: |
+          mkdir -p "$GITHUB_WORKSPACE/build"
           cd publish
           zip -r "$GITHUB_WORKSPACE/build/taskly-${{ env.VERSION }}-${{ matrix.os }}-${{ matrix.arch }}.zip" .
 

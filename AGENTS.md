@@ -43,6 +43,8 @@ dotnet run --project src/Taskly -- list --db /path/to/tasks.db --json
 | `search "<keyword>"` | 模糊搜索 |
 | `mklist "<name>" [--icon EMOJI] [--color '#RRGGBB'\|INT]` | 建列表 |
 | `rmlist <ID>` | 删列表（级联任务） |
+| `install-cli` | 安装 `taskly` 命令到系统 PATH（macOS/Linux: `~/.local/bin`；Windows: 用户 PATH） |
+| `uninstall-cli` | 卸载 `taskly` 命令 |
 
 **日期语法**（`--due` 复用 GUI 的 DateParser）：`+1d` / `+2h` / `@10am` / `@10:30pm` / `today` / `tomorrow` / `2026-08-07`。
 

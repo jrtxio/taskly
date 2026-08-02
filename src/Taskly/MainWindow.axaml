@@ -23,6 +23,10 @@
                 </MenuItem>
                 <MenuItem x:Name="MenuDarkMode" Header="深色模式" Click="OnMenuToggleTheme" ToggleType="CheckBox" IsChecked="{Binding IsDark}"/>
             </MenuItem>
+            <MenuItem x:Name="MenuTools" Header="工具">
+                <MenuItem x:Name="MenuInstallCli" Header="安装命令行工具…" Click="OnMenuInstallCli"/>
+                <MenuItem x:Name="MenuUninstallCli" Header="卸载命令行工具…" Click="OnMenuUninstallCli"/>
+            </MenuItem>
             <MenuItem x:Name="MenuHelp" Header="帮助">
                 <MenuItem x:Name="MenuAbout" Header="关于" Click="OnMenuAbout"/>
             </MenuItem>

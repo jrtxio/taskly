@@ -62,6 +62,7 @@ public sealed partial class I18nService : ObservableObject
         _zh["menuFile"] = "文件";
         _zh["menuSettings"] = "设置";
         _zh["menuHelp"] = "帮助";
+        _zh["menuTools"] = "工具";
         _zh["menuNewDatabase"] = "新建数据库";
         _zh["menuOpenDatabase"] = "打开数据库";
         _zh["menuCloseDatabase"] = "关闭数据库";
@@ -78,6 +79,8 @@ public sealed partial class I18nService : ObservableObject
         _zh["menuDeleteTask"] = "删除任务";
         _zh["menuToggleCompleted"] = "标记完成/未完成";
         _zh["menuDarkMode"] = "深色模式";
+        _zh["menuInstallCli"] = "安装命令行工具…";
+        _zh["menuUninstallCli"] = "卸载命令行工具…";
         _zh["aboutContent"] = "一款专注高效的个人任务管理工具\n帮助您轻松规划、组织和完成各项任务";
         _zh["dialogLanguageChanged"] = "语言已切换";
         _zh["dialogLanguageChangedContent"] = "界面语言已更新。macOS 系统菜单栏的顶级标题需重启应用后生效。";
@@ -202,6 +205,7 @@ public sealed partial class I18nService : ObservableObject
         _en["menuFile"] = "File";
         _en["menuSettings"] = "Settings";
         _en["menuHelp"] = "Help";
+        _en["menuTools"] = "Tools";
         _en["menuNewDatabase"] = "New Database";
         _en["menuOpenDatabase"] = "Open Database";
         _en["menuCloseDatabase"] = "Close Database";
@@ -218,6 +222,8 @@ public sealed partial class I18nService : ObservableObject
         _en["menuDeleteTask"] = "Delete Task";
         _en["menuToggleCompleted"] = "Mark Completed / Uncompleted";
         _en["menuDarkMode"] = "Dark Mode";
+        _en["menuInstallCli"] = "Install Command Line Tool…";
+        _en["menuUninstallCli"] = "Uninstall Command Line Tool…";
         _en["aboutContent"] = "A focused and efficient personal task management tool\nHelping you plan, organize and complete tasks easily";
         _en["dialogLanguageChanged"] = "Language Changed";
         _en["dialogLanguageChangedContent"] = "Interface language updated. The macOS system menu bar titles require an app restart to take effect.";
