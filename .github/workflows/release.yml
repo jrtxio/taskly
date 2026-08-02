@@ -91,13 +91,12 @@ jobs:
         run: dotnet tool install -g vpk
 
       - name: Create Setup.exe
-        shell: bash
+        shell: pwsh
         run: |
-          # dotnet tool 装到 ~/.dotnet/tools，确保在 PATH 里
-          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
-          export PATH="$HOME/.dotnet/tools:$PATH"
+          # dotnet tool 装到 $HOME/.dotnet/tools，确保在 PATH
+          $env:PATH = "$env:USERPROFILE\.dotnet\tools;$env:PATH"
           vpk pack -u Taskly -v ${{ env.VERSION }} -p publish -e Taskly.exe -o build
-          ls -la build/*.exe
+          Get-ChildItem build/*.exe | Format-Table Name, Length
 
       - uses: actions/upload-artifact@v4
         with:
@@ -134,12 +133,12 @@ jobs:
       - name: Build AppImage
         shell: bash
         run: |
-          # 组装 AppDir
+          # 组装 AppDir（appimagetool 要求 .desktop 在根目录）
           mkdir -p AppDir/usr/bin
-          mkdir -p AppDir/usr/share/applications
           cp -R publish/* AppDir/usr/bin/
           chmod +x AppDir/usr/bin/Taskly
-          cp packaging/linux/taskly.desktop AppDir/usr/share/applications/
+          # .desktop 必须在 AppDir 根目录
+          cp packaging/linux/taskly.desktop AppDir/taskly.desktop
           cp packaging/linux/AppRun AppDir/AppRun
           chmod +x AppDir/AppRun
 
@@ -147,7 +146,7 @@ jobs:
           wget -q "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage" -O appimagetool
           chmod +x appimagetool
 
-          # 生成 AppImage（CI 环境无 FUSE 运行时，用 --appimage-extract-and-run 绕过）
+          # 生成 AppImage（CI 环境用 APPIMAGE_EXTRACT_AND_RUN 绕过 FUSE）
           ARCH=x86_64 APPIMAGE_EXTRACT_AND_RUN=1 ./appimagetool AppDir "taskly-${{ env.VERSION }}-linux-x64.AppImage"
           ls -la *.AppImage
 
