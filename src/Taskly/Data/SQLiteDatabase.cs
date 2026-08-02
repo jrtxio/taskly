@@ -1,7 +1,6 @@
 using System.Data.Common;
 using System.Globalization;
 using System.Text;
-using Avalonia.Media;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using Taskly.Models;
@@ -69,6 +68,15 @@ public sealed class SQLiteDatabase : IDisposable
 
         _connection = new SqliteConnection(connectionString);
         await _connection.OpenAsync();
+
+        // 启用 WAL 模式：提升并发读写性能，并显著降低数据库文件被放到
+        // 云盘/iCloud 等同步目录时损坏的风险（WAL 对中途同步更健壮）。
+        // WAL 是持久化设置，写一次即永久生效；每次连接重复设置无害且廉价。
+        await using (var pragmaCmd = _connection.CreateCommand())
+        {
+            pragmaCmd.CommandText = "PRAGMA journal_mode=WAL;";
+            await pragmaCmd.ExecuteNonQueryAsync();
+        }
 
         await CreateOrUpgradeAsync(_connection);
         await EnsureColumnsExistAsync(_connection);
@@ -228,6 +236,16 @@ public sealed class SQLiteDatabase : IDisposable
         return rows.Count > 0 ? TodoListFromRow(rows[0]) : null;
     }
 
+    /// <summary>按名称查询列表（大小写敏感，精确匹配）。不存在返回 null。</summary>
+    public async Task<TodoList?> GetListByNameAsync(string name)
+    {
+        await EnsureConnectedAsync();
+        var rows = await QueryAsync(_connection!,
+            $"SELECT * FROM {TableLists} WHERE name = @name LIMIT 1",
+            new Dictionary<string, object?> { ["name"] = name });
+        return rows.Count > 0 ? TodoListFromRow(rows[0]) : null;
+    }
+
     public async Task<int> AddListAsync(string name, string? icon = null, int? color = null)
     {
         await EnsureConnectedAsync();
@@ -378,6 +396,16 @@ public sealed class SQLiteDatabase : IDisposable
             $"{TaskSelectBase} WHERE t.text LIKE @keyword",
             new Dictionary<string, object?> { ["keyword"] = $"%{keyword}%" });
 
+    /// <summary>按 id 查询单个任务（含 list_name）。任务不存在返回 null。</summary>
+    public async Task<TaskItem?> GetTaskByIdAsync(int id)
+    {
+        await EnsureConnectedAsync();
+        var rows = await QueryTasksAsync(
+            $"{TaskSelectBase} WHERE t.id = @id",
+            new Dictionary<string, object?> { ["id"] = id });
+        return rows.Count > 0 ? rows[0] : null;
+    }
+
     // ------------------------
     // Tasks 计数查询
     // ------------------------
@@ -481,6 +509,20 @@ public sealed class SQLiteDatabase : IDisposable
         return await ExecuteAsync(_connection!,
             $"UPDATE {TableTasks} SET completed = @value WHERE id = @id",
             new Dictionary<string, object?> { ["value"] = newValue, ["id"] = id });
+    }
+
+    /// <summary>幂等地设置任务完成状态（与 Toggle 的翻转语义不同）。
+    /// completed=true 置 1，false 置 0。返回受影响行数（0 表示任务不存在）。</summary>
+    public async Task<int> SetTaskCompletedAsync(int id, bool completed)
+    {
+        await EnsureConnectedAsync();
+        return await ExecuteAsync(_connection!,
+            $"UPDATE {TableTasks} SET completed = @value WHERE id = @id",
+            new Dictionary<string, object?>
+            {
+                ["value"] = completed ? 1 : 0,
+                ["id"] = id,
+            });
     }
 
     public async Task<int> DeleteTaskAsync(int id)
@@ -604,10 +646,10 @@ public sealed class SQLiteDatabase : IDisposable
         var id = Convert.ToInt32(row["id"], CultureInfo.InvariantCulture);
         var name = Convert.ToString(row["name"], CultureInfo.InvariantCulture)!;
         string? icon = row.TryGetValue("icon", out var iv) && iv is not null ? Convert.ToString(iv, CultureInfo.InvariantCulture) : null;
-        Color? color = null;
+        int? color = null;
         if (row.TryGetValue("color", out var cv) && cv is not null && cv != DBNull.Value)
         {
-            color = Color.FromUInt32((uint)Convert.ToInt32(cv, CultureInfo.InvariantCulture));
+            color = Convert.ToInt32(cv, CultureInfo.InvariantCulture);
         }
 
         return new TodoList(id, name, icon, color);

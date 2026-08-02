@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Taskly.Models;
 using Taskly.Services;
@@ -33,6 +34,10 @@ public partial class ListPane : UserControl
 
         // 监听选中列表变化，更新选中态高亮
         vm.PropertyChanged += OnVmPropertyChanged;
+
+        // 列表集合变化（切库/增删列表）时，延后一帧重算高亮——
+        // CollectionChanged 触发瞬间容器可能尚未生成，Post 到下一帧确保容器就位。
+        vm.Lists.CollectionChanged += (_, _) => Dispatcher.UIThread.Post(UpdateSelectionHighlight);
     }
 
     private void OnLanguageChanged(object? sender, EventArgs e) => ApplyLanguage();
@@ -194,7 +199,7 @@ public partial class ListPane : UserControl
             return;
         }
 
-        var dialog = new Dialogs.ListEditDialog(existing);
+        var dialog = new Dialogs.ListEditDialog(existing, I18n);
         await dialog.ShowDialog(Dialog.Host!);
         if (dialog.ResultOk)
         {

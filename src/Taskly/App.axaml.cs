@@ -28,6 +28,10 @@ public class App : Application
         Services = Program.ConfigureServices();
         Vm = new MainViewModelLocator(Services);
 
+        // macOS 菜单栏最左边的 app 名读 Application.Name（开发期 dotnet run 仍受 apphost 限制，
+        // 打包发布时配合 Info.plist 显示正确）
+        Name = "Taskly";
+
         // 注入子 ViewModel 的 MainViewModel 引用（打破构造循环依赖）
         var main = Services.GetRequiredService<ViewModels.MainViewModel>();
         Services.GetRequiredService<ViewModels.ListPaneViewModel>().Main = main;

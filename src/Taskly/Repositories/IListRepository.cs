@@ -9,6 +9,8 @@ public interface IListRepository
 {
     Task<List<TodoList>> GetAllListsAsync();
     Task<TodoList?> GetListByIdAsync(int id);
+    /// <summary>按名称查询列表（大小写敏感，精确匹配）。不存在返回 null。</summary>
+    Task<TodoList?> GetListByNameAsync(string name);
     Task<int> AddListAsync(string name, string? icon = null, int? color = null);
     Task<int> UpdateListAsync(int id, string name, string? icon = null, int? color = null,
         bool clearIcon = false, bool clearColor = false);
@@ -31,6 +33,8 @@ public sealed class ListRepository : IListRepository
     public Task<List<TodoList>> GetAllListsAsync() => _db.GetAllListsAsync();
 
     public Task<TodoList?> GetListByIdAsync(int id) => _db.GetListByIdAsync(id);
+
+    public Task<TodoList?> GetListByNameAsync(string name) => _db.GetListByNameAsync(name);
 
     public async Task<int> AddListAsync(string name, string? icon = null, int? color = null)
     {
@@ -58,7 +62,7 @@ public sealed class ListRepository : IListRepository
     public async Task<int> UpdateListIconAsync(int id, string icon)
     {
         var list = await GetListByIdAsync(id) ?? throw new ArgumentException("List not found");
-        return await _db.UpdateListAsync(id, list.Name, icon, list.ColorArgb);
+        return await _db.UpdateListAsync(id, list.Name, icon, list.Color);
     }
 
     public async Task<int> UpdateListColorAsync(int id, int color)

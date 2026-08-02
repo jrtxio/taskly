@@ -100,15 +100,15 @@ public partial class TaskItem : ObservableObject
         string? notes = null)
     {
         return new TaskItem(
-            id ?? _id,
-            listId ?? _listId,
-            text ?? _text,
-            createdAt ?? _createdAt,
-            hasDueDate ? dueDate : _dueDate,
-            hasDueTime ? dueTime : _dueTime,
-            completed ?? _completed,
-            hasNotes ? notes : _notes,
-            _listName);
+            id ?? Id,
+            listId ?? ListId,
+            text ?? Text,
+            createdAt ?? CreatedAt,
+            hasDueDate ? dueDate : DueDate,
+            hasDueTime ? dueTime : DueTime,
+            completed ?? Completed,
+            hasNotes ? notes : Notes,
+            ListName);
     }
 
     public override bool Equals(object? obj)
@@ -118,20 +118,20 @@ public partial class TaskItem : ObservableObject
             return false;
         }
 
-        return other._id == _id &&
-               other._listId == _listId &&
-               other._text == _text &&
-               other._dueDate == _dueDate &&
-               other._dueTime == _dueTime &&
-               other._completed == _completed &&
-               other._createdAt == _createdAt &&
-               other._notes == _notes;
+        return other.Id == Id &&
+               other.ListId == ListId &&
+               other.Text == Text &&
+               other.DueDate == DueDate &&
+               other.DueTime == DueTime &&
+               other.Completed == Completed &&
+               other.CreatedAt == CreatedAt &&
+               other.Notes == Notes;
     }
 
     public override int GetHashCode() =>
-        HashCode.Combine(_id, _listId, _text, _dueDate, _dueTime, _completed, _createdAt, _notes);
+        HashCode.Combine(Id, ListId, Text, DueDate, DueTime, Completed, CreatedAt, Notes);
 
     public override string ToString() =>
         string.Create(CultureInfo.InvariantCulture,
-            $"TaskItem(id: {_id}, listId: {_listId}, text: {_text}, dueDate: {_dueDate}, dueTime: {_dueTime}, completed: {_completed})");
+            $"TaskItem(id: {Id}, listId: {ListId}, text: {Text}, dueDate: {DueDate}, dueTime: {DueTime}, completed: {Completed})");
 }

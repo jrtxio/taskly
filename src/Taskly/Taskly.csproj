@@ -9,6 +9,8 @@
     <RootNamespace>Taskly</RootNamespace>
     <AssemblyName>Taskly</AssemblyName>
     <Version>0.0.2</Version>
+    <!-- macOS 打包时用作 app 显示名（CFBundleName），避免显示 "Avalonia Application" -->
+    <ApplicationTitle>Taskly</ApplicationTitle>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +27,7 @@
     <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.7" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.7" />
+    <PackageReference Include="System.CommandLine" Version="2.0.10" />
   </ItemGroup>
 
 </Project>

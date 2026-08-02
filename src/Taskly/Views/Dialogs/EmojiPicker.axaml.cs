@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Taskly.Repositories;
+using Taskly.Services;
 
 namespace Taskly.Views.Dialogs;
 
@@ -20,10 +21,11 @@ public partial class EmojiPicker : Window
         BuildGrid();
     }
 
-    public EmojiPicker(string? selected)
+    public EmojiPicker(string? selected, I18nService i18n)
     {
         InitializeComponent();
-        Title = "选择图标";
+        Title = i18n.T("dialogSelectIcon");
+        CancelButton.Content = i18n.T("dialogCancel");
         BuildGrid(selected);
     }
 
@@ -36,25 +38,25 @@ public partial class EmojiPicker : Window
             {
                 var btn = new Button
                 {
-                    Width = 48,
-                    Height = 48,
-                    CornerRadius = new(12),
+                    Width = 44,
+                    Height = 44,
+                    CornerRadius = new(22),
                     Padding = new(0),
                     Background = Avalonia.Media.Brushes.Transparent,
                     Content = new TextBlock
                     {
                         Text = emoji,
-                        FontSize = 24,
+                        FontSize = 22,
                         HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
                         VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                     },
                     Tag = emoji,
+                    Classes = { "emoji-cell" },
                 };
 
                 if (selected == emoji)
                 {
-                    btn.BorderBrush = Avalonia.Media.Brushes.DodgerBlue;
-                    btn.BorderThickness = new(2);
+                    btn.Background = (Avalonia.Media.IBrush?)Avalonia.Application.Current!.FindResource("AccentBrush");
                 }
 
                 btn.Click += OnEmojiClick;

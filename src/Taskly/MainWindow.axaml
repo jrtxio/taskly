@@ -7,24 +7,24 @@
 
     <DockPanel LastChildFill="True">
 
-        <!-- 顶部菜单栏 -->
-        <Menu DockPanel.Dock="Top" Height="32">
-            <MenuItem Header="文件">
-                <MenuItem Header="新建数据库" Click="OnMenuNewDb" InputGesture="Ctrl+N"/>
-                <MenuItem Header="打开数据库" Click="OnMenuOpenDb" InputGesture="Ctrl+O"/>
-                <MenuItem Header="关闭数据库" Click="OnMenuCloseDb" InputGesture="Ctrl+W"/>
+        <!-- 顶部菜单栏（Windows/Linux 用；macOS 用系统菜单栏，此控件在 macOS 上隐藏） -->
+        <Menu x:Name="WindowMenuBar" DockPanel.Dock="Top" Height="32">
+            <MenuItem x:Name="MenuFile" Header="文件">
+                <MenuItem x:Name="MenuNewDatabase" Header="新建数据库" Click="OnMenuNewDb" InputGesture="Ctrl+N"/>
+                <MenuItem x:Name="MenuOpenDatabase" Header="打开数据库" Click="OnMenuOpenDb" InputGesture="Ctrl+O"/>
+                <MenuItem x:Name="MenuCloseDatabase" Header="关闭数据库" Click="OnMenuCloseDb" InputGesture="Ctrl+W"/>
                 <Separator/>
-                <MenuItem Header="退出" Click="OnMenuExit" InputGesture="Ctrl+Q"/>
+                <MenuItem x:Name="MenuExit" Header="退出" Click="OnMenuExit" InputGesture="Ctrl+Q"/>
             </MenuItem>
-            <MenuItem Header="设置">
-                <MenuItem Header="语言">
-                    <MenuItem Header="简体中文" Click="OnMenuLangZh" ToggleType="Radio" IsChecked="{Binding IsChinese}"/>
-                    <MenuItem Header="English" Click="OnMenuLangEn" ToggleType="Radio"/>
+            <MenuItem x:Name="MenuSettings" Header="设置">
+                <MenuItem x:Name="MenuLanguage" Header="语言">
+                    <MenuItem x:Name="MenuLangZh" Header="简体中文" Click="OnMenuLangZh" ToggleType="Radio" IsChecked="{Binding IsChinese}"/>
+                    <MenuItem x:Name="MenuLangEn" Header="English" Click="OnMenuLangEn" ToggleType="Radio"/>
                 </MenuItem>
-                <MenuItem Header="深色模式" Click="OnMenuToggleTheme" ToggleType="CheckBox" IsChecked="{Binding IsDark}"/>
+                <MenuItem x:Name="MenuDarkMode" Header="深色模式" Click="OnMenuToggleTheme" ToggleType="CheckBox" IsChecked="{Binding IsDark}"/>
             </MenuItem>
-            <MenuItem Header="帮助">
-                <MenuItem Header="关于" Click="OnMenuAbout"/>
+            <MenuItem x:Name="MenuHelp" Header="帮助">
+                <MenuItem x:Name="MenuAbout" Header="关于" Click="OnMenuAbout"/>
             </MenuItem>
         </Menu>
 
@@ -35,16 +35,36 @@
                        Foreground="{DynamicResource ThemeSecondaryTextBrush}"/>
         </Border>
 
-        <!-- 主内容区：侧边栏 + 任务面板 -->
-        <Grid ColumnDefinitions="Auto,Auto,*">
+        <!-- 主内容区：侧边栏 + 分隔线 + 任务面板。
+             侧边栏用固定像素列（可被 GridSplitter 平滑拖拽改宽）；
+             收起时列宽动画过渡到 0。 -->
+        <Grid x:Name="ContentGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="280" MinWidth="200" MaxWidth="420"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
             <!-- 左侧栏 -->
-            <v:ListPane x:Name="ListPaneControl" Grid.Column="0" Width="280"
+            <v:ListPane x:Name="ListPaneControl" Grid.Column="0"
                         IsVisible="{Binding IsSidebarVisible}"/>
 
-            <!-- 分隔线 -->
-            <GridSplitter Grid.Column="1" Width="1" Background="{DynamicResource ThemeDividerBrush}"
-                          ResizeDirection="Columns"/>
+            <!-- 分隔线：5px 透明命中区（好拖），内部居中 1px 实线（视觉细，减少与侧边栏的空隙） -->
+            <GridSplitter x:Name="Splitter" Grid.Column="1"
+                          Width="5"
+                          Background="Transparent"
+                          ResizeDirection="Columns"
+                          ResizeBehavior="PreviousAndNext"
+                          Focusable="False">
+                <GridSplitter.Template>
+                    <ControlTemplate>
+                        <Border Background="Transparent">
+                            <Border Width="1" HorizontalAlignment="Center"
+                                    Background="{DynamicResource ThemeDividerBrush}"/>
+                        </Border>
+                    </ControlTemplate>
+                </GridSplitter.Template>
+            </GridSplitter>
 
             <!-- 任务面板 -->
             <v:TaskPane x:Name="TaskPaneControl" Grid.Column="2"/>

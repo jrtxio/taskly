@@ -219,7 +219,7 @@ public sealed partial class ListPaneViewModel : ViewModelBase
             var idx = Lists.IndexOf(list);
             if (idx >= 0)
             {
-                Lists[idx] = list.With(name: name, icon: icon, color: color is not null ? Avalonia.Media.Color.FromUInt32((uint)color.Value) : null,
+                Lists[idx] = list.With(name: name, icon: icon, color: color,
                     clearIcon: clearIcon, clearColor: clearColor, hasIcon: icon is not null, hasColor: color is not null);
             }
 

@@ -19,6 +19,7 @@ public partial class ListEditDialog : Window
     private readonly TodoList? _existing;
     private bool _clearIcon;
     private bool _clearColor;
+    private I18nService? _i18n;
 
     public bool ResultOk { get; private set; }
     public string ListName => _name.Trim();
@@ -32,15 +33,26 @@ public partial class ListEditDialog : Window
         InitializeComponent();
     }
 
-    public ListEditDialog(TodoList? existing)
+    public ListEditDialog(TodoList? existing, I18nService i18n)
     {
         _existing = existing;
         _name = existing?.Name ?? string.Empty;
         _icon = existing?.Icon;
-        _colorArgb = existing?.ColorArgb;
+        _colorArgb = existing?.Color;
+        _i18n = i18n;
 
         InitializeComponent();
-        Title = existing is null ? "创建列表" : "编辑列表";
+
+        Title = existing is null ? i18n.T("dialogCreateList") : i18n.T("dialogEditList");
+        NameLabel.Text = i18n.T("dialogListName");
+        NameBox.Watermark = i18n.T("dialogInputListName");
+        IconLabel.Text = i18n.T("dialogListIcon");
+        IconClearBtn.Content = i18n.T("dialogClearIcon");
+        ColorLabel.Text = i18n.T("dialogListColor");
+        ColorClearBtn.Content = i18n.T("dialogClearColor");
+        CancelBtn.Content = i18n.T("dialogCancel");
+        ConfirmBtn.Content = i18n.T("dialogConfirm");
+
         NameBox.Text = _name;
         UpdateIconPreview();
         UpdateColorPreview();
@@ -62,7 +74,7 @@ public partial class ListEditDialog : Window
 
     private async void OnPickIcon(object? sender, RoutedEventArgs e)
     {
-        var picker = new EmojiPicker(_icon);
+        var picker = new EmojiPicker(_icon, _i18n ?? App.Services.GetRequiredService<I18nService>());
         await picker.ShowDialog(this);
         // 关闭后读取结果
         if (picker.Cleared)
@@ -88,7 +100,7 @@ public partial class ListEditDialog : Window
 
     private async void OnPickColor(object? sender, RoutedEventArgs e)
     {
-        var picker = new ColorPicker(_colorArgb);
+        var picker = new ColorPicker(_colorArgb, _i18n ?? App.Services.GetRequiredService<I18nService>());
         await picker.ShowDialog(this);
         if (picker.Cleared)
         {

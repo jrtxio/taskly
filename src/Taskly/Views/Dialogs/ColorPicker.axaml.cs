@@ -3,6 +3,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Taskly.Repositories;
+using Taskly.Services;
 
 namespace Taskly.Views.Dialogs;
 
@@ -21,10 +22,11 @@ public partial class ColorPicker : Window
         BuildGrid();
     }
 
-    public ColorPicker(int? selectedArgb)
+    public ColorPicker(int? selectedArgb, I18nService i18n)
     {
         InitializeComponent();
-        Title = "选择颜色";
+        Title = i18n.T("dialogSelectColor");
+        CancelButton.Content = i18n.T("dialogCancel");
         BuildGrid(selectedArgb is not null ? Avalonia.Media.Color.FromUInt32((uint)selectedArgb.Value) : (Avalonia.Media.Color?)null);
     }
 
@@ -34,13 +36,14 @@ public partial class ColorPicker : Window
         {
             var btn = new Button
             {
-                Width = 48,
-                Height = 48,
-                CornerRadius = new(12),
+                Width = 44,
+                Height = 44,
+                CornerRadius = new(22),
                 Padding = new(0),
                 Background = new SolidColorBrush(color),
                 Content = new Border { Width = 24, Height = 24 },
                 Tag = color,
+                Classes = { "color-swatch" },
             };
 
             if (selected.HasValue && selected.Value == color)

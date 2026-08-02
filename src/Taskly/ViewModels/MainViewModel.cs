@@ -54,7 +54,7 @@ public sealed partial class MainViewModel : ViewModelBase
 
         // 应用语言
         var lang = _config.Language;
-        _i18n.SetLanguage(lang);
+        I18n.SetLanguage(lang);
 
         // 应用主题（配置默认浅色，如需持久化可扩展）
         _theme.Apply(false);
@@ -101,6 +101,8 @@ public sealed partial class MainViewModel : ViewModelBase
         {
             _listPane.Clear();
             _taskPane.Clear();
+            // 显式通知任务面板的派生属性重算（连接状态变了，空状态/输入框可见性要跟着变）
+            _taskPane.NotifyConnectionChanged();
         }
     }
 
@@ -178,11 +180,11 @@ public sealed partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     private I18nService _i18n;
 
-    /// <summary>切换语言并持久化。</summary>
+    /// <summary>切换语言并持久化。窗口内菜单即时刷新，无需重启。</summary>
     [RelayCommand]
     public async Task SetLanguageAsync(string language)
     {
-        _i18n.SetLanguage(language);
+        I18n.SetLanguage(language);
         _config.Language = language;
         await _config.SaveAsync();
     }
