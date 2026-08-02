@@ -388,13 +388,14 @@ public partial class MainWindow : Window
             return;
         }
 
-        var ok = await new Views.Dialogs.ConfirmDialog(
+        var dialog = new Views.Dialogs.ConfirmDialog(
             _i18n.T("dialogConfirmCloseDb"),
             _i18n.T("dialogConfirmCloseDbContent"),
             _i18n.T("dialogConfirm"),
-            _i18n.T("dialogCancel")).ShowDialog<bool>(this);
+            _i18n.T("dialogCancel"));
+        await dialog.ShowDialog(this);
 
-        if (ok)
+        if (dialog.Result)
         {
             await _main.CloseDatabaseAsync();
         }
@@ -461,7 +462,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        var about = $"Taskly v0.0.2\n© 2025 Taskly Team\n\n{_i18n.T("aboutContent")}";
+        var about = $"Taskly v0.2.1\n© 2026 Taskly Team\n\n{_i18n.T("aboutContent")}";
         await new Views.Dialogs.ConfirmDialog(
             _i18n.T("menuAbout"), about,
             _i18n.T("dialogConfirm"), _i18n.T("dialogCancel")).ShowDialog<bool>(this);

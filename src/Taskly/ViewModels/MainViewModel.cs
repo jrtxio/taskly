@@ -101,7 +101,6 @@ public sealed partial class MainViewModel : ViewModelBase
         {
             _listPane.Clear();
             _taskPane.Clear();
-            // 显式通知任务面板的派生属性重算（连接状态变了，空状态/输入框可见性要跟着变）
             _taskPane.NotifyConnectionChanged();
         }
     }
