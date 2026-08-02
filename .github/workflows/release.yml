@@ -136,8 +136,8 @@ jobs:
           # 诊断：确认 publish 目录内容
           Write-Host "=== publish 目录 ==="
           Get-ChildItem publish/*.exe | Format-Table Name, Length
-          # 运行 vpk（出错了能看到完整输出）
-          vpk pack -u Taskly -v ${{ env.VERSION }} -p publish -e Taskly.exe -o build --verbose
+          # 运行 vpk（--icon 让 Setup.exe 和安装后的快捷方式显示 Taskly 图标）
+          vpk pack -u Taskly -v ${{ env.VERSION }} -p publish -e Taskly.exe -o build --icon src/Taskly/taskly.ico --verbose
           Write-Host "=== build 产物 ==="
           Get-ChildItem build/*.exe | Format-Table Name, Length
 
