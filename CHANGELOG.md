@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-08-02
+
+### Changed — proper platform-native packaging
+- **macOS**: now ships as `.dmg` containing a proper `.app` bundle (was a raw
+  zip). The app name shows as "Taskly" in the menu bar (was "Avalonia
+  Application"). NativeMenu integrates with the system menu bar.
+- **Windows**: now ships as a Setup.exe installer via Velopack (was a raw zip).
+- **Linux**: now ships as `.AppImage` (zero-install) + `.deb` (Debian/Ubuntu).
+- **Self-contained**: all builds now use `--self-contained true` — users no
+  longer need to install the .NET runtime separately.
+- Release workflow restructured into per-platform jobs.
+
+### Notes
+- macOS builds are unsigned (notarization requires an Apple Developer account).
+  On first launch, right-click → Open to bypass Gatekeeper.
+- `PublishTrimmed` is intentionally disabled to avoid reflection-related
+  runtime failures. Builds are ~70-90MB.
+
 ## [0.2.2] - 2026-08-02
 
 ### Fixed

@@ -10,151 +10,228 @@ permissions:
   contents: write
 
 jobs:
-  build:
-    name: Build ${{ matrix.os }}-${{ matrix.arch }}
+  # ============================================================
+  # macOS: .app bundle + .dmg (arm64 + x64)
+  # ============================================================
+  build-macos:
+    name: macOS ${{ matrix.arch }}
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          # Linux x64
-          - os: linux
-            arch: x64
-            runner: ubuntu-latest
-            rid: linux-x64
-          # macOS x64 (Intel)
-          - os: macos
-            arch: x64
-            runner: macos-15-intel
-            rid: osx-x64
-          # macOS arm64 (Apple Silicon)
-          - os: macos
-            arch: arm64
+          - arch: arm64
             runner: macos-14
             rid: osx-arm64
-          # Windows x64
-          - os: windows
-            arch: x64
-            runner: windows-latest
-            rid: win-x64
-
+          - arch: x64
+            runner: macos-15
+            rid: osx-x64
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install Linux dependencies
-        if: matrix.os == 'linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
-      - name: Show environment info
+      - name: Get version
         shell: bash
         run: |
-          echo "Runner OS: ${{ matrix.os }}"
-          echo "Matrix Arch: ${{ matrix.arch }}"
-          echo "RID: ${{ matrix.rid }}"
-          dotnet --version
-
-      - name: Restore dependencies
-        run: dotnet restore src/Taskly/Taskly.csproj
-
-      - name: Build (test compile)
-        run: dotnet build src/Taskly/Taskly.csproj -c Release --no-restore
-
-      - name: Get version from tag
-        id: get_version
-        shell: bash
-        run: |
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
-            VERSION=${GITHUB_REF#refs/tags/v}
-          else
-            VERSION=0.0.0-dev
-          fi
+          VERSION=${GITHUB_REF#refs/tags/v}
+          [[ "$VERSION" == refs/* ]] && VERSION=0.0.0-dev
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-      - name: Publish application
-        run: dotnet publish src/Taskly/Taskly.csproj -c Release -r ${{ matrix.rid }} --self-contained false -p:Version=${{ env.VERSION }} -o publish
+      - name: Publish (self-contained)
+        run: dotnet publish src/Taskly/Taskly.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -p:Version=${{ env.VERSION }} -o publish
 
-      - name: Package Linux / macOS
-        if: matrix.os != 'windows'
+      - name: Assemble .app bundle
         shell: bash
         run: |
-          mkdir -p "$GITHUB_WORKSPACE/build"
-          cd publish
-          zip -r "$GITHUB_WORKSPACE/build/taskly-${{ env.VERSION }}-${{ matrix.os }}-${{ matrix.arch }}.zip" .
+          mkdir -p "Taskly.app/Contents/MacOS"
+          mkdir -p "Taskly.app/Contents/Resources"
+          cp -R publish/* "Taskly.app/Contents/MacOS/"
+          # 写 Info.plist（用实际版本号替换占位）
+          sed 's/0\.3\.0/${{ env.VERSION }}/' packaging/macos/Info.plist > "Taskly.app/Contents/Info.plist"
+          chmod +x "Taskly.app/Contents/MacOS/Taskly"
 
-      - name: Package Windows
-        if: matrix.os == 'windows'
-        shell: powershell
-        run: |
-          $version = $env:VERSION
-          New-Item -ItemType Directory -Force -Path build | Out-Null
-          Compress-Archive -Path publish\* -DestinationPath "build\taskly-$version-${{ matrix.os }}-${{ matrix.arch }}.zip" -Force
-
-      - name: List build artifacts
+      - name: Create .dmg (with retry)
         shell: bash
         run: |
-          ls -la build/ || echo "Build directory not found"
-          ls -la build/*.zip 2>/dev/null || echo "No zip files found in build/"
+          chmod +x packaging/macos/create-dmg.sh
+          packaging/macos/create-dmg.sh "Taskly.app" "taskly-${{ env.VERSION }}-macos-${{ matrix.arch }}.dmg" "Taskly"
 
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: taskly-${{ matrix.os }}-${{ matrix.arch }}
-          path: build/taskly-*.zip
+          name: taskly-macos-${{ matrix.arch }}
+          path: '*.dmg'
 
+  # ============================================================
+  # Windows: Setup.exe (Velopack)
+  # ============================================================
+  build-windows:
+    name: Windows x64
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Get version
+        shell: bash
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          [[ "$VERSION" == refs/* ]] && VERSION=0.0.0-dev
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Publish (self-contained)
+        run: dotnet publish src/Taskly/Taskly.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:Version=${{ env.VERSION }} -o publish
+
+      - name: Install Velopack
+        run: dotnet tool install -g vpk
+
+      - name: Create Setup.exe
+        shell: bash
+        run: |
+          vpk pack -u Taskly -v ${{ env.VERSION }} -p publish -e Taskly.exe -o build
+          ls -la build/*.exe
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: taskly-windows-x64
+          path: 'build/*.exe'
+
+  # ============================================================
+  # Linux: .AppImage + .deb
+  # ============================================================
+  build-linux:
+    name: Linux x64
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Get version
+        shell: bash
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          [[ "$VERSION" == refs/* ]] && VERSION=0.0.0-dev
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Publish (self-contained)
+        run: dotnet publish src/Taskly/Taskly.csproj -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:Version=${{ env.VERSION }} -o publish
+
+      # --- AppImage ---
+      - name: Build AppImage
+        shell: bash
+        run: |
+          # 组装 AppDir
+          mkdir -p AppDir/usr/bin
+          mkdir -p AppDir/usr/share/applications
+          cp -R publish/* AppDir/usr/bin/
+          chmod +x AppDir/usr/bin/Taskly
+          cp packaging/linux/taskly.desktop AppDir/usr/share/applications/
+          cp packaging/linux/AppRun AppDir/AppRun
+          chmod +x AppDir/AppRun
+
+          # 下载 appimagetool
+          wget -q "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage" -O appimagetool
+          chmod +x appimagetool
+
+          # 生成 AppImage（ARCH 设为 x86_64）
+          ARCH=x86_64 ./appimagetool AppDir "taskly-${{ env.VERSION }}-linux-x64.AppImage" || true
+          ls -la *.AppImage
+
+      # --- .deb ---
+      - name: Build .deb
+        shell: bash
+        run: |
+          VERSION=${{ env.VERSION }}
+          STAGING="deb-staging"
+          mkdir -p "$STAGING/usr/bin"
+          mkdir -p "$STAGING/usr/lib/taskly"
+          mkdir -p "$STAGING/usr/share/applications"
+          mkdir -p "$STAGING/DEBIAN"
+
+          # 可执行文件 + 运行时（self-contained）
+          cp -R publish/* "$STAGING/usr/lib/taskly/"
+          chmod +x "$STAGING/usr/lib/taskly/Taskly"
+
+          # 启动脚本（转发到 self-contained 可执行文件）
+          cat > "$STAGING/usr/bin/taskly" << 'EOF'
+          #!/bin/sh
+          exec /usr/lib/taskly/Taskly "$@"
+          EOF
+          chmod +x "$STAGING/usr/bin/taskly"
+
+          # .desktop 文件（Exec 指向启动脚本）
+          sed 's|Exec=Taskly|Exec=/usr/bin/taskly|' packaging/linux/taskly.desktop > "$STAGING/usr/share/applications/taskly.desktop"
+
+          # control 文件（用实际版本号）
+          sed "s/Version: 0.3.0/Version: $VERSION/" packaging/linux/control > "$STAGING/DEBIAN/control"
+
+          # 构建 .deb
+          dpkg-deb --root-owner-group --build "$STAGING" "taskly-${{ env.VERSION }}-linux-x64.deb"
+          ls -la *.deb
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: taskly-linux-x64
+          path: |
+            *.AppImage
+            *.deb
+
+  # ============================================================
+  # Release: 收集所有产物，创建 GitHub Release
+  # ============================================================
   release:
     name: Create Release
-    needs: build
+    needs: [build-macos, build-windows, build-linux]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Get version from tag
+      - name: Get version
         shell: bash
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
           path: artifacts
           merge-multiple: true
 
-      - name: List downloaded artifacts
+      - name: List artifacts
         shell: bash
-        run: |
-          ls -la artifacts/ || echo "No artifacts"
+        run: find artifacts -type f
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            artifacts/taskly-*.zip
+            artifacts/*.dmg
+            artifacts/*.exe
+            artifacts/*.AppImage
+            artifacts/*.deb
           name: Release v${{ env.VERSION }}
-          generate_release_notes: true
           body: |
             ## Downloads
 
-            ### Windows
-            - [taskly-${{ env.VERSION }}-windows-x64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-windows-x64.zip)
-
             ### macOS
-            - [taskly-${{ env.VERSION }}-macos-x64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-macos-x64.zip) (Intel)
-            - [taskly-${{ env.VERSION }}-macos-arm64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-macos-arm64.zip) (Apple Silicon)
+            - `taskly-${{ env.VERSION }}-macos-arm64.dmg` (Apple Silicon)
+            - `taskly-${{ env.VERSION }}-macos-x64.dmg` (Intel)
+
+            ### Windows
+            - `taskly-${{ env.VERSION }}-windows-x64.exe` (Setup installer)
 
             ### Linux
-            - [taskly-${{ env.VERSION }}-linux-x64.zip](https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/taskly-${{ env.VERSION }}-linux-x64.zip)
+            - `taskly-${{ env.VERSION }}-linux-x64.AppImage` (zero-install)
+            - `taskly-${{ env.VERSION }}-linux-x64.deb` (Debian/Ubuntu)
 
             ---
 
