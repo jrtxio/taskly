@@ -5,5 +5,5 @@ Comment=Cross-platform task manager for humans and AI agents
 Exec=Taskly
 Icon=taskly
 Terminal=false
-Categories=Office;TaskTracker;ProjectManagement;
+Categories=Office;ProjectManagement;
 StartupWMClass=Taskly
