@@ -111,12 +111,14 @@ public sealed class SQLiteDatabase : IDisposable
 
         await CreateIndexesAsync(db, transaction);
 
-        // 插入默认「工作」列表（与原版一致）
+        // 插入默认「工作」列表（带默认 icon/color）
         await ExecuteAsync(db,
-            $"INSERT INTO {TableLists} (name, created_at) VALUES (@name, @createdAt)",
+            $"INSERT INTO {TableLists} (name, icon, color, created_at) VALUES (@name, @icon, @color, @createdAt)",
             new Dictionary<string, object?>
             {
                 ["name"] = "工作",
+                ["icon"] = Models.TodoList.DefaultIcon,
+                ["color"] = Models.TodoList.DefaultColor,
                 ["createdAt"] = DateTime.Now.ToString("o", CultureInfo.InvariantCulture),
             }, transaction);
     }
@@ -249,6 +251,10 @@ public sealed class SQLiteDatabase : IDisposable
     public async Task<int> AddListAsync(string name, string? icon = null, int? color = null)
     {
         await EnsureConnectedAsync();
+        // 填充默认值：模仿 macOS Reminders，未选 icon/color 时使用默认值
+        icon ??= Models.TodoList.DefaultIcon;
+        color ??= Models.TodoList.DefaultColor;
+
         var createdAt = DateTime.Now.ToString("o", CultureInfo.InvariantCulture);
         var sb = new StringBuilder();
         sb.Append("INSERT INTO ").Append(TableLists).Append(" (name, created_at");

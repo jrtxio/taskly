@@ -11,6 +11,15 @@ namespace Taskly.Models;
 /// </summary>
 public partial class TodoList : ObservableObject
 {
+    /// <summary>默认 emoji 图标（模仿 macOS Reminders：未选 icon 时使用 📋）。</summary>
+    public const string DefaultIcon = "📋";
+
+    /// <summary>
+    /// 默认颜色（Crail 赤陶色 ARGB int，与 RemindersColors.Today 一致）。
+    /// 用户不选颜色时用此值，确保每个列表都有彩色圆圈。
+    /// </summary>
+    public const int DefaultColor = unchecked((int)0xFFC15F3C);
+
     [ObservableProperty]
     private int _id;
 

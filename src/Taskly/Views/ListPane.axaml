@@ -23,15 +23,17 @@
             <Setter Property="Padding" Value="10,8"/>
             <Setter Property="Margin" Value="0,1"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <!-- 常驻透明背景：Avalonia 中 Background 为 null 的 Border 不参与命中测试，
-                 会导致点击行内空白区域时 PointerPressed 不触发。设 Transparent 保证整行可点。 -->
-            <Setter Property="Background" Value="Transparent"/>
+            <!-- 淡底色 + 细边框，让列表项有明确的视觉容器感。 -->
+            <Setter Property="Background" Value="{DynamicResource ThemeSurfaceBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ThemeDividerBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
         </Style>
         <Style Selector="Border.list-row:pointerover">
             <Setter Property="Background" Value="{DynamicResource ThemeHoverBackgroundBrush}"/>
         </Style>
         <Style Selector="Border.list-row.selected">
             <Setter Property="Background" Value="{DynamicResource ThemeSelectionBackgroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
         </Style>
     </UserControl.Styles>
 
@@ -124,7 +126,7 @@
                                 <Border Grid.Column="0" Width="32" Height="32" CornerRadius="16"
                                         VerticalAlignment="Center"
                                         Background="{Binding Color, Converter={StaticResource ColorToBrush}, TargetNullValue={DynamicResource AccentBrush}}">
-                                    <TextBlock Text="{Binding Icon}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Icon, FallbackValue=📋, TargetNullValue=📋}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
                                 <!-- 名称 -->
                                 <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="13"
