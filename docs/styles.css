@@ -517,7 +517,7 @@ section {
 
 /* Task item — mirrors TaskItemRow.axaml structure
    App uses Grid ColumnDefinitions="24,*,28" Height="30".
-   We replicate with a 3-column grid for pixel-perfect alignment. */
+   We use flexbox (not grid) for maximum rendering reliability. */
 .mock-task {
     padding: 6px 16px;
     border-bottom: 1px solid var(--border);
@@ -527,23 +527,22 @@ section {
     border-bottom: none;
 }
 
-/* Main row: exact 24/*/28 column grid like the app */
+/* Main row: checkbox(24px area) + text(flex) + detail-btn(28px).
+   align-items:center vertically centers all three — no offset possible. */
 .mock-row {
-    display: grid;
-    grid-template-columns: 24px 1fr 28px;
+    display: flex;
     align-items: center;
-    column-gap: 6px;
     height: 32px;
 }
 
-/* Thin checkbox — sits in the 24px column, left-aligned like the app */
+/* Thin checkbox — fixed 24px column width, vertically centered */
 .mock-checkbox {
     width: 18px;
     height: 18px;
+    margin-right: 6px;
     border-radius: 50%;
     border: 1.5px solid #C4BDB1;
-    justify-self: start;
-    align-self: center;
+    flex: 0 0 18px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -560,11 +559,13 @@ section {
     border-color: var(--accent);
 }
 
-/* Task text — column 1, vertically centered */
+/* Task text — fills remaining space, vertically centered by parent flex */
 .task-title {
+    flex: 1 1 auto;
+    min-width: 0;
     font-size: 14px;
+    line-height: 32px;
     color: var(--text);
-    line-height: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -576,12 +577,11 @@ section {
     color: var(--text-3);
 }
 
-/* Borderless ⓘ detail button — column 2 (28px), right-aligned like the app */
+/* Borderless ⓘ detail button — fixed 28px, right-aligned, vertically centered */
 .task-detail-btn {
+    flex: 0 0 28px;
     width: 28px;
     height: 28px;
-    justify-self: end;
-    align-self: center;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -602,7 +602,7 @@ section {
     color: var(--accent);
 }
 
-/* Meta row — aligned to column 1 (starts at 24px + 6px gap = 30px).
+/* Meta row — aligned to text column (24px checkbox area + 6px margin = 30px).
    App uses Margin="24,2,0,0" on MetaPanel. */
 .mock-meta {
     margin-left: 30px;
