@@ -53,11 +53,28 @@ jobs:
           sed 's/0\.3\.0/${{ env.VERSION }}/' packaging/macos/Info.plist > "Taskly.app/Contents/Info.plist"
           chmod +x "Taskly.app/Contents/MacOS/Taskly"
 
-      - name: Create .dmg (with retry)
+      # appdmg writes the .DS_Store binary directly (no Finder/AppleScript),
+      # producing a decorated DMG (background + /Applications link) in headless CI.
+      - name: Setup Node for appdmg
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install appdmg
+        run: npm install -g appdmg
+
+      - name: Generate DMG background
+        run: |
+          pip install pillow
+          python3 packaging/macos/dmg/make_background.py packaging/macos/dmg
+
+      - name: Create .dmg (decorated, with retry)
         shell: bash
         run: |
           chmod +x packaging/macos/create-dmg.sh
-          packaging/macos/create-dmg.sh "Taskly.app" "taskly-${{ env.VERSION }}-macos-${{ matrix.arch }}.dmg" "Taskly"
+          packaging/macos/create-dmg.sh \
+            "packaging/macos/dmg/spec.json" \
+            "taskly-${{ env.VERSION }}-macos-${{ matrix.arch }}.dmg"
 
       - uses: actions/upload-artifact@v4
         with:
