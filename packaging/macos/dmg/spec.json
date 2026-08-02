@@ -1,14 +1,13 @@
 {
   "title": "Taskly",
-  "background": "background.png",
   "format": "UDZO",
   "icon-size": 80,
   "window": {
     "position": { "x": 200, "y": 120 },
-    "size": { "width": 660, "height": 400 }
+    "size": { "width": 520, "height": 320 }
   },
   "contents": [
-    { "x": 190, "y": 190, "type": "file", "path": "../../../Taskly.app" },
-    { "x": 470, "y": 190, "type": "link", "path": "/Applications" }
+    { "x": 150, "y": 160, "type": "file", "path": "../../../Taskly.app" },
+    { "x": 370, "y": 160, "type": "link", "path": "/Applications" }
   ]
 }

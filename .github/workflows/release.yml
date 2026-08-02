@@ -82,11 +82,9 @@ jobs:
       - name: Install appdmg
         run: npm install -g appdmg
 
-      - name: Generate DMG background and app icon
+      - name: Generate app icon
         run: |
-          python3 -m pip install pillow ds_store
-          python3 packaging/macos/dmg/make_background.py packaging/macos/dmg
-          # 生成应用图标并放入 .app Resources
+          python3 -m pip install pillow
           python3 packaging/macos/make_icon.py /tmp/taskly-icon-build
           cp /tmp/taskly-icon-build/icon.icns "Taskly.app/Contents/Resources/icon.icns"
 
