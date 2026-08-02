@@ -93,6 +93,9 @@ jobs:
       - name: Create Setup.exe
         shell: bash
         run: |
+          # dotnet tool 装到 ~/.dotnet/tools，确保在 PATH 里
+          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+          export PATH="$HOME/.dotnet/tools:$PATH"
           vpk pack -u Taskly -v ${{ env.VERSION }} -p publish -e Taskly.exe -o build
           ls -la build/*.exe
 
@@ -125,6 +128,9 @@ jobs:
         run: dotnet publish src/Taskly/Taskly.csproj -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:Version=${{ env.VERSION }} -o publish
 
       # --- AppImage ---
+      - name: Install FUSE for AppImage
+        run: sudo apt-get update && sudo apt-get install -y libfuse2
+
       - name: Build AppImage
         shell: bash
         run: |
@@ -141,8 +147,8 @@ jobs:
           wget -q "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage" -O appimagetool
           chmod +x appimagetool
 
-          # 生成 AppImage（ARCH 设为 x86_64）
-          ARCH=x86_64 ./appimagetool AppDir "taskly-${{ env.VERSION }}-linux-x64.AppImage" || true
+          # 生成 AppImage（CI 环境无 FUSE 运行时，用 --appimage-extract-and-run 绕过）
+          ARCH=x86_64 APPIMAGE_EXTRACT_AND_RUN=1 ./appimagetool AppDir "taskly-${{ env.VERSION }}-linux-x64.AppImage"
           ls -la *.AppImage
 
       # --- .deb ---
