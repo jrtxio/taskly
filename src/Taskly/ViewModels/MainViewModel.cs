@@ -130,6 +130,13 @@ public sealed partial class MainViewModel : ViewModelBase
     {
         try
         {
+            // 若已连接到其他数据库，先关闭，确保 IsDatabaseConnected 从 false→true
+            // 翻转，从而触发 OnIsDatabaseConnectedChanged 刷新 UI。
+            if (IsDatabaseConnected)
+            {
+                await CloseDatabaseAsync();
+            }
+
             _db.SetDatabasePath(path);
             await _db.EnsureConnectedAsync();
 
@@ -150,7 +157,8 @@ public sealed partial class MainViewModel : ViewModelBase
     /// <summary>新建数据库文件。对应原版 openNewDatabase。</summary>
     public async Task CreateDatabaseAsync(string path)
     {
-        // 新建文件路径交给 SQLite 的 ReadWriteCreate 自动创建
+        // 新建文件路径交给 SQLite 的 ReadWriteCreate 自动创建。
+        // OpenDatabaseAsync 内部会先关闭旧库再打开新库。
         await OpenDatabaseAsync(path);
     }
 

@@ -23,8 +23,8 @@
             <SolidColorBrush x:Key="ThemeOnSurfaceBrush" Color="#FF2B2825"/>
             <SolidColorBrush x:Key="ThemeSecondaryTextBrush" Color="#FF6B6862"/>
             <SolidColorBrush x:Key="ThemeTertiaryTextBrush" Color="#FF9B9890"/>
-            <SolidColorBrush x:Key="ThemeSelectionBackgroundBrush" Color="#1FC15F3C"/>
-            <SolidColorBrush x:Key="ThemeHoverBackgroundBrush" Color="#0A2B2825"/>
+            <SolidColorBrush x:Key="ThemeSelectionBackgroundBrush" Color="#38C15F3C"/>
+            <SolidColorBrush x:Key="ThemeHoverBackgroundBrush" Color="#142B2825"/>
             <SolidColorBrush x:Key="ThemeBadgeBackgroundBrush" Color="#FFE0DDD4"/>
             <SolidColorBrush x:Key="ThemeBadgeTextBrush" Color="#FF3C3934"/>
             <SolidColorBrush x:Key="ThemeInputBorderBrush" Color="#FFD9D6CE"/>

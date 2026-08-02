@@ -19,9 +19,9 @@ public static class RemindersColors
     public static readonly Color LightTertiaryText = Color.FromRgb(0x9B, 0x98, 0x90);  // 更浅的暖灰
     public static readonly Color LightOnSurface = Color.FromRgb(0x2B, 0x28, 0x25);     // 暖近黑主文字（非纯黑）
 
-    // Selection / hover — 用赤陶色低透明度叠加
-    public static readonly Color LightSelectionBackground = Color.FromArgb(0x1F, 0xC1, 0x5F, 0x3C); // Crail 12%
-    public static readonly Color LightHoverBackground = Color.FromArgb(0x0A, 0x2B, 0x28, 0x25);     // 暖黑 4%
+    // Selection / hover — 用赤陶色叠加，提高可见度
+    public static readonly Color LightSelectionBackground = Color.FromArgb(0x38, 0xC1, 0x5F, 0x3C); // Crail ~22%
+    public static readonly Color LightHoverBackground = Color.FromArgb(0x14, 0x2B, 0x28, 0x25);     // 暖黑 ~8%
 
     // Dark mode — 暖色调暗色（非冷黑）
     public static readonly Color DarkBackground = Color.FromRgb(0x1F, 0x1C, 0x19);    // 暖深棕黑
@@ -33,8 +33,8 @@ public static class RemindersColors
     public static readonly Color DarkOnSurface = Color.FromRgb(0xF4, 0xF3, 0xEE);     // Pampas 反色
 
     // Selection / hover — dark
-    public static readonly Color DarkSelectionBackground = Color.FromArgb(0x33, 0xD4, 0x77, 0x57); // 暖赤陶 20%
-    public static readonly Color DarkHoverBackground = Color.FromArgb(0x14, 0xFF, 0xFF, 0xFF);     // 白 8%
+    public static readonly Color DarkSelectionBackground = Color.FromArgb(0x4D, 0xD4, 0x77, 0x57); // 暖赤陶 ~30%
+    public static readonly Color DarkHoverBackground = Color.FromArgb(0x24, 0xFF, 0xFF, 0xFF);     // 白 ~14%
 
     // 智能列表语义色 — 低饱和暖色变体（避免鲜蓝/鲜红扎眼，整体协调）
     public static readonly Color Today = Color.FromRgb(0xC1, 0x5F, 0x3C);      // Crail 赤陶（今天）
