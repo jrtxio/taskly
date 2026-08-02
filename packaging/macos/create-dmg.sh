@@ -23,29 +23,49 @@ if ! command -v appdmg >/dev/null 2>&1; then
 fi
 
 # Force-eject any stale "Taskly" mounts that would cause "Resource busy".
-# (Common on GitHub Actions macOS runners — Spotlight/indexing holds the volume.)
-EJECT_DEV=$(hdiutil info 2>/dev/null | awk '/^\/dev\/disk/{dev=$1} /Taskly/{if(dev)print dev; dev=""}' | head -1)
-if [ -n "$EJECT_DEV" ]; then
-    echo "Ejecting stale mount: $EJECT_DEV"
-    hdiutil detach "$EJECT_DEV" -force 2>/dev/null || true
-    sleep 2
-fi
+EJECT_TASKLY() {
+    local dev
+    dev=$(hdiutil info 2>/dev/null | awk '/^\/dev\/disk/{d=$1} /Taskly/{if(d)print d; d=""}' | head -1)
+    if [ -n "$dev" ]; then
+        echo "Ejecting stale mount: $dev"
+        hdiutil detach "$dev" -force 2>/dev/null || true
+        sleep 2
+    fi
+}
 
 MAX_RETRIES=5
 for i in $(seq 1 "$MAX_RETRIES"); do
     echo "Attempt $i/$MAX_RETRIES: creating $OUTPUT_DMG via appdmg"
+    EJECT_TASKLY
     if appdmg "$SPEC" "$OUTPUT_DMG" 2>&1; then
         echo "Success: $OUTPUT_DMG created"
-        # Clean up any mount appdmg left behind
-        EJECT_DEV=$(hdiutil info 2>/dev/null | awk '/^\/dev\/disk/{dev=$1} /Taskly/{if(dev)print dev; dev=""}' | head -1)
-        [ -n "$EJECT_DEV" ] && hdiutil detach "$EJECT_DEV" -force 2>/dev/null || true
+
+        # Hide the .background folder inside the DMG image.
+        # Mount read-write, set hidden flag, repack as compressed read-only.
+        echo "Hiding .background folder..."
+        RW_DMG="${OUTPUT_DMG%.dmg}-rw.dmg"
+        MOUNT_POINT=$(mktemp -d /tmp/taskly-dmg-XXXX)
+        if hdiutil convert -format UDRW -ov "$OUTPUT_DMG" -o "$RW_DMG" 2>/dev/null && \
+           hdiutil attach -readwrite -nobrowse -mountpoint "$MOUNT_POINT" "$RW_DMG" 2>/dev/null; then
+            # Set the hidden/invisible flag on .background
+            if [ -d "$MOUNT_POINT/.background" ]; then
+                chflags hidden "$MOUNT_POINT/.background" 2>/dev/null || true
+                command -v SetFile >/dev/null 2>&1 && SetFile -a V "$MOUNT_POINT/.background" 2>/dev/null || true
+            fi
+            hdiutil detach "$MOUNT_POINT" -force 2>/dev/null || true
+            # Repack as compressed read-only DMG
+            rm -f "$OUTPUT_DMG"
+            hdiutil convert -format UDZO -ov "$RW_DMG" -o "$OUTPUT_DMG" 2>/dev/null
+            rm -f "$RW_DMG"
+        else
+            echo "Warning: could not hide .background (non-fatal)"
+        fi
+        rm -rf "$MOUNT_POINT"
+        EJECT_TASKLY
         exit 0
     fi
     echo "Failed, retrying in 5s..."
     rm -f "$OUTPUT_DMG"
-    # Eject again before retry
-    EJECT_DEV=$(hdiutil info 2>/dev/null | awk '/^\/dev\/disk/{dev=$1} /Taskly/{if(dev)print dev; dev=""}' | head -1)
-    [ -n "$EJECT_DEV" ] && hdiutil detach "$EJECT_DEV" -force 2>/dev/null || true
     sleep 5
 done
 

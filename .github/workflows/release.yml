@@ -53,6 +53,20 @@ jobs:
           sed 's/0\.3\.0/${{ env.VERSION }}/' packaging/macos/Info.plist > "Taskly.app/Contents/Info.plist"
           chmod +x "Taskly.app/Contents/MacOS/Taskly"
 
+      # Ad-hoc 签名（无 Apple Developer 账号）：让 macOS Gatekeeper 显示
+      # "无法验证开发者"而非误导性的"已损坏"。用户右键打开即可运行。
+      - name: Ad-hoc code sign
+        shell: bash
+        run: |
+          # 签名所有 Mach-O 二进制（self-contained 发布包含 .NET 运行时）
+          find "Taskly.app/Contents/MacOS" -type f -exec sh -c '
+            file "$1" | grep -q "Mach-O" && codesign --force --sign - "$1" 2>/dev/null || true
+          ' _ {} \;
+          # 整体签名 .app bundle
+          codesign --force --deep --sign - "Taskly.app"
+          # 验证
+          codesign --verify --verbose=2 "Taskly.app" 2>&1 || true
+
       # appdmg writes the .DS_Store binary directly (no Finder/AppleScript),
       # producing a decorated DMG (background + /Applications link) in headless CI.
       - name: Setup Node for appdmg
@@ -258,6 +272,14 @@ jobs:
             ### macOS
             - `taskly-${{ env.VERSION }}-macos-arm64.dmg` (Apple Silicon)
             - `taskly-${{ env.VERSION }}-macos-x64.dmg` (Intel)
+
+            > **首次打开提示**：Taskly 尚未经过 Apple 公证。安装后若提示"无法打开"或"已损坏"，
+            > 请在终端执行：`xattr -cr /Applications/Taskly.app`
+            > 然后即可正常打开。
+            >
+            > **First launch**: Taskly is not yet notarized by Apple. If macOS says the app
+            > is "damaged" or "can't be opened", run this in Terminal:
+            > `xattr -cr /Applications/Taskly.app`
 
             ### Windows
             - `taskly-${{ env.VERSION }}-windows-x64.exe` (Setup installer)
