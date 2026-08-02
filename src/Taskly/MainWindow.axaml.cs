@@ -407,7 +407,7 @@ public partial class MainWindow : Window
         {
             Title = _i18n?.T("dialogSaveDbTitle") ?? "Save Database File",
             DefaultExtension = "db",
-            SuggestedFileName = "tasks.db",
+            SuggestedFileName = "tasks",
             FileTypeChoices = new[] { new FilePickerFileType("Database") { Patterns = new[] { "*.db" } } },
         });
         return file?.Path.LocalPath;
