@@ -17,6 +17,9 @@ internal sealed class Program
     [STAThread]
     public static int Main(string[] args)
     {
+        // Velopack 生命周期钩子（Windows 安装/更新需要，macOS/Linux 无害）
+        Velopack.VelopackApp.Build().Run();
+
         if (args.Length > 0)
         {
             return Cli.Cli.Run(args);
