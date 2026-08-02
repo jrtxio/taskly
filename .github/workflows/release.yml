@@ -60,12 +60,17 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Setup Python for background generation
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: Install appdmg
         run: npm install -g appdmg
 
       - name: Generate DMG background
         run: |
-          pip install pillow
+          python3 -m pip install pillow
           python3 packaging/macos/dmg/make_background.py packaging/macos/dmg
 
       - name: Create .dmg (decorated, with retry)
