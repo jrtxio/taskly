@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-08-02
+
+### Added
+- **Command-line interface (CLI)** for AI agents and scripting. The same
+  binary serves GUI (no args) and CLI (subcommands), without booting Avalonia
+  in CLI mode. Subcommands: `list`, `lists`, `add`, `update`, `done`, `undone`,
+  `rm`, `search`, `mklist`, `rmlist`. JSON output via `--json`, stable exit
+  codes, idempotent done/undone. Powered by System.CommandLine 2.0.
+- **AGENTS.md** with build/run/CLI/architecture guidance for agents and devs.
+- macOS NativeMenu scaffolding (active when packaged as `.app`).
+
+### Changed
+- **Visual redesign** in Anthropic / Claude style: warm Pampas cream
+  background, Crail terracotta accent, low-saturation smart-list tiles,
+  softer corner radius and spacing. Replaces the cold Apple palette.
+- **Task item interaction**: double-click to edit (text + date + time +
+  notes in one place); metadata hidden by default to save space.
+- **Sidebar** resizes via GridSplitter and collapses fully.
+- **Title bar** reflects the currently selected list/view.
+- Full **i18n** coverage across menus, dialogs, tooltips, watermarks.
+
+### Fixed
+- Toggling completion now correctly filters the task out of the default view.
+- Closing the database clears the UI (was leaving stale content).
+- List rows clickable across the full width (hit-testing fix).
+- Time picker digits centered (rebuilt as hour/minute ComboBoxes).
+- Input box no longer jumps height on focus.
+- Numerous crashes from async edit-mode save (NRE on DataContext change).
+
 ## [0.1.0] - 2026-07-30
 
 ### Changed
