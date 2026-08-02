@@ -36,13 +36,14 @@ public partial class ColorPicker : Window
         {
             var btn = new Button
             {
-                Width = 48,
-                Height = 48,
-                CornerRadius = new(12),
+                Width = 44,
+                Height = 44,
+                CornerRadius = new(22),
                 Padding = new(0),
                 Background = new SolidColorBrush(color),
                 Content = new Border { Width = 24, Height = 24 },
                 Tag = color,
+                Classes = { "color-swatch" },
             };
 
             if (selected.HasValue && selected.Value == color)

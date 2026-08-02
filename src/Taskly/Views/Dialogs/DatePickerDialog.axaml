@@ -3,15 +3,16 @@
         x:Class="Taskly.Views.Dialogs.DatePickerDialog"
         Width="340" SizeToContent="Height"
         CanResize="False" WindowStartupLocation="CenterOwner"
-        ShowInTaskbar="False" Title="选择日期">
+        ShowInTaskbar="False" Title="选择日期"
+        Background="{DynamicResource ThemeBackgroundBrush}">
 
-    <DockPanel LastChildFill="True">
+    <DockPanel LastChildFill="True" Margin="4">
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8"
-                    Margin="16,12">
-            <Button x:Name="ClearBtn" Content="清除" Click="OnClear" MinWidth="64"/>
-            <Button x:Name="CancelBtn" Content="取消" Click="OnCancel" MinWidth="64"/>
-            <Button x:Name="ConfirmBtn" Content="确定" Click="OnConfirm" Classes="accent" MinWidth="64"/>
+                    Margin="12,8">
+            <Button x:Name="ClearBtn" Content="清除" Click="OnClear" MinWidth="64" MinHeight="34"/>
+            <Button x:Name="CancelBtn" Content="取消" Click="OnCancel" MinWidth="64" MinHeight="34"/>
+            <Button x:Name="ConfirmBtn" Content="确定" Click="OnConfirm" Classes="accent" MinWidth="64" MinHeight="34"/>
         </StackPanel>
-        <Calendar x:Name="Calendar" Margin="16" HorizontalAlignment="Center"/>
+        <Calendar x:Name="Calendar" Margin="8" HorizontalAlignment="Center"/>
     </DockPanel>
 </Window>

@@ -7,16 +7,16 @@
 
     <DockPanel LastChildFill="True">
 
-        <!-- 标题栏 -->
-        <Border DockPanel.Dock="Top" Background="{DynamicResource ThemeCardBackgroundBrush}"
-                BorderBrush="{DynamicResource ThemeDividerBrush}" BorderThickness="0,0,0,1" Padding="16,12">
+        <!-- 标题栏：透明背景融入内容区，无分隔线，整体性更强 -->
+        <Border DockPanel.Dock="Top" Background="Transparent"
+                BorderThickness="0" Padding="16,12">
             <Grid ColumnDefinitions="Auto,*,Auto">
                 <Button Grid.Column="0" x:Name="SidebarToggleBtn" Background="Transparent" BorderThickness="0" Padding="6"
                         VerticalAlignment="Center" Click="OnToggleSidebar"
                         ToolTip.Tip="隐藏侧边栏">
                     <TextBlock Text="‹" FontSize="20"/>
                 </Button>
-                <TextBlock x:Name="TitleText" Grid.Column="1" Text="Taskly" FontSize="24" FontWeight="SemiBold"
+                <TextBlock x:Name="TitleText" Grid.Column="1" Text="{Binding CurrentTitle}" FontSize="18" FontWeight="SemiBold"
                            VerticalAlignment="Center" Margin="8,0,0,0"/>
                 <!-- 显示/隐藏已完成切换 -->
                 <Button x:Name="ShowCompletedBtn" Grid.Column="2" Background="Transparent"
@@ -30,10 +30,13 @@
             </Grid>
         </Border>
 
-        <!-- 快速添加（仅数据库已连接时显示） -->
-        <Border DockPanel.Dock="Top" Padding="16,8" Background="{DynamicResource ThemeCardBackgroundBrush}"
+        <!-- 快速添加（仅数据库已连接时显示）：透明背景融入内容区。
+             固定 MinHeight 避免空/有文字时高度跳动导致下方内容上下跳。 -->
+        <Border DockPanel.Dock="Top" Padding="16,8" Background="Transparent"
                 IsVisible="{Binding IsConnected}">
             <TextBox x:Name="QuickAddBox" Text="{Binding QuickAddText}" Watermark="{Binding QuickAddHint}"
+                     MinHeight="36"
+                     VerticalContentAlignment="Center"
                      KeyDown="OnQuickAddKeyDown"/>
         </Border>
 

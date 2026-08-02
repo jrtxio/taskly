@@ -9,6 +9,8 @@
     <RootNamespace>Taskly</RootNamespace>
     <AssemblyName>Taskly</AssemblyName>
     <Version>0.0.2</Version>
+    <!-- macOS 打包时用作 app 显示名（CFBundleName），避免显示 "Avalonia Application" -->
+    <ApplicationTitle>Taskly</ApplicationTitle>
   </PropertyGroup>
 
   <ItemGroup>

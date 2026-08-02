@@ -79,6 +79,8 @@ public sealed partial class I18nService : ObservableObject
         _zh["menuToggleCompleted"] = "标记完成/未完成";
         _zh["menuDarkMode"] = "深色模式";
         _zh["aboutContent"] = "一款专注高效的个人任务管理工具\n帮助您轻松规划、组织和完成各项任务";
+        _zh["dialogLanguageChanged"] = "语言已切换";
+        _zh["dialogLanguageChangedContent"] = "界面语言已更新。macOS 系统菜单栏的顶级标题需重启应用后生效。";
 
         // 导航/智能列表
         _zh["navToday"] = "今天";
@@ -217,6 +219,8 @@ public sealed partial class I18nService : ObservableObject
         _en["menuToggleCompleted"] = "Mark Completed / Uncompleted";
         _en["menuDarkMode"] = "Dark Mode";
         _en["aboutContent"] = "A focused and efficient personal task management tool\nHelping you plan, organize and complete tasks easily";
+        _en["dialogLanguageChanged"] = "Language Changed";
+        _en["dialogLanguageChangedContent"] = "Interface language updated. The macOS system menu bar titles require an app restart to take effect.";
 
         _en["navToday"] = "Today";
         _en["navPlanned"] = "Planned";

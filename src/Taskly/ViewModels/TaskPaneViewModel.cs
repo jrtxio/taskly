@@ -79,6 +79,42 @@ public sealed partial class TaskPaneViewModel : ViewModelBase
         _logger = logger;
 
         Tasks.CollectionChanged += OnTasksChanged;
+
+        // 订阅 ListPane 的视图/选中变化，刷新标题
+        _listPane.PropertyChanged += OnListPanePropertyChanged;
+    }
+
+    private void OnListPanePropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(ListPaneViewModel.CurrentView)
+            or nameof(ListPaneViewModel.SelectedList))
+        {
+            OnPropertyChanged(nameof(CurrentTitle));
+        }
+    }
+
+    /// <summary>当前视图的短标题（用于任务区标题栏显示）。
+    /// 选了「工作」列表就显示「工作」，选了「今天」就显示「今天」。</summary>
+    public string CurrentTitle
+    {
+        get
+        {
+            // 搜索时显示搜索关键词
+            if (!string.IsNullOrEmpty(SearchKeyword))
+            {
+                return I18n.T("searchHint") + ": " + SearchKeyword;
+            }
+
+            return _listPane.CurrentView switch
+            {
+                TaskViewType.Today => I18n.T("navToday"),
+                TaskViewType.Planned => I18n.T("navPlanned"),
+                TaskViewType.All => I18n.T("navAll"),
+                TaskViewType.Completed => I18n.T("navCompleted"),
+                TaskViewType.List => _listPane.SelectedList?.Name ?? I18n.T("navAll"),
+                _ => I18n.T("navAll"),
+            };
+        }
     }
 
     /// <summary>当前显示的任务（已按完成态排序）。</summary>
@@ -112,6 +148,13 @@ public sealed partial class TaskPaneViewModel : ViewModelBase
 
     /// <summary>是否分组显示（仅「全部」视图分组）。</summary>
     public bool IsGrouped => _listPane.CurrentView == TaskViewType.All && string.IsNullOrEmpty(SearchKeyword);
+
+    /// <summary>搜索关键词变化时，刷新标题（搜索态标题显示关键词）和分组判断。</summary>
+    partial void OnSearchKeywordChanged(string value)
+    {
+        OnPropertyChanged(nameof(CurrentTitle));
+        OnPropertyChanged(nameof(IsGrouped));
+    }
 
     /// <summary>当前是否无数据库连接。</summary>
     public bool IsNoDb => !Main.IsDatabaseConnected;
@@ -286,8 +329,11 @@ public sealed partial class TaskPaneViewModel : ViewModelBase
             await _taskRepo.ToggleTaskCompletedAsync(task.Id);
             task.Completed = !task.Completed;
             await _listPane.RefreshCountsAsync();
-            // 完成态变化后可能需要重排（已完成沉底）
-            await ReorderTasksAsync();
+            // 完成态变化后必须按当前视图重新过滤：
+            // 默认视图（不显示已完成）下，刚完成的任务应从列表消失；
+            // "已完成"视图下，刚取消完成的任务应消失；
+            // "显示全部"模式下才需要沉底。统一 RefreshAsync 保证过滤始终正确。
+            await RefreshAsync();
             Main.ShowTransientStatus(I18n.T("statusUpdateTaskState"));
         }
         catch (Exception ex)
@@ -330,7 +376,9 @@ public sealed partial class TaskPaneViewModel : ViewModelBase
         {
             await _taskRepo.UpdateTaskAsync(task);
             await _listPane.RefreshCountsAsync();
-            await ReorderTasksAsync();
+            // 改日期/列表后，任务可能不再属于当前视图（如把今天的任务改到明天），
+            // 统一刷新保证过滤正确。
+            await RefreshAsync();
             Main.ShowTransientStatus(I18n.T("statusTaskUpdated"));
         }
         catch (Exception ex)
@@ -420,6 +468,17 @@ public sealed partial class TaskPaneViewModel : ViewModelBase
     public void OnLanguageChanged()
     {
         OnPropertyChanged(nameof(IsGrouped));
+    }
+
+    /// <summary>连接状态变化时由 MainViewModel 调用，显式重算依赖 IsDatabaseConnected 的派生属性。
+    /// 兜底保证关闭数据库后空状态/输入框可见性立即更新。</summary>
+    public void NotifyConnectionChanged()
+    {
+        OnPropertyChanged(nameof(IsConnected));
+        OnPropertyChanged(nameof(IsNotConnected));
+        OnPropertyChanged(nameof(IsNoDb));
+        OnPropertyChanged(nameof(ShowEmptyState));
+        OnPropertyChanged(nameof(QuickAddHint));
     }
 
     /// <summary>重排任务（已完成沉底）。仅在非分组视图下重排 Tasks。</summary>

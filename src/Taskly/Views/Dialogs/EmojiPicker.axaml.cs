@@ -38,25 +38,25 @@ public partial class EmojiPicker : Window
             {
                 var btn = new Button
                 {
-                    Width = 48,
-                    Height = 48,
-                    CornerRadius = new(12),
+                    Width = 44,
+                    Height = 44,
+                    CornerRadius = new(22),
                     Padding = new(0),
                     Background = Avalonia.Media.Brushes.Transparent,
                     Content = new TextBlock
                     {
                         Text = emoji,
-                        FontSize = 24,
+                        FontSize = 22,
                         HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
                         VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                     },
                     Tag = emoji,
+                    Classes = { "emoji-cell" },
                 };
 
                 if (selected == emoji)
                 {
-                    btn.BorderBrush = Avalonia.Media.Brushes.DodgerBlue;
-                    btn.BorderThickness = new(2);
+                    btn.Background = (Avalonia.Media.IBrush?)Avalonia.Application.Current!.FindResource("AccentBrush");
                 }
 
                 btn.Click += OnEmojiClick;
