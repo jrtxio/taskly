@@ -250,11 +250,12 @@ public sealed partial class TaskPaneViewModel : ViewModelBase
     // ---------------- 快速添加 ----------------
 
     /// <summary>快速添加任务（从输入框）。对应原版 quick-add 路径。
-    /// 会用 DateParser.extractTimeCommand 提取日期命令。</summary>
+    /// 会用 DateParser.extractTimeCommand 提取日期命令。
+    /// raw 参数由 code-behind 从 TextBox 直接传入（避免 TwoWay 绑定导致 IME 重复）。</summary>
     [RelayCommand]
-    public async Task QuickAddAsync()
+    public async Task QuickAddAsync(string? raw = null)
     {
-        var raw = QuickAddText;
+        raw ??= QuickAddText;
         if (string.IsNullOrWhiteSpace(raw) || !Main.IsDatabaseConnected)
         {
             return;

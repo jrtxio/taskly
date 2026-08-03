@@ -38,6 +38,15 @@ public sealed partial class ListPaneViewModel : ViewModelBase
         _logger = logger;
     }
 
+    /// <summary>数据库是否已连接（派生属性，供 UI 绑定禁用状态）。</summary>
+    public bool IsConnected => Main?.IsDatabaseConnected ?? false;
+
+    /// <summary>订阅 Main 的属性变更，连接状态变化时刷新 IsConnected 绑定。</summary>
+    public void NotifyConnectionChanged()
+    {
+        OnPropertyChanged(nameof(IsConnected));
+    }
+
     /// <summary>所有列表。</summary>
     public ObservableCollection<TodoList> Lists { get; } = new();
 

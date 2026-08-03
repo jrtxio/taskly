@@ -38,7 +38,8 @@
     </UserControl.Styles>
 
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="12" Spacing="0">
+        <StackPanel Margin="12" Spacing="0"
+                    IsEnabled="{Binding IsConnected}">
 
             <!-- 智能视图四宫格 -->
             <UniformGrid Columns="2" Rows="2" Margin="0,0,0,16">

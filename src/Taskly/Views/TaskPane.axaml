@@ -34,7 +34,7 @@
              固定 MinHeight 避免空/有文字时高度跳动导致下方内容上下跳。 -->
         <Border DockPanel.Dock="Top" Padding="16,8" Background="Transparent"
                 IsVisible="{Binding IsConnected}">
-            <TextBox x:Name="QuickAddBox" Text="{Binding QuickAddText}" Watermark="{Binding QuickAddHint}"
+            <TextBox x:Name="QuickAddBox" Watermark="{Binding QuickAddHint}"
                      MinHeight="36"
                      VerticalContentAlignment="Center"
                      KeyDown="OnQuickAddKeyDown"/>

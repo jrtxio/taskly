@@ -77,12 +77,15 @@ public partial class TaskPane : UserControl
         }
     }
 
-    /// <summary>快速添加回车提交。</summary>
+    /// <summary>快速添加回车提交。
+    /// 直接从 TextBox 读取文本传入 VM（避免 TwoWay 绑定在 Windows IME 下导致文字重复）。</summary>
     public void OnQuickAddKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key == Key.Enter && ViewModel is not null)
         {
-            _ = ViewModel.QuickAddCommand.ExecuteAsync(null);
+            var text = QuickAddBox.Text;
+            _ = ViewModel.QuickAddAsync(text);
+            QuickAddBox.Text = string.Empty;
             e.Handled = true;
         }
     }

@@ -101,8 +101,10 @@ public sealed partial class MainViewModel : ViewModelBase
         {
             _listPane.Clear();
             _taskPane.Clear();
-            _taskPane.NotifyConnectionChanged();
         }
+        // 两个子 VM 都需要刷新连接状态绑定
+        _listPane.NotifyConnectionChanged();
+        _taskPane.NotifyConnectionChanged();
     }
 
     /// <summary>数据库连接后的数据加载。对应原版 _loadInitialData。</summary>
@@ -122,6 +124,7 @@ public sealed partial class MainViewModel : ViewModelBase
 
         await _listPane.RefreshCountsAsync();
         await _taskPane.RefreshAsync();
+        _listPane.NotifyConnectionChanged();
         ShowTransientStatus(I18n.T("statusDatabaseConnected"));
     }
 
