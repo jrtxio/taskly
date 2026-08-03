@@ -145,14 +145,15 @@
     <Style Selector="TextBox">
         <Setter Property="CornerRadius" Value="8"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ThemeInputBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Padding" Value="12,8"/>
         <Setter Property="MinHeight" Value="34"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
     <Style Selector="TextBox:focus">
+        <!-- 只改颜色不改粗细，避免聚焦时高度跳动 -->
         <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
-        <Setter Property="BorderThickness" Value="2"/>
     </Style>
 
     <!-- 菜单栏 -->
