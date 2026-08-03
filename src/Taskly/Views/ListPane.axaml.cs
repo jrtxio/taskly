@@ -128,36 +128,35 @@ public partial class ListPane : UserControl
     private I18nService I18n => App.Services.GetRequiredService<I18nService>();
     private DialogService Dialog => App.Services.GetRequiredService<DialogService>();
 
+    /// <summary>数据库是否已连接。未连接时拦截所有侧边栏交互（但不改变外观）。</summary>
+    private bool IsConnected => ViewModel?.IsConnected ?? false;
+
     // ---------------- 智能视图点击 ----------------
     private void OnTodayPressed(object? sender, PointerPressedEventArgs e)
-        => _ = ViewModel?.SelectTodayCommand.ExecuteAsync(null);
+    { if (IsConnected) _ = ViewModel?.SelectTodayCommand.ExecuteAsync(null); }
 
     private void OnPlannedPressed(object? sender, PointerPressedEventArgs e)
-        => _ = ViewModel?.SelectPlannedCommand.ExecuteAsync(null);
+    { if (IsConnected) _ = ViewModel?.SelectPlannedCommand.ExecuteAsync(null); }
 
     private void OnAllPressed(object? sender, PointerPressedEventArgs e)
-        => _ = ViewModel?.SelectAllCommand.ExecuteAsync(null);
+    { if (IsConnected) _ = ViewModel?.SelectAllCommand.ExecuteAsync(null); }
 
     private void OnCompletedPressed(object? sender, PointerPressedEventArgs e)
-        => _ = ViewModel?.SelectCompletedCommand.ExecuteAsync(null);
+    { if (IsConnected) _ = ViewModel?.SelectCompletedCommand.ExecuteAsync(null); }
 
     private void OnToggleMyLists(object? sender, RoutedEventArgs e)
-        => ViewModel?.ToggleMyListsCommand.Execute(null);
+    { if (IsConnected) ViewModel?.ToggleMyListsCommand.Execute(null); }
 
     private void OnAddList(object? sender, RoutedEventArgs e)
     {
-        if (ViewModel is null)
-        {
-            return;
-        }
-
+        if (!IsConnected || ViewModel is null) return;
         _ = ShowListEditDialogAsync(null);
     }
 
     // ---------------- 列表项点击/右键 ----------------
     private void OnListPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (sender is not Control border || ViewModel is null)
+        if (sender is not Control border || ViewModel is null || !IsConnected)
         {
             return;
         }
@@ -183,7 +182,7 @@ public partial class ListPane : UserControl
 
     private void OnListDoubleTapped(object? sender, TappedEventArgs e)
     {
-        if (sender is not Control control || control.DataContext is not TodoList list)
+        if (!IsConnected || sender is not Control control || control.DataContext is not TodoList list)
         {
             return;
         }

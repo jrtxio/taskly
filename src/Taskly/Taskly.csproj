@@ -8,7 +8,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <RootNamespace>Taskly</RootNamespace>
     <AssemblyName>Taskly</AssemblyName>
-    <Version>0.4.8</Version>
+    <Version>0.4.9</Version>
     <!-- Windows .exe 图标（嵌入 Win32 资源）-->
     <ApplicationIcon>taskly.ico</ApplicationIcon>
     <!-- macOS 打包时用作 app 显示名（CFBundleName），避免显示 "Avalonia Application" -->
