@@ -5,8 +5,8 @@
 
     <UserControl.ContextMenu>
         <ContextMenu x:Name="TaskContextMenu" Opening="OnContextMenuOpening">
-            <MenuItem x:Name="ToggleMenuItem" Header="标记完成/未完成" Click="OnToggle"/>
-            <MenuItem x:Name="DeleteMenuItem" Header="删除" Click="OnDelete"/>
+            <MenuItem x:Name="ToggleMenuItem" Click="OnToggle"/>
+            <MenuItem x:Name="DeleteMenuItem" Click="OnDelete"/>
         </ContextMenu>
     </UserControl.ContextMenu>
 
@@ -25,12 +25,12 @@
                     <SelectableTextBlock Grid.Column="1" Text="{Binding Text}" FontSize="14"
                                          VerticalAlignment="Center"
                                          IsVisible="{Binding !Completed}"
-                                         ToolTip.Tip="双击编辑"/>
+                                         x:Name="TitleLabel"/>
                     <SelectableTextBlock Grid.Column="1" Text="{Binding Text}" FontSize="14"
                                          VerticalAlignment="Center"
                                          IsVisible="{Binding Completed}"
                                          Foreground="{DynamicResource ThemeTertiaryTextBrush}"
-                                         ToolTip.Tip="双击编辑">
+                                         x:Name="TitleLabelDone">
                         <SelectableTextBlock.TextDecorations>
                             <TextDecorationCollection>
                                 <TextDecoration Location="Strikethrough" Stroke="{DynamicResource ThemeTertiaryTextBrush}" StrokeThickness="1" StrokeOffset="0.1"/>
@@ -39,7 +39,7 @@
                     </SelectableTextBlock>
                     <Button Grid.Column="2" x:Name="InfoBtn" Classes="task-detail-btn"
                             HorizontalAlignment="Right" VerticalAlignment="Center"
-                            Click="OnInfoClick" ToolTip.Tip="详情与编辑">
+                            Click="OnInfoClick">
                         <TextBlock Text="ⓘ" FontSize="13"/>
                     </Button>
                 </Grid>
@@ -98,7 +98,7 @@
 
                 <!-- 备注（编辑态显示，多行：回车换行，与标题的"回车退出"区分） -->
                 <TextBox x:Name="NotesEdit" Classes="task-notes-edit"
-                         Watermark="添加备注..." TextWrapping="Wrap" AcceptsReturn="True"
+                         TextWrapping="Wrap" AcceptsReturn="True"
                          Margin="24,0,0,0"
                          LostFocus="OnNotesLostFocus"/>
             </StackPanel>

@@ -230,7 +230,7 @@ jobs:
           sed 's|Exec=Taskly|Exec=/usr/bin/taskly|' packaging/linux/taskly.desktop > "$STAGING/usr/share/applications/taskly.desktop"
 
           # control 文件（用实际版本号）
-          sed "s/Version: 0.3.0/Version: $VERSION/" packaging/linux/control > "$STAGING/DEBIAN/control"
+          sed "s/@VERSION@/$VERSION/" packaging/linux/control > "$STAGING/DEBIAN/control"
 
           # 构建 .deb
           dpkg-deb --root-owner-group --build "$STAGING" "taskly-${{ env.VERSION }}-linux-x64.deb"

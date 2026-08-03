@@ -12,8 +12,7 @@
                 BorderThickness="0" Padding="16,12">
             <Grid ColumnDefinitions="Auto,*,Auto">
                 <Button Grid.Column="0" x:Name="SidebarToggleBtn" Background="Transparent" BorderThickness="0" Padding="6"
-                        VerticalAlignment="Center" Click="OnToggleSidebar"
-                        ToolTip.Tip="隐藏侧边栏">
+                        VerticalAlignment="Center" Click="OnToggleSidebar">
                     <TextBlock Text="‹" FontSize="20"/>
                 </Button>
                 <TextBlock x:Name="TitleText" Grid.Column="1" Text="{Binding CurrentTitle}" FontSize="18" FontWeight="SemiBold"
@@ -24,7 +23,7 @@
                         VerticalAlignment="Center"
                         Click="OnToggleShowCompleted"
                         IsVisible="{Binding IsConnected}">
-                    <TextBlock x:Name="ShowCompletedLabel" Text="显示已完成" FontSize="13"
+                    <TextBlock x:Name="ShowCompletedLabel" FontSize="13"
                                Foreground="{DynamicResource AccentBrush}"/>
                 </Button>
             </Grid>
@@ -48,7 +47,7 @@
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
                             IsVisible="{Binding IsNotConnected}">
                     <TextBlock Text="📂" FontSize="48" HorizontalAlignment="Center" Opacity="0.4"/>
-                    <TextBlock x:Name="NoDbHint" Text="请点击「文件」菜单创建或打开数据库" FontSize="14"
+                    <TextBlock x:Name="NoDbHint" FontSize="14"
                                Foreground="{DynamicResource ThemeSecondaryTextBrush}"
                                HorizontalAlignment="Center" Margin="0,12,0,0"/>
                 </StackPanel>
@@ -58,7 +57,7 @@
                             IsVisible="{Binding ShowEmptyState}">
                     <TextBlock Text="✓" FontSize="48" HorizontalAlignment="Center" Opacity="0.3"
                                Foreground="{DynamicResource ThemeDividerBrush}"/>
-                    <TextBlock x:Name="EmptyText" Text="暂无任务" FontSize="14"
+                    <TextBlock x:Name="EmptyText" FontSize="14"
                                Foreground="{DynamicResource ThemeSecondaryTextBrush}"
                                HorizontalAlignment="Center" Margin="0,8,0,0"/>
                 </StackPanel>

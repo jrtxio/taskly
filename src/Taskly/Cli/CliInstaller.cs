@@ -38,7 +38,8 @@ public static class CliInstaller
         // 写 shell wrapper：exec 指向实际二进制，转发所有参数
         var wrapper = $"#!/bin/sh\nexec \"{exePath}\" \"$@\"\n";
         File.WriteAllText(target, wrapper);
-        try { FileUnixPermissions.SetUnixExecutable(target); } catch { }
+        try { FileUnixPermissions.SetUnixExecutable(target); }
+        catch (Exception ex) { Console.Error.WriteLine($"Warning: could not set executable permission: {ex.Message}"); }
 
         // 确保 ~/.local/bin 在 PATH（检查 shell rc，按需追加）
         var needsRestart = EnsureLocalBinInPath();
@@ -89,8 +90,9 @@ public static class CliInstaller
             File.AppendAllText(rc, block);
             return true;
         }
-        catch
+        catch (Exception ex)
         {
+            Console.Error.WriteLine($"Warning: could not update shell PATH: {ex.Message}");
             return true;
         }
     }
@@ -171,8 +173,9 @@ public static class CliInstaller
             BroadcastEnvironmentChange();
             return true;
         }
-        catch
+        catch (Exception ex)
         {
+            Console.Error.WriteLine($"Warning: could not install CLI to PATH: {ex.Message}");
             return false;
         }
     }
@@ -190,14 +193,31 @@ public static class CliInstaller
             key.SetValue("Path", string.Join(';', parts), Microsoft.Win32.RegistryValueKind.ExpandString);
             BroadcastEnvironmentChange();
         }
-        catch { }
+        catch (Exception ex) { Console.Error.WriteLine($"Warning: registry PATH update failed: {ex.Message}"); }
     }
 
-    /// <summary>广播 WM_SETTINGCHANGE，让 Explorer 等感知 PATH 变化。</summary>
+    /// <summary>广播 WM_SETTINGCHANGE，让 Explorer 等感知 PATH 变化。
+    /// 已打开的终端仍需重开才能读到新 PATH，但资源管理器/新进程会立即生效。</summary>
     private static void BroadcastEnvironmentChange()
     {
-        // 简化：不导入 SendMessageTimeout（P/Invoke 较繁），PATH 改了注册表后新终端自然会读到。
-        // 完整实现可在后续版本加。
+        if (!OperatingSystem.IsWindows()) return;
+        try
+        {
+            const int HWND_BROADCAST = 0xFFFF;
+            const int WM_SETTINGCHANGE = 0x001A;
+            PInvoke.SendMessageTimeout(
+                (IntPtr)HWND_BROADCAST, WM_SETTINGCHANGE, IntPtr.Zero, "Environment",
+                0x0002 /* SMTO_ABORTIFHUNG */, 5000, out _);
+        }
+        catch { /* best-effort; new terminals will pick up PATH anyway */ }
+    }
+
+    private static class PInvoke
+    {
+        [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true, CharSet = System.Runtime.InteropServices.CharSet.Unicode, EntryPoint = "SendMessageTimeoutW")]
+        public static extern IntPtr SendMessageTimeout(
+            IntPtr hWnd, int Msg, IntPtr wParam, string lParam,
+            int fuFlags, int uTimeout, out IntPtr lpdwResult);
     }
 }
 
@@ -216,6 +236,6 @@ file static class FileUnixPermissions
             var p = System.Diagnostics.Process.Start(psi);
             p?.WaitForExit(2000);
         }
-        catch { }
+        catch (Exception ex) { Console.Error.WriteLine($"Warning: registry PATH update failed: {ex.Message}"); }
     }
 }

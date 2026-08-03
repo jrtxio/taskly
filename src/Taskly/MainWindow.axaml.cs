@@ -77,7 +77,10 @@ public partial class MainWindow : Window
                 BuildNativeMenuItems();
                 _nativeMenuBuilt = true;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Failed to build native menu");
+            }
         }
 
         // 监听侧边栏显隐，平滑调整列宽（收起后任务区占满）
@@ -254,7 +257,10 @@ public partial class MainWindow : Window
                 }
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Warning: failed to read language from config: {ex.Message}");
+        }
         return "zh";
     }
 

@@ -1,5 +1,5 @@
 Package: taskly
-Version: 0.3.0
+Version: @VERSION@
 Architecture: amd64
 Maintainer: Taskly Team
 Depends: libx11-6, libice6, libsm6, libfontconfig1, libc6, libgcc-s1, libstdc++6, zlib1g, ca-certificates

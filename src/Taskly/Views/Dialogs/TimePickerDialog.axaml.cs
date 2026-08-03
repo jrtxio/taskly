@@ -20,7 +20,9 @@ public partial class TimePickerDialog : Window
     public TimePickerDialog(string? currentTime, I18nService i18n)
     {
         InitializeComponent();
-        Title = i18n.T("labelAddTime");
+        Title = i18n.T("dialogSelectTime");
+        HourLabel.Text = i18n.T("labelHour");
+        MinuteLabel.Text = i18n.T("labelMinute");
         ClearBtn.Content = i18n.T("dialogClear");
         CancelBtn.Content = i18n.T("dialogCancel");
         ConfirmBtn.Content = i18n.T("dialogConfirm");

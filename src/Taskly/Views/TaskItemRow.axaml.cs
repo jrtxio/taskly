@@ -111,8 +111,10 @@ public partial class TaskItemRow : UserControl
     {
         ToggleMenuItem.Header = I18n.T("menuToggleCompleted");
         DeleteMenuItem.Header = I18n.T("taskDelete");
-        ToolTip.SetTip(InfoBtn, I18n.T("labelTaskInfo"));
-        ToolTip.SetTip(InfoBtnEdit, I18n.T("labelTaskInfo"));
+        ToolTip.SetTip(TitleLabel, I18n.T("tooltipDoubleClickEdit"));
+        ToolTip.SetTip(TitleLabelDone, I18n.T("tooltipDoubleClickEdit"));
+        ToolTip.SetTip(InfoBtn, I18n.T("tooltipTaskEdit"));
+        ToolTip.SetTip(InfoBtnEdit, I18n.T("tooltipTaskEdit"));
         NotesEdit.Watermark = I18n.T("hintAddNotes");
     }
 

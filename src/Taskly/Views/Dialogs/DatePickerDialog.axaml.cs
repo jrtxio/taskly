@@ -19,7 +19,7 @@ public partial class DatePickerDialog : Window
     public DatePickerDialog(string? currentDate, I18nService i18n)
     {
         InitializeComponent();
-        Title = i18n.T("labelAddDate");
+        Title = i18n.T("dialogSelectDate");
         ClearBtn.Content = i18n.T("dialogClear");
         CancelBtn.Content = i18n.T("dialogCancel");
         ConfirmBtn.Content = i18n.T("dialogConfirm");
