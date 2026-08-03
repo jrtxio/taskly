@@ -128,33 +128,6 @@ public partial class MainWindow : Window
 
     private void OnLanguageChanged(object? sender, EventArgs e) => ApplyLanguage();
 
-    /// <summary>构建 macOS 系统菜单栏（NativeMenu）。结构与窗口内 Menu 对等。
-    /// 幂等：首次构建并 SetMenu；后续调用（语言切换）只更新已有 item 的 Header 和勾选态，
-    /// 避免 SetMenu 传新对象导致 "menu does not match" 崩溃。
-    /// 异步：内部 await config 加载（不能在 UI 线程用 GetAwaiter().GetResult() 否则死锁）。</summary>
-    private async Task SetupNativeMenuAsync()
-    {
-        if (_i18n is null)
-        {
-            return;
-        }
-
-        // 已构建过：只更新文案/勾选态
-        if (_nativeMenuBuilt)
-        {
-            UpdateNativeMenuText();
-            return;
-        }
-
-        // 确保 config 已加载 + 语言已应用（独立于 InitializeAsync 的数据库打开，避免被慢操作阻塞）
-        var cfg = App.Services.GetRequiredService<Data.ConfigService>();
-        await cfg.LoadAsync();
-        _i18n.SetLanguage(cfg.Language);
-
-        _nativeMenuBuilt = true;
-        BuildNativeMenuItems();
-    }
-
     /// <summary>构建 NativeMenuItem 对象并装配（用当前 _i18n 语言）。</summary>
     private void BuildNativeMenuItems()
     {
@@ -462,7 +435,8 @@ public partial class MainWindow : Window
             return;
         }
 
-        var about = $"Taskly v0.2.1\n© 2026 Taskly Team\n\n{_i18n.T("aboutContent")}";
+        var version = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version?.ToString(3) ?? "0.0.0";
+        var about = $"Taskly v{version}\n© 2026 Taskly Team\n\n{_i18n.T("aboutContent")}";
         await new Views.Dialogs.ConfirmDialog(
             _i18n.T("menuAbout"), about,
             _i18n.T("dialogConfirm"), _i18n.T("dialogCancel")).ShowDialog<bool>(this);

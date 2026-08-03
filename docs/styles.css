@@ -352,6 +352,7 @@ section {
 .smart-list-card.scheduled { background: #C9A36A; }
 .smart-list-card.all { background: #9B9489; }
 .smart-list-card.flagged { background: #B8893F; }
+.smart-list-card.completed { background: #6FA57A; }
 
 .smart-icon {
     position: absolute;

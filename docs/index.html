@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Taskly — Organize your life</title>
     <meta name="description" content="Taskly is a calm, warm task manager with natural-language scheduling, an AI-friendly CLI, and native apps for macOS, Windows, and Linux.">
-    <link rel="stylesheet" href="styles.css?v=7">
+    <link rel="stylesheet" href="styles.css?v=8">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="icon" href="taskly.svg" type="image/svg+xml" sizes="any">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -118,14 +118,14 @@
                                     <div class="smart-label" data-en="All" data-zh="全部">All</div>
                                 </div>
                             </div>
-                            <div class="smart-list-card flagged">
+                            <div class="smart-list-card completed">
                                 <div class="smart-card-content">
                                     <div class="smart-icon"><svg viewBox="0 0 24 24" width="18" height="18"
                                             fill="currentColor">
-                                            <path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                                         </svg></div>
-                                    <div class="smart-count">0</div>
-                                    <div class="smart-label" data-en="Flagged" data-zh="旗标">Flagged</div>
+                                    <div class="smart-count">3</div>
+                                    <div class="smart-label" data-en="Completed" data-zh="已完成">Completed</div>
                                 </div>
                             </div>
                         </div>
@@ -320,7 +320,7 @@
                     </p>
                     <div class="code-block"><span class="comment"># add a task, get JSON back</span>
 <span class="prompt">$</span> taskly add <span class="str">"Ship v0.4 @friday 5pm"</span> <span class="flag">--list</span> <span class="str">"Work"</span> <span class="flag">--json</span>
-<span class="prompt">$</span> taskly list <span class="flag">--status</span> <span class="str">incomplete</span> <span class="flag">--json</span> <span class="flag">|</span> jq <span class="str">'.[] | .title'</span></div>
+<span class="prompt">$</span> taskly list <span class="flag">--status</span> <span class="str">incomplete</span> <span class="flag">--json</span> <span class="flag">|</span> jq <span class="str">'.[] | .text'</span></div>
                     <span class="card-tag" data-en="Single binary. Zero config." data-zh="单文件，零配置。">Single binary. Zero config.</span>
                 </div>
 
@@ -385,7 +385,7 @@
                     <span data-en="All downloads" data-zh="全部下载">All downloads</span>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </a>
-                <span class="version-badge" data-en="Latest:" data-zh="最新版：">Latest: <span class="ver" id="ver-badge">v0.4.9</span></span>
+                <span class="version-badge" data-en="Latest:" data-zh="最新版：">Latest: <span class="ver" id="ver-badge">v0.5.0</span></span>
             </div>
         </div>
     </section>
@@ -405,7 +405,7 @@
         </div>
     </footer>
 
-    <script src="script.js?v=7"></script>
+    <script src="script.js?v=8"></script>
 </body>
 
 </html>

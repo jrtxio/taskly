@@ -27,8 +27,13 @@ public interface IListRepository
 public sealed class ListRepository : IListRepository
 {
     private readonly Data.SQLiteDatabase _db;
+    private readonly Services.I18nService _i18n;
 
-    public ListRepository(Data.SQLiteDatabase db) => _db = db;
+    public ListRepository(Data.SQLiteDatabase db, Services.I18nService i18n)
+    {
+        _db = db;
+        _i18n = i18n;
+    }
 
     public Task<List<TodoList>> GetAllListsAsync() => _db.GetAllListsAsync();
 
@@ -38,7 +43,7 @@ public sealed class ListRepository : IListRepository
 
     public async Task<int> AddListAsync(string name, string? icon = null, int? color = null)
     {
-        var error = ValidationHelper.ValidateListName(name);
+        var error = ValidationHelper.ValidateListName(name, _i18n);
         if (error is not null)
         {
             throw new ArgumentException(error.Message);
@@ -50,7 +55,7 @@ public sealed class ListRepository : IListRepository
     public async Task<int> UpdateListAsync(int id, string name, string? icon = null, int? color = null,
         bool clearIcon = false, bool clearColor = false)
     {
-        var error = ValidationHelper.ValidateListName(name);
+        var error = ValidationHelper.ValidateListName(name, _i18n);
         if (error is not null)
         {
             throw new ArgumentException(error.Message);

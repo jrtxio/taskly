@@ -5,6 +5,135 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.9] - 2026-08-03
+
+### Fixed
+- Sidebar disabled state: removed `IsEnabled` binding (caused ugly focus borders on
+  disabled buttons). Interaction handlers now guard on `IsConnected` in code-behind.
+- Website mobile responsive: comprehensive breakpoints for phones.
+- Centered hero buttons on mobile.
+
+## [0.4.8] - 2026-08-03
+
+### Fixed
+- Quick-add input box height jumps when typing: fixed `Height` + `Padding` and
+  removed `:focus` border thickness change that caused 1px height jump.
+
+## [0.4.7] - 2026-08-03
+
+### Fixed
+- Windows installer naming unified: `Taskly-win-Setup.exe` → `taskly-{version}-windows-x64.exe`.
+
+## [0.4.6] - 2026-08-03
+
+### Fixed
+- **Windows IME text duplication**: removed TwoWay binding from QuickAddBox that
+  caused CJK input characters to repeat on Windows.
+- **No-database guard**: sidebar now properly blocks all interactions when no
+  database is connected (was only guarding TaskPane, not ListPane).
+
+## [0.4.5] - 2026-08-03
+
+### Fixed
+- New database dialog default filename was `tasks.db.db` (double extension).
+  `SuggestedFileName` changed from `"tasks.db"` to `"tasks"`.
+
+## [0.4.4] - 2026-08-03
+
+### Added
+- **Default list icon/color**: new lists get a default emoji (📋) and Crail
+  terracotta color when the user doesn't pick one. Mimics macOS Reminders.
+
+### Changed
+- List rows now have a subtle surface background + divider border for clear
+  visual container (was transparent — looked like floating text).
+
+## [0.4.3] - 2026-08-03
+
+### Fixed
+- **DMG `.background` folder visible**: appdmg always creates an empty
+  `.background` directory. Now physically removed after DMG generation.
+
+## [0.4.2] - 2026-08-03
+
+### Added
+- **Unified app logo**: single SVG source → derived `.icns`, `.ico`, `.png`,
+  and favicon across all platforms. Crail terracotta rounded square + white
+  checkmark.
+- Windows: `ApplicationIcon` in csproj + `--icon` flag in vpk pack.
+- Website: inline SVG logo in nav, SVG favicon.
+
+### Fixed
+- Linux `taskly.png` was a solid color block (missing checkmark).
+- Website favicon was a blue globe placeholder.
+
+## [0.4.1] - 2026-08-03
+
+### Fixed
+- DMG `.background` folder: attempt to hide via `ds_store` icon repositioning
+  (superseded by complete removal in 0.4.3).
+
+## [0.4.0] - 2026-08-03
+
+### Fixed
+- App icon generation: moved after Pillow install step (CI was failing because
+  `make_icon.py` couldn't import PIL).
+
+## [0.3.9] - 2026-08-02
+
+### Fixed
+- List item selection/hover visibility: raised alpha from 12%→22% (selection)
+  and 4%→8% (hover). Items were nearly invisible on the warm sidebar.
+
+## [0.3.8] - 2026-08-02
+
+### Added
+- Ad-hoc code signing for macOS `.app` (`codesign --force --deep -s -`).
+- DMG `.background` folder hidden via `chflags hidden`.
+- Release notes include macOS first-launch instructions (`xattr -cr`).
+
+## [0.3.7] - 2026-08-02
+
+### Added
+- **Professional DMG**: `node-appdmg` with `/Applications` symlink, background
+  image, and icon layout. Drag-to-install experience.
+- CI-generated background image (Pillow) with warm palette.
+
+### Fixed
+- `pip install pillow` → `python3 -m pip install` for reliable Pillow import on
+  macOS runners.
+
+## [0.3.6] - 2026-08-02
+
+### Fixed
+- DMG background generation: added `actions/setup-python@v5` for consistent
+  Python environment (pip/python3 mismatch on macOS runners).
+
+## [0.3.5] - 2026-08-02
+
+### Fixed
+- Linux `.desktop` Categories fixed to standard `Office;ProjectManagement`.
+- Windows vpk diagnostics output.
+- AppImage placeholder icon generated (Crail terracotta 256×256).
+
+## [0.3.4] - 2026-08-02
+
+### Fixed
+- AppImage: `APPIMAGE_EXTRACT_AND_RUN=1` for CI FUSE compatibility.
+- Velopack: `VelopackApp.Build().Run()` added to Program.cs.
+
+## [0.3.3] - 2026-08-02
+
+### Fixed
+- Release workflow: create `build/` directory before packaging.
+
+## [0.3.2] - 2026-08-02
+
+### Changed
+- Website redesign: Anthropic warm palette (Pampas cream + Crail terracotta),
+  Newsreader serif headings, CLI feature section, dynamic GitHub Release links.
+- Task mockup aligned to real `TaskItemRow.axaml` structure.
+
 ## [0.3.1] - 2026-08-02
 
 ### Fixed

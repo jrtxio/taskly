@@ -36,8 +36,13 @@ public interface ITaskRepository
 public sealed class TaskRepository : ITaskRepository
 {
     private readonly Data.SQLiteDatabase _db;
+    private readonly Services.I18nService _i18n;
 
-    public TaskRepository(Data.SQLiteDatabase db) => _db = db;
+    public TaskRepository(Data.SQLiteDatabase db, Services.I18nService i18n)
+    {
+        _db = db;
+        _i18n = i18n;
+    }
 
     /// <summary>
     /// 按视图类型分发查询。对应原版 getTasksByView。
@@ -68,7 +73,7 @@ public sealed class TaskRepository : ITaskRepository
 
     public async Task<int> AddTaskAsync(TaskItem task)
     {
-        var error = ValidationHelper.ValidateTaskText(task.Text);
+        var error = ValidationHelper.ValidateTaskText(task.Text, _i18n);
         if (error is not null)
         {
             throw new ArgumentException(error.Message);
@@ -79,7 +84,7 @@ public sealed class TaskRepository : ITaskRepository
 
     public async Task<int> UpdateTaskAsync(TaskItem task)
     {
-        var error = ValidationHelper.ValidateTaskText(task.Text);
+        var error = ValidationHelper.ValidateTaskText(task.Text, _i18n);
         if (error is not null)
         {
             throw new ArgumentException(error.Message);
