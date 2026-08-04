@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taskly — Manual</title>
+    <meta name="description" content="Taskly user manual — scheduling shortcuts, smart lists, custom lists, editing, CLI, and sync.">
+    <link rel="stylesheet" href="styles.css?v=10">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="taskly.svg" type="image/svg+xml" sizes="any">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Nav -->
+    <nav class="nav-container">
+        <div class="nav-wrapper">
+            <a href="index.html" class="nav-brand">
+                <svg class="nav-logo" width="28" height="28" viewBox="0 0 512 512" fill="none">
+                    <rect width="512" height="512" rx="115" fill="#C15F3C"/>
+                    <polyline points="156,276 232,352 372,192" fill="none" stroke="#FFFFFF" stroke-width="42" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Taskly
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html#features" data-en="Features" data-zh="功能">Features</a></li>
+                <li><a href="manual.html" data-en="Manual" data-zh="手册" style="color:var(--accent)">Manual</a></li>
+                <li><a href="index.html#cli" data-en="CLI" data-zh="命令行">CLI</a></li>
+                <li><a href="index.html#download" data-en="Download" data-zh="下载">Download</a></li>
+
+                <!-- Language Dropdown -->
+                <li class="lang-dropdown-wrapper">
+                    <button class="lang-btn">
+                        <svg class="globe-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                            <path
+                                d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                            </path>
+                        </svg>
+                        <span id="current-lang-label" data-en="English" data-zh="简体中文">English</span>
+                    </button>
+                    <ul class="lang-menu">
+                        <li onclick="setLanguage('en')">English</li>
+                        <li onclick="setLanguage('zh')">简体中文</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="manual-hero" style="padding-top:88px;padding-bottom:40px">
+        <div class="container">
+            <span class="eyebrow animate-on-scroll" data-en="User Manual" data-zh="使用手册">User Manual</span>
+            <h1 class="animate-on-scroll">
+                <span data-en="Everything Taskly can do" data-zh="Taskly 能做的事">Everything Taskly can do</span>
+            </h1>
+            <p class="lead animate-on-scroll"
+                data-en="Scheduling shortcuts, lists, editing, the CLI, and sync — in one place."
+                data-zh="速记语法、列表、编辑、命令行与同步，一处说清。">
+                Scheduling shortcuts, lists, editing, the CLI, and sync — in one place.
+            </p>
+        </div>
+    </section>
+
+    <!-- Two-column: TOC + content -->
+    <div class="manual-layout manual-body">
+
+        <!-- Sticky side TOC -->
+        <aside class="manual-toc" id="toc">
+            <div class="manual-toc-group" data-en="Scheduling" data-zh="排程">Scheduling</div>
+            <a href="#shortcuts" data-en="Quick syntax" data-zh="速记语法">Quick syntax</a>
+            <a href="#relative" data-en="Relative time (+)" data-zh="相对时间 (+)">Relative time (+)</a>
+            <a href="#exact" data-en="Exact time (@)" data-zh="精确时间 (@)">Exact time (@)</a>
+            <a href="#dates" data-en="Absolute dates" data-zh="绝对日期">Absolute dates</a>
+            <a href="#examples" data-en="Examples" data-zh="组合示例">Examples</a>
+
+            <div class="manual-toc-group" data-en="Organizing" data-zh="组织">Organizing</div>
+            <a href="#smart-lists" data-en="Smart lists" data-zh="智能列表">Smart lists</a>
+            <a href="#custom-lists" data-en="Custom lists" data-zh="自定义列表">Custom lists</a>
+
+            <div class="manual-toc-group" data-en="Editing" data-zh="编辑">Editing</div>
+            <a href="#editing" data-en="Editing tasks" data-zh="编辑任务">Editing tasks</a>
+
+            <div class="manual-toc-group" data-en="Power" data-zh="进阶">Power</div>
+            <a href="#cli" data-en="CLI" data-zh="命令行">CLI</a>
+            <a href="#sync" data-en="Cloud sync" data-zh="云同步">Cloud sync</a>
+        </aside>
+
+        <!-- Content -->
+        <main>
+
+            <!-- =================== Scheduling shortcuts =================== -->
+            <section class="manual-section" id="shortcuts">
+                <h2 class="manual-h2"><span class="h2-emoji">⚡️</span>
+                    <span data-en="Scheduling shortcuts" data-zh="排程速记">Scheduling shortcuts</span>
+                </h2>
+                <p data-en="Type a task, then add a scheduling modifier at the end. Taskly extracts the modifier, parses it into a date and time, and leaves the rest as the task text. No calendars to scroll, no dials to turn."
+                   data-zh="在任务文字末尾加上一个排程修饰符，Taskly 会把它提取出来、解析为日期和时间，剩下的文字就是任务本身。无需翻日历，无需拨盘。">
+                    Type a task, then add a scheduling modifier at the end. Taskly extracts the modifier, parses it into a date and time, and leaves the rest as the task text. No calendars to scroll, no dials to turn.
+                </p>
+                <p data-en="There are two modifiers: + for relative time, and @ for an exact time of day. You can use one or both."
+                   data-zh="有两种修饰符：+ 表示相对时间，@ 表示一天中的精确时刻。可以只用其一，也可组合使用。">
+                    There are two modifiers: <code>+</code> for relative time, and <code>@</code> for an exact time of day. You can use one or both.
+                </p>
+            </section>
+
+            <!-- Relative time -->
+            <section class="manual-section" id="relative">
+                <h2 class="manual-h2"><span class="h2-emoji">➕</span>
+                    <span data-en="Relative time" data-zh="相对时间">Relative time</span>
+                </h2>
+                <p data-en="A + followed by a number and a unit means “that much time from now.”"
+                   data-zh="+ 后跟数字和单位，表示“从现在起 N 个单位后”。">
+                    A <code>+</code> followed by a number and a unit means "that much time from now."
+                </p>
+                <table class="syntax-table">
+                    <thead>
+                        <tr>
+                            <th data-en="Syntax" data-zh="语法">Syntax</th>
+                            <th data-en="Unit" data-zh="单位">Unit</th>
+                            <th data-en="Example" data-zh="示例">Example</th>
+                            <th data-en="Meaning" data-zh="含义">Meaning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>+10m</code></td><td data-en="minutes" data-zh="分钟">minutes</td><td><code>+30m</code></td><td data-en="30 minutes from now" data-zh="30 分钟后">30 minutes from now</td></tr>
+                        <tr><td><code>+2h</code></td><td data-en="hours" data-zh="小时">hours</td><td><code>+2h</code></td><td data-en="2 hours from now" data-zh="2 小时后">2 hours from now</td></tr>
+                        <tr><td><code>+1d</code></td><td data-en="days" data-zh="天">days</td><td><code>+1d</code></td><td data-en="1 day from now" data-zh="1 天后">1 day from now</td></tr>
+                        <tr><td><code>+1w</code></td><td data-en="weeks" data-zh="周">weeks</td><td><code>+2w</code></td><td data-en="2 weeks from now" data-zh="2 周后">2 weeks from now</td></tr>
+                        <tr><td><code>+1M</code></td><td data-en="months (30 days)" data-zh="月（按 30 天）">months (30 days)</td><td><code>+6M</code></td><td data-en="6 months from now" data-zh="6 个月后">6 months from now</td></tr>
+                    </tbody>
+                </table>
+                <div class="callout">
+                    <div class="callout-title">⚠️ <span data-en="Note the units" data-zh="注意单位">Note the units</span></div>
+                    <span data-en="Lowercase m = minutes, uppercase M = months. h = hours, d = days, w = weeks. The number may be omitted (e.g. +d means 1 day)."
+                          data-zh="小写 m = 分钟，大写 M = 月。h = 小时，d = 天，w = 周。数字可省略（如 +d 表示 1 天）。">
+                        Lowercase <code>m</code> = minutes, uppercase <code>M</code> = months. <code>h</code> = hours, <code>d</code> = days, <code>w</code> = weeks. The number may be omitted (e.g. <code>+d</code> means 1 day).
+                    </span>
+                </div>
+            </section>
+
+            <!-- Exact time -->
+            <section class="manual-section" id="exact">
+                <h2 class="manual-h2"><span class="h2-emoji">⏰</span>
+                    <span data-en="Exact time" data-zh="精确时间">Exact time</span>
+                </h2>
+                <p data-en="A @ followed by a time sets a specific moment today. You can pin it to tomorrow or a weekday."
+                   data-zh="@ 后跟一个时间，设定今天的某个具体时刻。可附加修饰符固定到明天或某个工作日。">
+                    A <code>@</code> followed by a time sets a specific moment today. You can pin it to tomorrow or a weekday.
+                </p>
+                <table class="syntax-table">
+                    <thead>
+                        <tr>
+                            <th data-en="Syntax" data-zh="语法">Syntax</th>
+                            <th data-en="Example" data-zh="示例">Example</th>
+                            <th data-en="Meaning" data-zh="含义">Meaning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>@10am</code></td><td><code>@9am</code></td><td data-en="10:00 today" data-zh="今天 10:00">10:00 today</td></tr>
+                        <tr><td><code>@10:30pm</code></td><td><code>@10:30pm</code></td><td data-en="22:30 today" data-zh="今天 22:30">22:30 today</td></tr>
+                        <tr><td><code>@22:30</code></td><td><code>@22:30</code></td><td data-en="Military time" data-zh="24 小时制">24-hour time</td></tr>
+                        <tr><td><code>@now</code></td><td><code>@now</code></td><td data-en="This exact moment" data-zh="此刻">This exact moment</td></tr>
+                        <tr><td><code>@10am tomorrow</code></td><td><code>@8am tmw</code></td><td data-en="tomorrow at that time (tmw works too)" data-zh="明天的同一时刻（tmw 亦可）">tomorrow at that time (tmw works too)</td></tr>
+                        <tr><td><code>@8pm mon</code></td><td><code>@6pm fri</code></td><td data-en="next Monday/Friday at that time" data-zh="下周一/五的同一时刻">next Monday/Friday at that time</td></tr>
+                    </tbody>
+                </table>
+                <div class="callout">
+                    <div class="callout-title">🕒 <span data-en="Already passed? Tomorrow it is." data-zh="时间已过？顺延明天。">Already passed? Tomorrow it is.</span></div>
+                    <span data-en="If the time today has already passed and no weekday is given, Taskly silently rolls it forward to the same time tomorrow."
+                          data-zz="若今天的这个时刻已过、且未指定工作日，Taskly 会自动顺延到明天同一时刻。"
+                          data-zh="若今天的这个时刻已过、且未指定工作日，Taskly 会自动顺延到明天同一时刻。">
+                        If the time today has already passed and no weekday is given, Taskly silently rolls it forward to the same time tomorrow.
+                    </span>
+                </div>
+                <p data-en="Weekday abbreviations: mon, tue, wed, thu, fri, sat, sun."
+                   data-zh="工作日缩写：mon、tue、wed、thu、fri、sat、sun。">
+                    Weekday abbreviations: <code>mon</code>, <code>tue</code>, <code>wed</code>, <code>thu</code>, <code>fri</code>, <code>sat</code>, <code>sun</code>.
+                </p>
+            </section>
+
+            <!-- Absolute dates -->
+            <section class="manual-section" id="dates">
+                <h2 class="manual-h2"><span class="h2-emoji">📅</span>
+                    <span data-en="Absolute dates" data-zh="绝对日期">Absolute dates</span>
+                </h2>
+                <p data-en="In the detail dialog or with the CLI --due flag, you can type a full date instead of a modifier. These always set the date with no time."
+                   data-zh="在详情对话框或 CLI 的 --due 参数里，可直接输入完整日期（不使用修饰符）。此时只设日期、不设时间。">
+                    In the detail dialog or with the CLI <code>--due</code> flag, you can type a full date instead of a modifier. These always set the date with no time.
+                </p>
+                <table class="syntax-table">
+                    <thead>
+                        <tr>
+                            <th data-en="Format" data-zh="格式">Format</th>
+                            <th data-en="Example" data-zh="示例">Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>yyyy-MM-dd</code></td><td><code>2026-08-07</code></td></tr>
+                        <tr><td><code>yyyy/MM/dd</code></td><td><code>2026/08/07</code></td></tr>
+                        <tr><td><code>MM/dd/yyyy</code></td><td><code>08/07/2026</code></td></tr>
+                        <tr><td><code>dd/MM/yyyy</code></td><td><code>07/08/2026</code></td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Examples -->
+            <section class="manual-section" id="examples">
+                <h2 class="manual-h2"><span class="h2-emoji">✨</span>
+                    <span data-en="Putting it together" data-zh="组合起来看">Putting it together</span>
+                </h2>
+                <p data-en="The modifier lives at the end of the task text. Anything before it becomes the task title."
+                   data-zh="修饰符写在任务文字末尾，前面的部分就是任务标题。">
+                    The modifier lives at the end of the task text. Anything before it becomes the task title.
+                </p>
+
+                <div class="example-row">
+                    <span class="example-input">买牛奶 <span class="arg">+1d</span></span>
+                    <span class="example-arrow">→</span>
+                    <span class="example-result" data-en="<strong>tomorrow</strong>, same time" data-zh="<strong>明天</strong> 同时">→ <strong>tomorrow</strong>, same time</span>
+                </div>
+                <div class="example-row">
+                    <span class="example-input">Standup <span class="arg">@9am</span></span>
+                    <span class="example-arrow">→</span>
+                    <span class="example-result" data-en="today <strong>9:00</strong>" data-zh="今天 <strong>9:00</strong>">today <strong>9:00</strong></span>
+                </div>
+                <div class="example-row">
+                    <span class="example-input">Ship release <span class="arg">@5pm fri</span></span>
+                    <span class="example-arrow">→</span>
+                    <span class="example-result" data-en="next <strong>Friday 17:00</strong>" data-zh="下<strong>周五 17:00</strong>">next <strong>Friday 17:00</strong></span>
+                </div>
+                <div class="example-row">
+                    <span class="example-input">Call mom <span class="arg">@8pm tmw</span></span>
+                    <span class="example-arrow">→</span>
+                    <span class="example-result" data-en="<strong>tomorrow 20:00</strong>" data-zh="<strong>明天 20:00</strong>"><strong>tomorrow 20:00</strong></span>
+                </div>
+                <div class="example-row">
+                    <span class="example-input">Reply to email <span class="arg">+30m</span></span>
+                    <span class="example-arrow">→</span>
+                    <span class="example-result" data-en="in <strong>30 minutes</strong>" data-zh="<strong>30 分钟</strong> 后">in <strong>30 minutes</strong></span>
+                </div>
+            </section>
+
+            <!-- Smart lists -->
+            <section class="manual-section" id="smart-lists">
+                <h2 class="manual-h2"><span class="h2-emoji">🗓</span>
+                    <span data-en="Smart lists" data-zh="智能列表">Smart lists</span>
+                </h2>
+                <p data-en="The four tiles at the top of the sidebar are automatic views, built from every list:"
+                   data-zh="侧边栏顶部的四个卡片是自动视图，汇总你所有列表的任务：">
+                    The four tiles at the top of the sidebar are automatic views, built from every list:
+                </p>
+                <div class="dl-grid">
+                    <div class="dl-item">
+                        <h4 data-en="Today" data-zh="今天">Today</h4>
+                        <p data-en="Tasks due today or overdue." data-zh="今天到期或已逾期的任务。">Tasks due today or overdue.</p>
+                    </div>
+                    <div class="dl-item">
+                        <h4 data-en="Planned" data-zh="计划">Planned</h4>
+                        <p data-en="Everything with a future date or time." data-zh="所有有未来日期或时间的任务。">Everything with a future date or time.</p>
+                    </div>
+                    <div class="dl-item">
+                        <h4 data-en="All" data-zh="全部">All</h4>
+                        <p data-en="Every task, grouped by list." data-zh="所有任务，按列表分组。">Every task, grouped by list.</p>
+                    </div>
+                    <div class="dl-item">
+                        <h4 data-en="Completed" data-zh="已完成">Completed</h4>
+                        <p data-en="Finished tasks, kept for review." data-zh="已完成的任务，留作回顾。">Finished tasks, kept for review.</p>
+                    </div>
+                </div>
+                <p data-en="Each tile shows a count badge. Click any tile to filter the task pane."
+                   data-zh="每个卡片显示计数徽章。点击任一卡片即可筛选任务区。">
+                    Each tile shows a count badge. Click any tile to filter the task pane.
+                </p>
+            </section>
+
+            <!-- Custom lists -->
+            <section class="manual-section" id="custom-lists">
+                <h2 class="manual-h2"><span class="h2-emoji">📂</span>
+                    <span data-en="Custom lists" data-zh="自定义列表">Custom lists</span>
+                </h2>
+                <p data-en="Below the smart tiles, create your own lists to separate Work, Life, Ideas, and so on. Each list gets an emoji icon and a color."
+                   data-zh="在智能卡片下方，创建自己的列表来区分工作、生活、创意等。每个列表可设 emoji 图标和颜色。">
+                    Below the smart tiles, create your own lists to separate Work, Life, Ideas, and so on. Each list gets an emoji icon and a color.
+                </p>
+                <div class="dl-grid">
+                    <div class="dl-item">
+                        <h4 data-en="Create" data-zh="创建">Create</h4>
+                        <p data-en="Click the + next to “My Lists.” A default emoji (📋) and Crail color are applied if you skip them."
+                           data-zh="点击「我的列表」旁的 +。若不选择，会套用默认 emoji（📋）和 Crail 配色。">
+                            Click the <code>+</code> next to "My Lists." A default emoji (📋) and Crail color are applied if you skip them.
+                        </p>
+                    </div>
+                    <div class="dl-item">
+                        <h4 data-en="Edit" data-zh="编辑">Edit</h4>
+                        <p data-en="Double-click a list to rename it or change its icon/color."
+                           data-zh="双击列表即可重命名或更换图标/颜色。">
+                            Double-click a list to rename it or change its icon/color.
+                        </p>
+                    </div>
+                    <div class="dl-item">
+                        <h4 data-en="Move a task" data-zh="移动任务">Move a task</h4>
+                        <p data-en="Right-click a task → “Move to list” → pick the target."
+                           data-zh="右键任务 →「移动到列表」→ 选择目标。">
+                            Right-click a task → "Move to list" → pick the target.
+                        </p>
+                    </div>
+                    <div class="dl-item">
+                        <h4 data-en="Delete a list" data-zh="删除列表">Delete a list</h4>
+                        <p data-en="Deleting a list removes all tasks in it (cascade)."
+                           data-zh="删除列表会级联删除其中所有任务。">
+                            Deleting a list removes all tasks in it (cascade).
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Editing -->
+            <section class="manual-section" id="editing">
+                <h2 class="manual-h2"><span class="h2-emoji">✏️</span>
+                    <span data-en="Editing tasks" data-zh="编辑任务">Editing tasks</span>
+                </h2>
+                <p data-en="Taskly has two editing surfaces: a quick inline editor, and a full detail dialog."
+                   data-zh="Taskly 有两层编辑：行内快速编辑，和完整的详情对话框。">
+                    Taskly has two editing surfaces: a quick inline editor, and a full detail dialog.
+                </p>
+
+                <h3 class="manual-h3" data-en="Inline editing" data-zh="行内编辑">Inline editing</h3>
+                <div class="dl-grid">
+                    <div class="dl-item">
+                        <h4>Complete / uncomplete</h4>
+                        <p data-en="Click the round checkbox. Instant, no mode." data-zh="点圆形复选框。即时生效，无模式切换。">Click the round checkbox. Instant, no mode.</p>
+                    </div>
+                    <div class="dl-item">
+                        <h4 data-en="Edit text + date + notes" data-zh="编辑文字+日期+备注">Edit text + date + notes</h4>
+                        <p data-en="Double-click the task row. Press Enter to save, Esc to cancel."
+                           data-zh="双击任务行。回车保存，Esc 放弃。">
+                            Double-click the task row. Press <kbd>Enter</kbd> to save, <kbd>Esc</kbd> to cancel.
+                        </p>
+                    </div>
+                </div>
+
+                <h3 class="manual-h3" data-en="Detail dialog (ⓘ)" data-zh="详情对话框 (ⓘ)">Detail dialog (ⓘ)</h3>
+                <div class="dl-grid">
+                    <div class="dl-item">
+                        <h4 data-en="Open" data-zh="打开">Open</h4>
+                        <p data-en="Click the ⓘ button on any task row." data-zh="点击任务行上的 ⓘ 按钮。">Click the <kbd>ⓘ</kbd> button on any task row.</p>
+                    </div>
+                    <div class="dl-item">
+                        <h4 data-en="Fields" data-zh="字段">Fields</h4>
+                        <p data-en="Task text, notes, date, and time — all editable."
+                           data-zh="任务文字、备注、日期、时间，全部可改。">
+                            Task text, notes, date, and time — all editable.
+                        </p>
+                    </div>
+                    <div class="dl-item">
+                        <h4 data-en="Date &amp; time" data-zh="日期与时间">Date &amp; time</h4>
+                        <p data-en="Click the date/time buttons to open pickers. Clear to remove."
+                           data-zh="点日期/时间按钮弹出选择器。可清除。">
+                            Click the date/time buttons to open pickers. Clear to remove.
+                        </p>
+                    </div>
+                    <div class="dl-item">
+                        <h4 data-en="Delete" data-zh="删除">Delete</h4>
+                        <p data-en="Delete button asks for confirmation first." data-zh="删除按钮会先弹出确认。">Delete button asks for confirmation first.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CLI -->
+            <section class="manual-section" id="cli">
+                <h2 class="manual-h2"><span class="h2-emoji">⌘</span>
+                    <span data-en="Command-line interface" data-zh="命令行">Command-line interface</span>
+                </h2>
+                <p data-en="The same Taskly binary is also a CLI. Run it with a subcommand and it never boots the GUI — perfect for scripts and AI agents. Every command speaks JSON."
+                   data-zh="同一个 Taskly 二进制也是命令行工具。带子命令运行时不启动 GUI——适合脚本和 AI agent。每个命令都支持 JSON 输出。">
+                    The same Taskly binary is also a CLI. Run it with a subcommand and it never boots the GUI — perfect for scripts and AI agents. Every command speaks JSON.
+                </p>
+                <p data-en="Install the taskly command to your PATH once:"
+                   data-zh="一次性把 taskly 命令安装到你的 PATH：">
+                    Install the <code>taskly</code> command to your PATH once:
+                </p>
+                <div class="code-block-light"><span class="comment"># install the CLI (macOS/Linux: ~/.local/bin · Windows: user PATH)</span>
+<span class="prompt">$</span> taskly install-cli</div>
+                <table class="syntax-table">
+                    <thead>
+                        <tr>
+                            <th data-en="Command" data-zh="命令">Command</th>
+                            <th data-en="What it does" data-zh="作用">What it does</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>list</code></td><td data-en="List tasks (filter by list/view/status)" data-zh="列任务（可按列表/视图/状态筛选）">List tasks (filter by list/view/status)</td></tr>
+                        <tr><td><code>lists</code></td><td data-en="List all task lists" data-zh="列出所有任务列表">List all task lists</td></tr>
+                        <tr><td><code>add "&lt;text&gt;"</code></td><td data-en="Add a task (--list, --due, --time, --notes)" data-zh="添加任务（--list、--due、--time、--notes）">Add a task (--list, --due, --time, --notes)</td></tr>
+                        <tr><td><code>update &lt;id&gt;</code></td><td data-en="Edit a task" data-zh="编辑任务">Edit a task</td></tr>
+                        <tr><td><code>done</code> / <code>undone</code></td><td data-en="Set complete/incomplete (idempotent)" data-zh="设完成/未完成（幂等）">Set complete/incomplete (idempotent)</td></tr>
+                        <tr><td><code>rm &lt;id&gt;</code></td><td data-en="Delete a task" data-zh="删除任务">Delete a task</td></tr>
+                        <tr><td><code>search "&lt;kw&gt;"</code></td><td data-en="Fuzzy search tasks" data-zh="模糊搜索任务">Fuzzy search tasks</td></tr>
+                        <tr><td><code>mklist</code> / <code>rmlist</code></td><td data-en="Create / delete a list" data-zh="创建 / 删除列表">Create / delete a list</td></tr>
+                    </tbody>
+                </table>
+                <p data-en="The --due flag uses the same scheduling syntax as the GUI:"
+                   data-zh="--due 参数复用与 GUI 相同的排程语法：">
+                    The <code>--due</code> flag uses the same scheduling syntax as the GUI:
+                </p>
+                <div class="code-block-light"><span class="comment"># schedule with the same + and @ modifiers</span>
+<span class="prompt">$</span> taskly add <span class="str">"Standup"</span> <span class="flag">--due</span> <span class="str">@9am</span> <span class="flag">--list</span> <span class="str">"Work"</span> <span class="flag">--json</span>
+<span class="prompt">$</span> taskly add <span class="str">"Buy milk"</span> <span class="flag">--due</span> <span class="str">+1d</span>
+<span class="prompt">$</span> taskly add <span class="str">"Review PRs"</span> <span class="flag">--due</span> <span class="str">2026-08-07</span> <span class="flag">--time</span> <span class="str">17:00</span></div>
+                <p data-en="Exit codes: 0 success · 1 generic error · 2 validation failed · 3 not found · 4 database error."
+                   data-zh="退出码：0 成功 · 1 通用错误 · 2 校验失败 · 3 未找到 · 4 数据库错误。">
+                    Exit codes: <code>0</code> success · <code>1</code> generic error · <code>2</code> validation failed · <code>3</code> not found · <code>4</code> database error.
+                </p>
+            </section>
+
+            <!-- Sync -->
+            <section class="manual-section" id="sync">
+                <h2 class="manual-h2"><span class="h2-emoji">🔄</span>
+                    <span data-en="Cloud sync" data-zh="云同步">Cloud sync</span>
+                </h2>
+                <p data-en="Taskly stores everything in a single local SQLite database file. To sync across devices, put the .db file in any cloud-synced folder — iCloud, Dropbox, Syncthing — and point each device at it."
+                   data-zh="Taskly 把所有数据存在一个本地 SQLite 数据库文件里。跨设备同步的方法：把 .db 文件放进任意云同步文件夹（iCloud、Dropbox、Syncthing），然后让每台设备指向它。">
+                    Taskly stores everything in a single local SQLite database file. To sync across devices, put the <code>.db</code> file in any cloud-synced folder — iCloud, Dropbox, Syncthing — and point each device at it.
+                </p>
+                <div class="callout">
+                    <div class="callout-title">🔒 <span data-en="WAL mode keeps it safe" data-zh="WAL 模式保障并发安全">WAL mode keeps it safe</span></div>
+                    <span data-en="Taskly runs SQLite in WAL mode, so concurrent reads and writes from cloud-sync daemons won’t corrupt your data. No account, no cloud lock-in."
+                          data-zh="Taskly 以 WAL 模式运行 SQLite，云同步守护进程的并发读写不会损坏数据。无需账号，不绑定云服务。">
+                        Taskly runs SQLite in WAL mode, so concurrent reads and writes from cloud-sync daemons won't corrupt your data. No account, no cloud lock-in.
+                    </span>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">Taskly</div>
+                <div class="footer-links">
+                    <a href="index.html" data-en="Home" data-zh="首页">Home</a>
+                    <a href="https://github.com/turinglambdaai/taskly">GitHub</a>
+                    <a href="https://github.com/turinglambdaai/taskly/releases" data-en="Releases" data-zh="版本发布">Releases</a>
+                    <a href="https://github.com/turinglambdaai/taskly/blob/main/CHANGELOG.md" data-en="Changelog" data-zh="更新日志">Changelog</a>
+                </div>
+                <div>&copy; 2026 Taskly. <span data-en="Apache License 2.0." data-zh="Apache 2.0 协议。">Apache License 2.0.</span></div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js?v=10"></script>
+    <script>
+        // Active-TOC highlighting: mark the section currently in view.
+        document.addEventListener('DOMContentLoaded', () => {
+            const links = document.querySelectorAll('.manual-toc a');
+            const sections = Array.from(links).map(a => {
+                const id = a.getAttribute('href').slice(1);
+                return { link: a, el: document.getElementById(id) };
+            }).filter(s => s.el);
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        links.forEach(l => l.classList.remove('active'));
+                        const match = sections.find(s => s.el === entry.target);
+                        if (match) match.link.classList.add('active');
+                    }
+                });
+            }, { rootMargin: '-80px 0px -70% 0px' });
+
+            sections.forEach(s => observer.observe(s.el));
+        });
+    </script>
+</body>
+
+</html>

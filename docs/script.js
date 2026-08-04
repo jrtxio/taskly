@@ -62,8 +62,11 @@ window.setLanguage = function (lang) {
     localStorage.setItem('taskly_lang', lang);
     document.documentElement.lang = lang;
 
-    // Update translatable text. Preserve nested child elements (icons/spans)
-    // by only replacing the element's own text node(s) when it has no element children.
+    // Update translatable text.
+    // - Leaf elements (no element children): set innerText directly.
+    // - Elements with inline markup in their data-* attribute (e.g. <code>, <strong>):
+    //   the attribute is author-controlled and safe to render as innerHTML, so we use
+    //   that path to support mixed text+markup like "Lowercase <code>m</code> = minutes".
     document.querySelectorAll('[data-en], [data-zh]').forEach(el => {
         const text = el.getAttribute('data-' + lang);
         if (!text) return;
@@ -71,6 +74,8 @@ window.setLanguage = function (lang) {
         const hasElementChildren = Array.from(el.children).some(c => c.nodeType === 1);
         if (!hasElementChildren) {
             el.innerText = text;
+        } else if (/<\w/.test(text)) {
+            el.innerHTML = text;
         }
     });
 
