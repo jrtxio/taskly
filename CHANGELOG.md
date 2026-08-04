@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.2] - 2026-08-04
+
+### Fixed
+- **Windows IME text duplication (root cause)**: typing Chinese (and other IME
+  languages) into any text box on Windows caused the last character(s) to be
+  repeated (e.g. "完成" → "完成成"). This was an upstream regression in
+  Avalonia 11.2.7 ([Avalonia#18661](https://github.com/AvaloniaUI/Avalonia/issues/18661)).
+  Upgraded Avalonia from 11.2.7 → **11.2.8**, which ships the official
+  "Fix Windows IME" patch. The earlier 0.4.6 workaround (removing TwoWay
+  bindings) addressed a separate binding-layer issue but did not resolve the
+  library-level duplication.
+
 ## [0.4.9] - 2026-08-03
 
 ### Fixed
