@@ -1,7 +1,9 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Taskly.Services;
@@ -21,6 +23,9 @@ public partial class MainWindow : Window
     private MainViewModel? _main;
     private I18nService? _i18n;
     private ILogger<MainWindow>? _logger;
+    private ReminderService? _reminderService;
+    private WindowNotificationManager? _notificationManager;
+    private DispatcherTimer? _reminderTimer;
 
     // macOS 系统菜单栏的 NativeMenuItem 引用（用于 i18n 更新文案 + 勾选态）
     private NativeMenuItem? _nativeFile, _nativeNewDb, _nativeOpenDb, _nativeCloseDb, _nativeExit;
@@ -42,6 +47,7 @@ public partial class MainWindow : Window
         I18nService i18n,
         AppTheme theme,
         DialogService dialog,
+        ReminderService reminderService,
         ILogger<MainWindow> logger)
     {
         InitializeComponent();
@@ -49,6 +55,7 @@ public partial class MainWindow : Window
         _main = main;
         _i18n = i18n;
         _logger = logger;
+        _reminderService = reminderService;
 
         DataContext = main;
 
@@ -320,11 +327,41 @@ public partial class MainWindow : Window
         {
             // macOS NativeMenu 已在构造函数里同步构建（保证窗口创建时就挂上）
             await _main.InitializeAsync();
+
+            // 初始化到期提醒：通知管理器 + 启动检查 + 定时器
+            StartReminderSystem();
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Failed to initialize");
         }
+    }
+
+    /// <summary>启动到期提醒系统：创建通知管理器，检查已过期任务，启动定时器。</summary>
+    private void StartReminderSystem()
+    {
+        if (_reminderService is null) return;
+
+        // 创建应用内 toast 通知管理器
+        _notificationManager = new WindowNotificationManager(this)
+        {
+            Position = NotificationPosition.TopRight,
+            MaxItems = 3,
+        };
+
+        // 启动时检查已过期任务
+        _ = _reminderService.CheckStartupRemindersAsync(_notificationManager);
+
+        // 定时器：每分钟检查新到期任务
+        _reminderTimer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
+        _reminderTimer.Tick += async (s, e) =>
+        {
+            if (_reminderService is not null && _main?.IsDatabaseConnected == true)
+            {
+                await _reminderService.CheckAndNotifyAsync(_notificationManager);
+            }
+        };
+        _reminderTimer.Start();
     }
 
     // ---------------- 文件菜单命令 ----------------

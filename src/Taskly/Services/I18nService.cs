@@ -168,6 +168,11 @@ public sealed partial class I18nService : ObservableObject
         _zh["dialogSelectTime"] = "选择时间";
         _zh["labelHour"] = "时";
         _zh["labelMinute"] = "分";
+
+        // 到期提醒
+        _zh["reminderTitle"] = "⏰ 任务到期";
+        _zh["reminderDueAt"] = "到期时间";
+        _zh["reminderStartupSummary"] = "{0} 个任务已过期";
     }
 
     private void InitializeEnglish()
@@ -274,5 +279,10 @@ public sealed partial class I18nService : ObservableObject
         _en["dialogSelectTime"] = "Select Time";
         _en["labelHour"] = "Hour";
         _en["labelMinute"] = "Min";
+
+        // Task reminders
+        _en["reminderTitle"] = "⏰ Task Due";
+        _en["reminderDueAt"] = "Due at";
+        _en["reminderStartupSummary"] = "{0} task(s) overdue";
     }
 }

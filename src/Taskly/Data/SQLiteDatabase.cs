@@ -340,6 +340,15 @@ public sealed class SQLiteDatabase : IDisposable
         return rows.Select(TaskFromRow).ToList();
     }
 
+    /// <summary>查所有未完成且有截止日期的任务（供到期提醒检查用）。</summary>
+    public async Task<List<TaskItem>> GetAllIncompleteTasksWithDueDateAsync()
+    {
+        await EnsureConnectedAsync();
+        var rows = await QueryAsync(_connection!,
+            $"{TaskSelectBase} WHERE t.completed = 0 AND t.due_date IS NOT NULL", null);
+        return rows.Select(TaskFromRow).ToList();
+    }
+
     /// <summary>按列表查询未完成任务（ORDER BY id DESC）。</summary>
     public async Task<List<TaskItem>> GetTasksByListAsync(int listId, int limit = 1000, int offset = 0) =>
         await QueryTasksAsync(

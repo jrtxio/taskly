@@ -23,6 +23,7 @@ public sealed partial class MainViewModel : ViewModelBase
     private readonly ListPaneViewModel _listPane;
     private readonly TaskPaneViewModel _taskPane;
     private readonly DialogService _dialog;
+    private readonly ReminderService _reminderService;
     private CancellationTokenSource? _statusCts;
 
     public MainViewModel(
@@ -33,6 +34,7 @@ public sealed partial class MainViewModel : ViewModelBase
         ListPaneViewModel listPane,
         TaskPaneViewModel taskPane,
         DialogService dialog,
+        ReminderService reminderService,
         ILogger<MainViewModel> logger)
     {
         _db = db;
@@ -42,6 +44,7 @@ public sealed partial class MainViewModel : ViewModelBase
         _listPane = listPane;
         _taskPane = taskPane;
         _dialog = dialog;
+        _reminderService = reminderService;
         _i18n = i18n;
 
         i18n.LanguageChanged += OnLanguageChanged;
@@ -92,6 +95,9 @@ public sealed partial class MainViewModel : ViewModelBase
 
     partial void OnIsDatabaseConnectedChanged(bool value)
     {
+        // 数据库切换时清空已提醒集合，让新库的任务能重新检查
+        _reminderService.ResetNotified();
+
         // 连接状态变化时通知子视图模型刷新
         if (value)
         {

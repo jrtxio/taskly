@@ -53,6 +53,7 @@ internal sealed class Program
         services.AddSingleton<Services.I18nService>();
         services.AddSingleton<Services.DateParser>();
         services.AddSingleton<Services.DialogService>();
+        services.AddSingleton<Services.ReminderService>();
         services.AddSingleton<Services.AppTheme>(sp => new Services.AppTheme(Application.Current!));
 
         // ViewModels
