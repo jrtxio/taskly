@@ -1,6 +1,15 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <!-- 全局字体：系统 UI 字体优先，带 CJK 回退链。
+         Windows: Segoe UI → Microsoft YaHei UI（标点靠下，非 SimSun 居中）
+         macOS: system → PingFang SC
+         Linux: system → Noto Sans CJK SC
+         Window 级别设置会继承到所有子控件。 -->
+    <Style Selector="Window">
+        <Setter Property="FontFamily" Value="Segoe UI, system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei UI', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif"/>
+    </Style>
+
     <!-- 所有按钮的统一基线：最小高度 + 垂直居中内容，保证跨界面尺寸一致 -->
     <Style Selector="Button">
         <Setter Property="MinHeight" Value="34"/>
