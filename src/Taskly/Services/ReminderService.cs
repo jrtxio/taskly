@@ -1,5 +1,6 @@
+using System.Diagnostics;
 using System.Globalization;
-using Avalonia.Controls.Notifications;
+using Avalonia.Labs.Notifications;
 using Microsoft.Extensions.Logging;
 using Taskly.Data;
 using Taskly.Models;
@@ -8,7 +9,7 @@ namespace Taskly.Services;
 
 /// <summary>
 /// 到期提醒服务。应用运行期间定时检查未完成且已到期的任务，
-/// 通过 WindowNotificationManager 弹出 toast 通知。
+/// 通过操作系统级通知弹出提醒（通知中心/锁屏/声音）。
 /// 每个任务到期只提醒一次（HashSet 去重）。
 /// </summary>
 public sealed class ReminderService
@@ -32,9 +33,8 @@ public sealed class ReminderService
     }
 
     /// <summary>启动时检查已过期任务，弹汇总通知。</summary>
-    public async Task CheckStartupRemindersAsync(INotificationManager? manager)
+    public async Task CheckStartupRemindersAsync()
     {
-        if (manager is null) return;
         try
         {
             var overdue = await GetOverdueTasksAsync();
@@ -48,7 +48,7 @@ public sealed class ReminderService
                 // 少量：逐条弹通知
                 foreach (var t in overdue)
                 {
-                    ShowNotification(manager, t);
+                    ShowNotification(t);
                 }
             }
             else
@@ -58,7 +58,7 @@ public sealed class ReminderService
                     CultureInfo.InvariantCulture,
                     _i18n.T("reminderStartupSummary"),
                     overdue.Count);
-                manager.Show(new Notification(_i18n.T("reminderTitle"), msg, NotificationType.Warning));
+                ShowNotification(_i18n.T("reminderTitle"), msg);
             }
         }
         catch (Exception ex)
@@ -68,9 +68,8 @@ public sealed class ReminderService
     }
 
     /// <summary>运行期间定时检查：只弹新到期（尚未通知过）的任务。</summary>
-    public async Task CheckAndNotifyAsync(INotificationManager? manager)
+    public async Task CheckAndNotifyAsync()
     {
-        if (manager is null) return;
         try
         {
             var overdue = await GetOverdueTasksAsync();
@@ -78,7 +77,7 @@ public sealed class ReminderService
             {
                 if (_notifiedIds.Add(t.Id)) // true = 新加入（未通知过）
                 {
-                    ShowNotification(manager, t);
+                    ShowNotification(t);
                 }
             }
         }
@@ -109,12 +108,69 @@ public sealed class ReminderService
         return false;
     }
 
-    private void ShowNotification(INotificationManager manager, TaskItem task)
+    /// <summary>发送 OS 级系统通知。
+    /// 优先用 Avalonia.Labs.Notifications 的 NativeNotificationManager（三平台原生），
+    /// Linux 上 portal 不可用时 fallback 到 notify-send 命令。</summary>
+    private void ShowNotification(TaskItem task)
     {
         var time = !string.IsNullOrEmpty(task.DueTime)
             ? $"{task.DueDate} {task.DueTime}"
             : task.DueDate!;
         var msg = $"{task.Text}\n{_i18n.T("reminderDueAt")}: {time}";
-        manager.Show(new Notification(_i18n.T("reminderTitle"), msg, NotificationType.Information));
+        ShowNotification(_i18n.T("reminderTitle"), msg);
     }
+
+    private void ShowNotification(string title, string message)
+    {
+        // 优先：Avalonia.Labs.Notifications 原生系统通知
+        var native = NativeNotificationManager.Current;
+        if (native is not null)
+        {
+            try
+            {
+                var n = native.CreateNotification(category: null);
+                if (n is not null)
+                {
+                    n.Title = title;
+                    n.Message = message;
+                    n.Show();
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Native notification failed, trying fallback");
+            }
+        }
+
+        // Linux fallback：notify-send 命令
+        if (OperatingSystem.IsLinux())
+        {
+            try
+            {
+                using var proc = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "notify-send",
+                        Arguments = $"--app-name=Taskly \"{Escape(title)}\" \"{Escape(message)}\"",
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        RedirectStandardError = true,
+                    },
+                };
+                proc.Start();
+                return;
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "notify-send fallback failed");
+            }
+        }
+
+        _logger?.LogWarning("No notification method available on this platform");
+    }
+
+    /// <summary>转义 shell 参数中的双引号和反斜杠。</summary>
+    private static string Escape(string s) => s.Replace("\\", "\\\\").Replace("\"", "\\\"");
 }

@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Diagnostics;
+using Avalonia.Labs.Notifications;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -72,7 +73,11 @@ internal sealed class Program
     {
         var builder = AppBuilder.Configure<App>()
             .UsePlatformDetect()
-            .WithInterFont();
+            .WithInterFont()
+            .WithAppNotifications(new AppNotificationOptions
+            {
+                AppName = "Taskly",
+            });
 
         return builder.LogToTrace();
     }

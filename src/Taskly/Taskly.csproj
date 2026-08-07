@@ -8,7 +8,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <RootNamespace>Taskly</RootNamespace>
     <AssemblyName>Taskly</AssemblyName>
-    <Version>0.6.0</Version>
+    <Version>0.6.1</Version>
     <!-- Windows .exe 图标（嵌入 Win32 资源）-->
     <ApplicationIcon>taskly.ico</ApplicationIcon>
     <!-- macOS 打包时用作 app 显示名（CFBundleName），避免显示 "Avalonia Application" -->
@@ -27,6 +27,7 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.8" />
+    <PackageReference Include="Avalonia.Labs.Notifications" Version="11.2.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.7" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />
