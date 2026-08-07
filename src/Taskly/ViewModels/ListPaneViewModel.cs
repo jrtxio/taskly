@@ -189,7 +189,13 @@ public sealed partial class ListPaneViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    public async Task SelectList(TodoList list) => await SelectListAsync(list.Id);
+    public async Task SelectListAsync(TodoList list)
+    {
+        if (list.Id != (SelectedList?.Id ?? 0))
+        {
+            await SelectListAsync(list.Id);
+        }
+    }
 
     // ---------------- 列表 CRUD ----------------
 

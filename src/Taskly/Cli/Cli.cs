@@ -7,7 +7,7 @@ namespace Taskly.Cli;
 
 /// <summary>CLI 入口。装配 System.CommandLine 根命令与全部子命令，
 /// 顶层 try/catch 将异常统一转换为退出码与 JSON 错误输出。</summary>
-public static class Cli
+public static class CliEngine
 {
     /// <summary>CLI 主流程：Windows 附加控制台 → 解析 → 执行 → 返回退出码。</summary>
     public static int Run(string[] args)

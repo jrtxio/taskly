@@ -22,7 +22,7 @@ internal static class DoneUndoneCommand
             IdArgument,
         };
 
-        cmd.SetAction(async parseResult => await Cli.RunCommand(async () =>
+        cmd.SetAction(async parseResult => await CliEngine.RunCommand(async () =>
         {
             var json = parseResult.GetValue(CliOptions.Json);
             var quiet = parseResult.GetValue(CliOptions.Quiet);

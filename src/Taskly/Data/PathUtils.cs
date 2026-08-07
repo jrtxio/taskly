@@ -11,7 +11,7 @@ public static class PathUtils
     /// <summary>应用目录名（与原版一致）。</summary>
     public const string AppDirName = ".taskly";
 
-    public const string DefaultDbFileName = "tasks.db";
+    public const string DefaultDatabaseFileName = "tasks.db";
     public const string ConfigFileName = "config.ini";
 
     /// <summary>获取用户主目录下的应用目录（~/.taskly）。</summary>
@@ -28,7 +28,7 @@ public static class PathUtils
     }
 
     /// <summary>默认数据库路径（~/.taskly/tasks.db）。</summary>
-    public static string GetDefaultDbPath() => Path.Combine(GetAppDirectory(), DefaultDbFileName);
+    public static string GetDefaultDatabasePath() => Path.Combine(GetAppDirectory(), DefaultDatabaseFileName);
 
     /// <summary>配置文件路径（~/.taskly/config.ini）。</summary>
     public static string GetConfigPath() => Path.Combine(GetAppDirectory(), ConfigFileName);

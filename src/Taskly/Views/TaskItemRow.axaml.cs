@@ -131,7 +131,7 @@ public partial class TaskItemRow : UserControl
 
     private TaskItem? Task => DataContext as TaskItem;
 
-    private TaskPaneViewModel? PaneVm
+    private TaskPaneViewModel? _paneVm
     {
         get
         {
@@ -146,9 +146,9 @@ public partial class TaskItemRow : UserControl
     // ---------------- 完成 ----------------
     private void OnToggle(object? sender, RoutedEventArgs e)
     {
-        if (Task is not null && PaneVm is not null)
+        if (Task is not null && _paneVm is not null)
         {
-            _ = PaneVm.ToggleCompletedCommand.ExecuteAsync(Task);
+            _ = _paneVm.ToggleCompletedCommand.ExecuteAsync(Task);
         }
     }
 
@@ -237,12 +237,12 @@ public partial class TaskItemRow : UserControl
             // 退出编辑后刷新默认态的元信息显示（可能新加了日期/备注）
             UpdateMetaVisibility();
 
-            if (save && Task is not null && PaneVm is not null)
+            if (save && Task is not null && _paneVm is not null)
             {
                 // 缓存到局部变量：Task 是每次访问重新求值的属性（DataContext as TaskItem），
                 // 在异步保存触发 RefreshAsync 重建集合时 DataContext 可能变 null，导致 NRE。
                 var task = Task;
-                var paneVm = PaneVm;
+                var paneVm = _paneVm;
 
                 // 文字
                 var newText = TaskTextEdit.Text ?? string.Empty;
@@ -318,9 +318,9 @@ public partial class TaskItemRow : UserControl
             if (dialog.ResultOk)
             {
                 Task.DueDate = dialog.Date;
-                if (PaneVm is not null)
+                if (_paneVm is not null)
                 {
-                    await PaneVm.UpdateTaskAsync(Task);
+                    await _paneVm.UpdateTaskAsync(Task);
                 }
             }
         }
@@ -347,9 +347,9 @@ public partial class TaskItemRow : UserControl
             if (dialog.ResultOk)
             {
                 Task.DueTime = dialog.Time;
-                if (PaneVm is not null)
+                if (_paneVm is not null)
                 {
-                    await PaneVm.UpdateTaskAsync(Task);
+                    await _paneVm.UpdateTaskAsync(Task);
                 }
             }
         }
@@ -374,13 +374,13 @@ public partial class TaskItemRow : UserControl
 
         var dialog = new Dialogs.TaskDetailDialog(Task, I18n);
         await dialog.ShowDialog(Dialog.Host!);
-        if (dialog.ResultDeleted && PaneVm is not null)
+        if (dialog.ResultDeleted && _paneVm is not null)
         {
-            await PaneVm.DeleteTaskAsync(Task);
+            await _paneVm.DeleteTaskAsync(Task);
         }
-        else if (dialog.ResultSaved && PaneVm is not null)
+        else if (dialog.ResultSaved && _paneVm is not null)
         {
-            await PaneVm.UpdateTaskAsync(Task);
+            await _paneVm.UpdateTaskAsync(Task);
         }
     }
 
@@ -431,17 +431,17 @@ public partial class TaskItemRow : UserControl
 
     private void MoveToList(TodoList target)
     {
-        if (Task is not null && PaneVm is not null)
+        if (Task is not null && _paneVm is not null)
         {
-            _ = PaneVm.MoveTaskToListAsync(Task, target.Id);
+            _ = _paneVm.MoveTaskToListAsync(Task, target.Id);
         }
     }
 
     private void OnDelete(object? sender, RoutedEventArgs e)
     {
-        if (Task is not null && PaneVm is not null)
+        if (Task is not null && _paneVm is not null)
         {
-            _ = PaneVm.DeleteTaskAsync(Task);
+            _ = _paneVm.DeleteTaskAsync(Task);
         }
     }
 }

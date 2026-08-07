@@ -43,7 +43,7 @@ public sealed class SQLiteDatabase : IDisposable
     }
 
     /// <summary>获取当前数据库路径。</summary>
-    public string GetDatabasePath() => _customDatabasePath ?? PathUtils.GetDefaultDbPath();
+    public string GetDatabasePath() => _customDatabasePath ?? PathUtils.GetDefaultDatabasePath();
 
     /// <summary>打开/初始化数据库连接（对应原版 database getter + _initDatabase）。</summary>
     public async Task EnsureConnectedAsync()

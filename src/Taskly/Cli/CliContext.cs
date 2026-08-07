@@ -45,7 +45,7 @@ public sealed class CliContext : IDisposable
         }
         if (string.IsNullOrEmpty(path))
         {
-            path = PathUtils.GetDefaultDbPath();
+            path = PathUtils.GetDefaultDatabasePath();
         }
 
         var db = services.GetRequiredService<SQLiteDatabase>();

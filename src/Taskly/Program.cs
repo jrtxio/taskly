@@ -23,7 +23,7 @@ internal sealed class Program
 
         if (args.Length > 0)
         {
-            return Cli.Cli.Run(args);
+            return Cli.CliEngine.Run(args);
         }
 
         BuildAvaloniaApp()

@@ -10,9 +10,9 @@
         <!-- 顶部菜单栏（Windows/Linux 用；macOS 用系统菜单栏，此控件在 macOS 上隐藏） -->
         <Menu x:Name="WindowMenuBar" DockPanel.Dock="Top" Height="32">
             <MenuItem x:Name="MenuFile">
-                <MenuItem x:Name="MenuNewDatabase" Click="OnMenuNewDb" InputGesture="Ctrl+N"/>
-                <MenuItem x:Name="MenuOpenDatabase" Click="OnMenuOpenDb" InputGesture="Ctrl+O"/>
-                <MenuItem x:Name="MenuCloseDatabase" Click="OnMenuCloseDb" InputGesture="Ctrl+W"/>
+                <MenuItem x:Name="MenuNewDatabase" Click="OnMenuNewDatabase" InputGesture="Ctrl+N"/>
+                <MenuItem x:Name="MenuOpenDatabase" Click="OnMenuOpenDatabase" InputGesture="Ctrl+O"/>
+                <MenuItem x:Name="MenuCloseDatabase" Click="OnMenuCloseDatabase" InputGesture="Ctrl+W"/>
                 <Separator/>
                 <MenuItem x:Name="MenuExit" Click="OnMenuExit" InputGesture="Ctrl+Q"/>
             </MenuItem>

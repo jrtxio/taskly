@@ -145,9 +145,9 @@ public partial class MainWindow : Window
         }
 
         // 文件菜单
-        _nativeNewDb = NewNativeItem(_i18n.T("menuNewDatabase"), (s, e) => OnMenuNewDb(s, new RoutedEventArgs()), "Cmd+N");
-        _nativeOpenDb = NewNativeItem(_i18n.T("menuOpenDatabase"), (s, e) => OnMenuOpenDb(s, new RoutedEventArgs()), "Cmd+O");
-        _nativeCloseDb = NewNativeItem(_i18n.T("menuCloseDatabase"), (s, e) => OnMenuCloseDb(s, new RoutedEventArgs()), "Cmd+W");
+        _nativeNewDb = NewNativeItem(_i18n.T("menuNewDatabase"), (s, e) => OnMenuNewDatabase(s, new RoutedEventArgs()), "Cmd+N");
+        _nativeOpenDb = NewNativeItem(_i18n.T("menuOpenDatabase"), (s, e) => OnMenuOpenDatabase(s, new RoutedEventArgs()), "Cmd+O");
+        _nativeCloseDb = NewNativeItem(_i18n.T("menuCloseDatabase"), (s, e) => OnMenuCloseDatabase(s, new RoutedEventArgs()), "Cmd+W");
         _nativeExit = NewNativeItem(_i18n.T("menuExit"), (s, e) => OnMenuExit(s, new RoutedEventArgs()), "Cmd+Q");
         _nativeFile = new NativeMenuItem { Header = _i18n.T("menuFile"), Menu = new NativeMenu() };
         _nativeFile.Menu!.Items.Add(_nativeNewDb);
@@ -364,7 +364,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        var path = await PickSaveDbPathAsync();
+        var path = await PickSaveDatabasePathAsync();
         if (path is null)
         {
             return;
@@ -380,7 +380,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        var path = await PickOpenDbPathAsync();
+        var path = await PickOpenDatabasePathAsync();
         if (path is null)
         {
             return;
@@ -409,7 +409,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private async Task<string?> PickSaveDbPathAsync()
+    private async Task<string?> PickSaveDatabasePathAsync()
     {
         var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
@@ -421,7 +421,7 @@ public partial class MainWindow : Window
         return file?.Path.LocalPath;
     }
 
-    private async Task<string?> PickOpenDbPathAsync()
+    private async Task<string?> PickOpenDatabasePathAsync()
     {
         var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
@@ -433,9 +433,9 @@ public partial class MainWindow : Window
     }
 
     // ---------------- 菜单事件 ----------------
-    private void OnMenuNewDb(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _ = NewDatabaseAsync();
-    private void OnMenuOpenDb(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _ = OpenDatabaseAsync();
-    private void OnMenuCloseDb(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _ = CloseDatabaseAsync();
+    private void OnMenuNewDatabase(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _ = NewDatabaseAsync();
+    private void OnMenuOpenDatabase(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _ = OpenDatabaseAsync();
+    private void OnMenuCloseDatabase(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _ = CloseDatabaseAsync();
     private void OnMenuExit(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => Close();
     private void OnMenuLangZh(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _ = _main?.SetLanguageAsync("zh");
     private void OnMenuLangEn(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _ = _main?.SetLanguageAsync("en");

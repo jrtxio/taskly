@@ -203,10 +203,10 @@ public static class CliInstaller
         if (!OperatingSystem.IsWindows()) return;
         try
         {
-            const int HWND_BROADCAST = 0xFFFF;
-            const int WM_SETTINGCHANGE = 0x001A;
+            const int HwndBroadcast = 0xFFFF;
+            const int WmSettingChange = 0x001A;
             PInvoke.SendMessageTimeout(
-                (IntPtr)HWND_BROADCAST, WM_SETTINGCHANGE, IntPtr.Zero, "Environment",
+                (IntPtr)HwndBroadcast, WmSettingChange, IntPtr.Zero, "Environment",
                 0x0002 /* SMTO_ABORTIFHUNG */, 5000, out _);
         }
         catch { /* best-effort; new terminals will pick up PATH anyway */ }

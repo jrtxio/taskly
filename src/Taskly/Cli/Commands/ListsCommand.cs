@@ -12,7 +12,7 @@ internal static class ListsCommand
             Description = "Lists all lists with their ids, names, icons, and pending counts",
         };
 
-        cmd.SetAction(async parseResult => await Cli.RunCommand(async () =>
+        cmd.SetAction(async parseResult => await CliEngine.RunCommand(async () =>
         {
             var json = parseResult.GetValue(CliOptions.Json);
             var quiet = parseResult.GetValue(CliOptions.Quiet);
