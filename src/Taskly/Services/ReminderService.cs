@@ -19,6 +19,9 @@ public sealed class ReminderService
     private readonly ILogger<ReminderService> _logger;
     private readonly HashSet<int> _notifiedIds = new();
 
+    /// <summary>系统通知是否可用（首次失败后置 false，避免反复崩溃）。</summary>
+    private bool _nativeNotificationsDisabled;
+
     public ReminderService(SQLiteDatabase db, I18nService i18n, ILogger<ReminderService> logger)
     {
         _db = db;
@@ -30,6 +33,8 @@ public sealed class ReminderService
     public void ResetNotified()
     {
         _notifiedIds.Clear();
+        // 切库后重新尝试系统通知（用户可能已手动授权）
+        _nativeNotificationsDisabled = false;
     }
 
     /// <summary>启动时检查已过期任务，弹汇总通知。</summary>
@@ -45,7 +50,6 @@ public sealed class ReminderService
 
             if (overdue.Count <= 3)
             {
-                // 少量：逐条弹通知
                 foreach (var t in overdue)
                 {
                     ShowNotification(t);
@@ -53,7 +57,6 @@ public sealed class ReminderService
             }
             else
             {
-                // 多量：弹一条汇总
                 var msg = string.Format(
                     CultureInfo.InvariantCulture,
                     _i18n.T("reminderStartupSummary"),
@@ -109,8 +112,7 @@ public sealed class ReminderService
     }
 
     /// <summary>发送 OS 级系统通知。
-    /// 优先用 Avalonia.Labs.Notifications 的 NativeNotificationManager（三平台原生），
-    /// Linux 上 portal 不可用时 fallback 到 notify-send 命令。</summary>
+    /// 所有异常都被捕获——通知是"best effort"功能，绝不能因此崩溃应用。</summary>
     private void ShowNotification(TaskItem task)
     {
         var time = !string.IsNullOrEmpty(task.DueTime)
@@ -122,24 +124,32 @@ public sealed class ReminderService
 
     private void ShowNotification(string title, string message)
     {
-        // 优先：Avalonia.Labs.Notifications 原生系统通知
-        var native = NativeNotificationManager.Current;
-        if (native is not null)
+        // 首选：Avalonia.Labs.Notifications 原生系统通知。
+        // macOS 首次使用时系统会弹权限请求；未授权/被拒绝/未签名时可能抛异常，
+        // 全部 catch 住，降级到 Linux notify-send 或静默跳过。
+        if (!_nativeNotificationsDisabled)
         {
             try
             {
-                var n = native.CreateNotification(category: null);
-                if (n is not null)
+                var native = NativeNotificationManager.Current;
+                if (native is not null)
                 {
-                    n.Title = title;
-                    n.Message = message;
-                    n.Show();
-                    return;
+                    var n = native.CreateNotification(category: null);
+                    if (n is not null)
+                    {
+                        n.Title = title;
+                        n.Message = message;
+                        n.Show();
+                        return;
+                    }
                 }
             }
             catch (Exception ex)
             {
-                _logger?.LogWarning(ex, "Native notification failed, trying fallback");
+                _logger?.LogWarning(ex, "Native notification failed, disabling for this session");
+                // 首次失败后本会话不再尝试原生通知（避免反复崩溃）。
+                // ResetNotified()（切库时）会重新启用。
+                _nativeNotificationsDisabled = true;
             }
         }
 
@@ -168,7 +178,7 @@ public sealed class ReminderService
             }
         }
 
-        _logger?.LogWarning("No notification method available on this platform");
+        _logger?.LogDebug("No notification method available; reminder skipped: {Title}", title);
     }
 
     /// <summary>转义 shell 参数中的双引号和反斜杠。</summary>
