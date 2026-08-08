@@ -96,10 +96,12 @@
         <Setter Property="CornerRadius" Value="100"/>
     </Style>
 
-    <!-- 任务行容器：柔和圆角 + 充足留白（Anthropic 风格的呼吸感） -->
+    <!-- 任务行容器：柔和圆角 + 充足留白（Anthropic 风格的呼吸感）。
+         Transparent 背景（非 null）保证整行命中测试，双击空白区域也能触发编辑。 -->
     <Style Selector="Border.task-row">
         <Setter Property="CornerRadius" Value="10"/>
         <Setter Property="Padding" Value="16,10"/>
+        <Setter Property="Background" Value="Transparent"/>
     </Style>
     <Style Selector="Border.task-row:pointerover">
         <Setter Property="Background" Value="{DynamicResource ThemeHoverBackgroundBrush}"/>
