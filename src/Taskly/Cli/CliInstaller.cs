@@ -117,13 +117,21 @@ public static class CliInstaller
         var installDir = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "Programs", "Taskly");
-        Directory.CreateDirectory(installDir);
+        var sourceDir = Path.GetDirectoryName(Path.GetFullPath(exePath))!;
 
-        // 复制 exe（避免原文件被锁/移动后失效）
-        var destExe = Path.Combine(installDir, "taskly.exe");
-        File.Copy(exePath, destExe, overwrite: true);
+        // 从已安装副本再次运行 install-cli：源=目标，跳过复制，只补 wrapper 和 PATH
+        var selfInstall = string.Equals(sourceDir, Path.GetFullPath(installDir), StringComparison.OrdinalIgnoreCase);
+        if (!selfInstall)
+        {
+            Directory.CreateDirectory(installDir);
+            // 旧版本安装器把 exe 改名为 taskly.exe（不带依赖 DLL），清理遗留
+            var legacyExe = Path.Combine(installDir, "taskly.exe");
+            if (File.Exists(legacyExe)) File.Delete(legacyExe);
+            CopyAppFiles(sourceDir, installDir);
+        }
 
         // 写 taskly.cmd 包装（转发参数）
+        var destExe = Path.Combine(installDir, "Taskly.exe");
         var cmdPath = Path.Combine(installDir, "taskly.cmd");
         File.WriteAllText(cmdPath, $"@echo off\r\n\"{destExe}\" %*\r\n");
 
@@ -132,8 +140,46 @@ public static class CliInstaller
 
         var msg = added
             ? $"Installed to {installDir}. Added to PATH — open a new terminal to use `taskly`."
-            : $"Installed to {installDir}. You may need to add it to PATH manually.";
+            : $"Installed to {installDir}. PATH already configured — open a new terminal to use `taskly`.";
         return new InstallResult(true, msg, true);
+    }
+
+    /// <summary>复制运行所需的文件到安装目录：exe、同目录 DLL 与 deps/runtimeconfig、
+    /// 以及 runtimes/ 子目录（框架依赖构建的原生库位置）。跳过 Velopack 更新器与杂项文件。
+    /// 单文件发布布局：原生库若已内嵌则同目录仅少量冗余 DLL，复制无害。</summary>
+    private static void CopyAppFiles(string sourceDir, string installDir)
+    {
+        foreach (var file in Directory.EnumerateFiles(sourceDir))
+        {
+            var name = Path.GetFileName(file);
+            var keep = name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)
+                || name.EndsWith(".deps.json", StringComparison.OrdinalIgnoreCase)
+                || name.EndsWith(".runtimeconfig.json", StringComparison.OrdinalIgnoreCase)
+                || name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase);
+            if (!keep) continue;
+            // Velopack 安装根目录的更新器不属于 CLI
+            if (name.Equals("Update.exe", StringComparison.OrdinalIgnoreCase)) continue;
+
+            File.Copy(file, Path.Combine(installDir, name), overwrite: true);
+        }
+
+        var runtimes = Path.Combine(sourceDir, "runtimes");
+        if (Directory.Exists(runtimes))
+        {
+            CopyDirectoryRecursive(runtimes, Path.Combine(installDir, "runtimes"));
+        }
+    }
+
+    private static void CopyDirectoryRecursive(string source, string dest)
+    {
+        foreach (var dir in Directory.EnumerateDirectories(source, "*", SearchOption.AllDirectories))
+        {
+            Directory.CreateDirectory(Path.Combine(dest, dir[(source.Length + 1)..]));
+        }
+        foreach (var file in Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories))
+        {
+            File.Copy(file, Path.Combine(dest, file[(source.Length + 1)..]), overwrite: true);
+        }
     }
 
     private static InstallResult UninstallWindows()

@@ -14,6 +14,8 @@
     <!-- macOS 打包时用作 app 显示名（CFBundleName），避免显示 "Avalonia Application" -->
     <ApplicationTitle>Taskly</ApplicationTitle>
     <UseAppHost>true</UseAppHost>
+    <!-- 单文件发布时把原生库（e_sqlite3 等）打进 exe，避免 exe 被单独复制后 SQLite 加载失败 -->
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <RuntimeIdentifiers>win-x64;osx-x64;osx-arm64;linux-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
