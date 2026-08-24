@@ -32,8 +32,8 @@
             <Setter Property="Background" Value="{DynamicResource ThemeHoverBackgroundBrush}"/>
         </Style>
         <Style Selector="Border.list-row.selected">
+            <!-- Reminders 式选中：中性灰填充，不加彩色描边 -->
             <Setter Property="Background" Value="{DynamicResource ThemeSelectionBackgroundBrush}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
         </Style>
     </UserControl.Styles>
 

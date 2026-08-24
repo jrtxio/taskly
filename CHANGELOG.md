@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2026-08-24
+
+### Changed
+- **Theme redesign — macOS Reminders style**: replaced the Anthropic-inspired warm
+  palette (Pampas cream / Crail terracotta) with a neutral Reminders-style theme:
+  pure-white content area, light-gray sidebar, system-blue accent (`#007AFF`),
+  Reminders-semantic smart-list tiles (Today blue / Scheduled red / All & Completed
+  gray), and a layered Reminders-style dark mode. New lists default to system blue.
+- App icon regenerated as a blue rounded square; website (homepage + manual)
+  reskinned to the same neutral palette, and the homepage mockup now mirrors the
+  app exactly: bordered quick-add input, secondary-gray task dates, 280px sidebar,
+  18px list titles, real macOS traffic-light colors.
+
+### Fixed
+- **Windows CLI install lost native libraries**: `install-cli` copied only the exe,
+  so the installed `taskly` command was missing `e_sqlite3.dll` and every database
+  command failed with exit code 4. The installer now copies the full app directory
+  (DLLs, deps/runtimeconfig, runtimes/), and single-file publishes embed native
+  libraries (`IncludeNativeLibrariesForSelfExtract`), so a bare exe works standalone.
+
 ## [0.5.2] - 2026-08-04
 
 ### Fixed

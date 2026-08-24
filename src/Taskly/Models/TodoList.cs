@@ -15,10 +15,10 @@ public partial class TodoList : ObservableObject
     public const string DefaultIcon = "📋";
 
     /// <summary>
-    /// 默认颜色（Crail 赤陶色 ARGB int，与 RemindersColors.Today 一致）。
+    /// 默认颜色（系统蓝 ARGB int，与 RemindersColors.Today 一致）。
     /// 用户不选颜色时用此值，确保每个列表都有彩色圆圈。
     /// </summary>
-    public const int DefaultColor = unchecked((int)0xFFC15F3C);
+    public const int DefaultColor = unchecked((int)0xFF007AFF);
 
     [ObservableProperty]
     private int _id;

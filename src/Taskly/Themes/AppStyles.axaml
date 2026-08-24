@@ -18,7 +18,7 @@
         <Setter Property="CornerRadius" Value="8"/>
     </Style>
 
-    <!-- 强调色按钮（Crail 赤陶底 + 白字 + 柔和圆角） -->
+    <!-- 强调色按钮（系统蓝底 + 白字 + 柔和圆角） -->
     <Style Selector="Button.accent">
         <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
         <Setter Property="Foreground" Value="White"/>
@@ -51,7 +51,7 @@
     </Style>
 
     <!-- 圆形复选框（18px，克制风格）：
-         未勾选=灰边空心圆；勾选=赤陶边框空心圆 + 内部细赤陶勾。
+         未勾选=灰边空心圆；勾选=系统蓝边框空心圆 + 内部细蓝勾。
          不填充背景，轻盈但有完成指示。checked 态用模板内 TemplatedParent 绑定驱动。 -->
     <Style Selector="CheckBox.reminder">
         <Setter Property="Padding" Value="0"/>
@@ -69,7 +69,7 @@
                             BorderBrush="{DynamicResource ThemeTertiaryTextBrush}"
                             Background="Transparent"
                             IsVisible="{Binding !IsChecked, RelativeSource={RelativeSource TemplatedParent}}"/>
-                    <!-- 勾选：赤陶边框空心圆 + 细赤陶勾 -->
+                    <!-- 勾选：系统蓝边框空心圆 + 细蓝勾 -->
                     <Border CornerRadius="9"
                             BorderThickness="1.25"
                             BorderBrush="{DynamicResource AccentBrush}"
@@ -96,7 +96,7 @@
         <Setter Property="CornerRadius" Value="100"/>
     </Style>
 
-    <!-- 任务行容器：柔和圆角 + 充足留白（Anthropic 风格的呼吸感）。
+    <!-- 任务行容器：柔和圆角 + 充足留白（Reminders 式的呼吸感）。
          Transparent 背景（非 null）保证整行命中测试，双击空白区域也能触发编辑。 -->
     <Style Selector="Border.task-row">
         <Setter Property="CornerRadius" Value="10"/>
@@ -182,29 +182,28 @@
         <Setter Property="Padding" Value="16,0"/>
     </Style>
 
-    <!-- Calendar 主题覆盖（Anthropic 暖色调）：
-         Fluent 默认用冷蓝选中色，这里改成 Crail 赤陶。 -->
+    <!-- Calendar 主题覆盖：选中日/今日与 AccentBrush 系统蓝统一。 -->
     <Style Selector="Calendar">
         <Setter Property="Background" Value="{DynamicResource ThemeSurfaceBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ThemeDividerBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource ThemeOnSurfaceBrush}"/>
     </Style>
-    <!-- 选中日：赤陶底 + 白字 -->
+    <!-- 选中日：系统蓝底 + 白字 -->
     <Style Selector="CalendarDayButton:selected">
         <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
         <Setter Property="Foreground" Value="White"/>
     </Style>
-    <!-- 悬停日：柔和暖底 -->
+    <!-- 悬停日：柔和浅底 -->
     <Style Selector="CalendarDayButton:pointerover">
         <Setter Property="Background" Value="{DynamicResource ThemeHoverBackgroundBrush}"/>
     </Style>
-    <!-- 今日：赤陶字色标记 -->
+    <!-- 今日：系统蓝字色标记 -->
     <Style Selector="CalendarDayButton:today">
         <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
     </Style>
 
-    <!-- TimePicker 背景 + 边框 + 字色（暖色调统一） -->
+    <!-- TimePicker 背景 + 边框 + 字色（与主题统一） -->
     <Style Selector="TimePicker">
         <Setter Property="Background" Value="{DynamicResource ThemeSurfaceBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ThemeDividerBrush}"/>
@@ -232,7 +231,7 @@
         <Setter Property="Opacity" Value="0.85"/>
     </Style>
 
-    <!-- Emoji 选择器：单元格（悬停暖底） -->
+    <!-- Emoji 选择器：单元格（悬停浅底） -->
     <Style Selector="Button.emoji-cell">
         <Setter Property="MinHeight" Value="0"/>
         <Setter Property="MinWidth" Value="0"/>
